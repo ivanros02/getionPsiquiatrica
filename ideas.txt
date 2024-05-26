@@ -1,0 +1,1 @@
+menu principal paciente,agenda de turnos,estadisticas,gestion de ome(Cargado-No cargado)

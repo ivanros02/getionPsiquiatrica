@@ -1,0 +1,77 @@
+:root {
+    --font-family-sans-serif: "Open Sans", -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+*,
+*::before,
+*::after {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html {
+    font-family: sans-serif;
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+h1 {
+    color: #3f84fc; /* Cambia el color del texto */
+    text-align: center; /* Centra el texto */
+    margin-bottom: 30px; /* Añade espacio en la parte inferior del título */
+}
+
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    /* Ajusta según sea necesario */
+}
+
+/* Estilo para el enlace de eliminar */
+.eliminar-profesional {
+    color: red;
+    /* Color rojo */
+    text-decoration: none;
+    /* Sin subrayado */
+}
+
+.button {
+    padding: 1.3em 3em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: #3f84fc;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-top: 1rem;
+}
+
+.button:hover {
+    background-color: #3f84fc;
+    box-shadow: 0px 15px 20px rgba(94, 170, 233, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+
+.button:active {
+    transform: translateY(-1px);
+}
+
+/* Estilos para ocultar el botón en dispositivos móviles */
+@media screen and (max-width: 768px) {
+    .button {
+        display: none;
+        /* Oculta el botón */
+    }
+}
