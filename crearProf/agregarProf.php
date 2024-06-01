@@ -6,16 +6,23 @@ require_once "../conexion.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recibir los datos del formulario
     $nombreYapellido = $_POST["nombreYapellido"];
-    $especialidad = $_POST["especialidad"];
+    $id_especialidad = $_POST["id_especialidad"];
+    $domicilio = $_POST["domicilio"];
+    $localidad = $_POST["localidad"];
+    $codigo_pos = $_POST["codigo_pos"];
+    $matricula_p = $_POST["matricula_p"];
+    $matricula_n = $_POST["matricula_n"];
+    $telefono = $_POST["telefono"];
+    $email = $_POST["email"];
 
     // Preparar la consulta SQL para insertar un profesional
-    $sql = "INSERT INTO profesional (nombreYapellido, especialidad) VALUES (?, ?)";
+    $sql = "INSERT INTO profesional (nombreYapellido, id_especialidad, domicilio, localidad, codigo_pos, matricula_p, matricula_n, telefono, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros
-    $stmt->bind_param("ss", $nombreYapellido, $especialidad);
+    $stmt->bind_param("sssssssss", $nombreYapellido, $id_especialidad, $domicilio, $localidad, $codigo_pos, $matricula_p, $matricula_n, $telefono, $email);
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

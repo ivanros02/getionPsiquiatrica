@@ -1,27 +1,6 @@
 :root {
-    --font-family-sans-serif: "Open Sans", -apple-system, BlinkMacSystemFont,
-        "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
-        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
-*,
-*::before,
-*::after {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-html {
-    font-family: sans-serif;
-    line-height: 1.15;
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-
-h1 {
-    color: #3f84fc; /* Cambia el color del texto */
-    text-align: center; /* Centra el texto */
-    margin-bottom: 30px; /* Añade espacio en la parte inferior del título */
+    --primary-color: #29dcc9;
+    /* Define tu color aquí */
 }
 
 .title-container {
@@ -30,6 +9,19 @@ h1 {
     justify-content: space-between;
     margin-bottom: 20px;
     /* Ajusta según sea necesario */
+}
+
+.btn-custom {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+    /* Para asegurarte de que el texto sea legible */
+}
+
+.btn-custom-editar {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
 }
 
 /* Estilo para el enlace de eliminar */
@@ -47,7 +39,8 @@ h1 {
     letter-spacing: 2.5px;
     font-weight: 500;
     color: #000;
-    background-color: #3f84fc;
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
     border: none;
     border-radius: 45px;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
@@ -57,8 +50,22 @@ h1 {
     margin-top: 1rem;
 }
 
+/* Estilo personalizado para el botón Guardar */
+.btn-custom-save {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+.btn-custom-save:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important; 
+}
+
 .button:hover {
-    background-color: #3f84fc;
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
     box-shadow: 0px 15px 20px rgba(94, 170, 233, 0.4);
     color: #fff;
     transform: translateY(-7px);
@@ -75,3 +82,4 @@ h1 {
         /* Oculta el botón */
     }
 }
+

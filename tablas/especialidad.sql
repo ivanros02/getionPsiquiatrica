@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-05-2024 a las 14:26:47
+-- Tiempo de generación: 28-05-2024 a las 16:35:55
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,42 +24,41 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `profesional`
+-- Estructura de tabla para la tabla `especialidad`
 --
 
-CREATE TABLE `profesional` (
-  `id_prof` int(11) NOT NULL,
-  `nombreYapellido` varchar(255) NOT NULL,
-  `especialidad` varchar(255) NOT NULL
+CREATE TABLE `especialidad` (
+  `id_especialidad` int(11) NOT NULL,
+  `desc_especialidad` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `profesional`
+-- Volcado de datos para la tabla `especialidad`
 --
 
-INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `especialidad`) VALUES
-(1, 'WALTER', 'Psiquiatria'),
-(3, 'IVAN', 'TEST');
+INSERT INTO `especialidad` (`id_especialidad`, `desc_especialidad`) VALUES
+(21, 'especialidad1'),
+(22, 'especialidad2');
 
 --
 -- Índices para tablas volcadas
 --
 
 --
--- Indices de la tabla `profesional`
+-- Indices de la tabla `especialidad`
 --
-ALTER TABLE `profesional`
-  ADD PRIMARY KEY (`id_prof`);
+ALTER TABLE `especialidad`
+  ADD PRIMARY KEY (`id_especialidad`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT de la tabla `profesional`
+-- AUTO_INCREMENT de la tabla `especialidad`
 --
-ALTER TABLE `profesional`
-  MODIFY `id_prof` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+ALTER TABLE `especialidad`
+  MODIFY `id_especialidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
