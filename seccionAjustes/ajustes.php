@@ -29,7 +29,7 @@ if (isset($_GET['cerrar_sesion'])) {
   <!--icono pestana-->
   <link rel="icon" href="../img/logo.png" type="image/x-icon">
   <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon">
-  
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -45,15 +45,15 @@ if (isset($_GET['cerrar_sesion'])) {
   <nav class="navbar bg-body-tertiary">
     <div class="container d-flex justify-content-center">
       <a class="navbar-brand" href="#">
-        <img src="../img/logo.png" height="120" alt="Medical Logo" loading="lazy" />
+        <img src="../img/logoBlanco.png" height="120" alt="Medical Logo" loading="lazy" />
       </a>
     </div>
   </nav>
 
   <button class="button" style="vertical-align:middle; margin-left:7rem"
-        onclick="window.location.href = '../inicio/home.php';">
-        <span>VOLVER</span>
-    </button>
+    onclick="window.location.href = '../inicio/home.php';">
+    <span>VOLVER</span>
+  </button>
 
   <!-- Cards Container -->
   <div class="container my-5">
@@ -61,7 +61,7 @@ if (isset($_GET['cerrar_sesion'])) {
       <!-- Reducir el valor de g a 2 para reducir la distancia entre las tarjetas -->
       <!--PRIMERA CARD -->
       <div class="col d-flex justify-content-center">
-        <a href="../crearProf/crearProf.php">
+        <a href="../todosAjustes/crearProf/crearProf.php">
           <div class="card h-100">
             <div class="first-content">
               <img src="../img/iconoCrearProf.png" alt="Icono Crear Profesional">
@@ -77,7 +77,7 @@ if (isset($_GET['cerrar_sesion'])) {
 
       <!--SEGUNDA CARD -->
       <div class="col d-flex justify-content-center">
-        <a href="../crearEspecialidad/crearEspecialidad.php">
+        <a href="../todosAjustes/crearEspecialidad/crearEspecialidad.php">
           <div class="card h-100">
             <div class="first-content">
               <img src="../img/iconoCrearEsp.png" alt="Icono Crear Especialidad">
@@ -93,7 +93,7 @@ if (isset($_GET['cerrar_sesion'])) {
 
       <!-- TERCERA CARD -->
       <div class="col d-flex justify-content-center">
-        <a href="../obraSocial/obraSocial.php">
+        <a href="../todosAjustes/obraSocial/obraSocial.php">
           <div class="card h-100">
             <div class="first-content">
               <img src="../img/obraSocial.png" class="img-fluid" alt="Obra Social">
@@ -109,7 +109,63 @@ if (isset($_GET['cerrar_sesion'])) {
 
       <!-- Cuarta Card -->
       <div class="col d-flex justify-content-center">
-        <a href="../actividades/actividades.php">
+        <a href="../todosAjustes/origen/origen.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/origen.png" class="img-fluid" alt="Origen">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Origen de ingreso</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Quinta Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/ingreso/ingreso.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/ingreso.png" class="img-fluid" alt="ingreso">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Motivo de ingreso</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+
+      <!--CARD -->
+
+      <!-- Sexta Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/egreso/egreso.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/egreso.png" class="img-fluid" alt="egreso">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Motivo de egresos</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Septima Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/actividades/actividades.php">
           <div class="card h-100">
             <div class="first-content">
               <img src="../img/actividad.png" class="img-fluid" alt="Actividad">
@@ -125,15 +181,15 @@ if (isset($_GET['cerrar_sesion'])) {
       </div>
       <!--CARD -->
 
-      <!-- Quinta Card -->
+      <!-- Octava Card -->
       <div class="col d-flex justify-content-center">
-        <a href="../egreso/egreso.php">
+        <a href="../todosAjustes/categoria/categoria.php">
           <div class="card h-100">
             <div class="first-content">
-              <img src="../img/egreso.png" class="img-fluid" alt="egreso">
+              <img src="../img/categorias.png" class="img-fluid" alt="categoria">
             </div>
             <div class="third-content">
-              <h3 class="mt-3">Tipos de egresos</h3>
+              <h3 class="mt-3">Categorias</h3>
             </div>
             <div class="second-content">
             </div>
@@ -142,7 +198,242 @@ if (isset($_GET['cerrar_sesion'])) {
 
       </div>
       <!--CARD -->
-        
+
+      <!-- Novena Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/tipoAfiliado/tipoAfiliado.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/tipoAfiliado.png" class="img-fluid" alt="tipo de Afiliado">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Tipo de afiliado</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Novena Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/modalidad/modalidad.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/modalidad.png" class="img-fluid" alt="Modalidad">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Modalidades</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Decima Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/familiar/familiar.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/familiar.png" class="img-fluid" alt="familiar">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Familiares</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Onceava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/diag/diag.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/diagnostico.png" class="img-fluid" alt="diagnostico">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Diagnosticos</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Doceava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/judiciales/juzgados/juzgados.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Juzgados</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Treceava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/judiciales/secretarias/secretarias.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Secretarias</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Catorceava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/judiciales/curadurias/curadurias.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Curadurias</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Catorceava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/judiciales/tiposJuicios/tiposJuicios.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Tipo de juicios</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Quinceava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/habitaciones/habitaciones.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/habitaciones.png" class="img-fluid" alt="habitaciones">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Habitaciones</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Dieciseisava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/rubros/rubros.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/rubros.png" class="img-fluid" alt="Rubros">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Rubros</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Diecisieteava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/cuentas/cuentas.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/cuentas.png" class="img-fluid" alt="cuentas">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Cuentas</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Diecisieteava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/comprobantes/comprobantes.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/comprobante.png" class="img-fluid" alt="comprobantes">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Comprobantes</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+      <!-- Dieciochoava Card -->
+      <div class="col d-flex justify-content-center">
+        <a href="../todosAjustes/periodo/periodo.php">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/periodo.png" class="img-fluid" alt="periodo">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Periodos de pagos</h3>
+            </div>
+            <div class="second-content">
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <!--CARD -->
+
+
 
     </div>
   </div>

@@ -45,8 +45,8 @@ a {
 
 /* Otros estilos */
 .card {
-  width: 10rem;
-  height: 10rem;
+  width: 12rem;
+  height: 12rem;
   background: var(--primary-color);
   border-radius: 10px;
   font-size: 30px;

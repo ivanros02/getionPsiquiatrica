@@ -29,7 +29,7 @@ if (isset($_GET['cerrar_sesion'])) {
   <!--icono pestana-->
   <link rel="icon" href="../img/logo.png" type="image/x-icon">
   <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon">
-  
+
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -37,6 +37,7 @@ if (isset($_GET['cerrar_sesion'])) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="../estilos/styleGeneral.css">
+  <link rel="stylesheet" href="../estilos/styleBotones.css">
 </head>
 
 <body>
@@ -44,14 +45,19 @@ if (isset($_GET['cerrar_sesion'])) {
   <nav class="navbar bg-body-tertiary">
     <div class="container d-flex justify-content-center">
       <a class="navbar-brand" href="#">
-        <img src="../img/logo.png" height="120" alt="Medical Logo" loading="lazy" />
+        <img src="../img/logoBlanco.png" height="120" alt="Medical Logo" loading="lazy" />
       </a>
     </div>
   </nav>
 
+  <button class="button" style="vertical-align:middle; margin-left:7rem" onclick="confirmLogout(event)">
+    <span>Cerrar sesión</span>
+  </button>
+
+
   <!-- Cards Container -->
   <div class="container my-5">
-    <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center">
+    <div class="row row-cols-1 row-cols-md-3 g-3 justify-content-center" style="margin-top:-3rem;">
       <!-- Reducir el valor de g a 2 para reducir la distancia entre las tarjetas -->
       <!--PRIMERA CARD -->
       <div class="col d-flex justify-content-center">
@@ -71,7 +77,7 @@ if (isset($_GET['cerrar_sesion'])) {
         <a href="../turnos/turnos.php">
           <div class="card h-100">
             <div class="first-content">
-              <img src="../img/prueba.png" class="img-fluid" alt="">
+              <img src="../img/turnos.png" class="img-fluid" alt="">
             </div>
             <div class="third-content">
               <h3 class="mt-3">Agendas</h3>
@@ -143,7 +149,7 @@ if (isset($_GET['cerrar_sesion'])) {
 
 
   <!-- Pie de página -->
-  <footer class="bg-dark text-white text-center py-4 mt-auto">
+  <footer class="bg-dark text-white text-center py-4" style="margin-top:-3rem;">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-12 footer-logo-text">
@@ -154,10 +160,27 @@ if (isset($_GET['cerrar_sesion'])) {
     </div>
   </footer>
 
+
   <!-- Bootstrap JS (opcional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+
+  <script>
+    function confirmLogout(event) {
+      // Evitar la acción predeterminada del botón
+      event.preventDefault();
+
+      // Mostrar una ventana de confirmación
+      var userConfirmed = confirm("¿Estás seguro de que deseas cerrar sesión?");
+
+      // Si el usuario confirma, redirigir al script de cierre de sesión
+      if (userConfirmed) {
+        window.location.href = '../inicio/logout.php';
+      }
+      // Si el usuario cancela, no hacer nada
+    }
+  </script>
 </body>
 
 </html>
