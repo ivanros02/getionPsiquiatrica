@@ -7,15 +7,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recibir los datos del formulario
     $codigo = $_POST["codigo"];
     $descripcion = $_POST["descripcion"];
+    $modalidad = $_POST["modalidad_paci"];
 
     // Preparar la consulta SQL para insertar una especialidad
-    $sql = "INSERT INTO actividades (codigo, descripcion) VALUES (?, ?)";
+    $sql = "INSERT INTO actividades (codigo, descripcion, modalidad) VALUES (?, ?, ?)";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros
-    $stmt->bind_param("ss", $codigo, $descripcion);
+    $stmt->bind_param("ssi", $codigo, $descripcion, $modalidad);
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

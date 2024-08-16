@@ -17,7 +17,7 @@
                 <div class="card">
                     <div class="card-header">Iniciar sesión como admin</div>
                     <div class="card-body">
-                        <form action="loginA.php" method="POST">
+                        <form action="loginAdmin.php" method="POST">
                             <div class="form-group">
                                 <label for="usuario">Usuario:</label>
                                 <input type="text" name="usuario" id="usuario" class="form-control" required>

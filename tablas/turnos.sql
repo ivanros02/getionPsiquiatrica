@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-05-2024 a las 21:33:10
+-- Tiempo de generación: 07-08-2024 a las 17:13:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -28,27 +28,24 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `turnos` (
-  `id_reserva` int(11) NOT NULL,
-  `nombre_paciente` varchar(255) NOT NULL,
-  `practica` int(255) NOT NULL,
-  `fecha_turno` date NOT NULL,
-  `fyh_creacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `id_prof` int(11) NOT NULL,
-  `beneficio` int(15) NOT NULL,
+  `id` int(255) NOT NULL,
+  `fecha` date NOT NULL,
   `hora` time NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `start` datetime NOT NULL,
-  `end` datetime NOT NULL,
-  `color` varchar(255) NOT NULL
+  `paciente` int(11) NOT NULL,
+  `id_prof` int(255) NOT NULL,
+  `motivo` int(255) NOT NULL,
+  `llego` varchar(255) NOT NULL,
+  `atendido` varchar(255) NOT NULL,
+  `observaciones` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `turnos`
 --
 
-INSERT INTO `turnos` (`id_reserva`, `nombre_paciente`, `practica`, `fecha_turno`, `fyh_creacion`, `id_prof`, `beneficio`, `hora`, `title`, `start`, `end`, `color`) VALUES
-(1, 'IVAN', 333, '2024-05-20', '2024-05-19 19:29:36', 1, 0, '06:30:00', 'IVAN', '2024-05-20 00:00:00', '2024-05-20 00:00:00', ''),
-(2, 'MONICA', 333, '2024-05-20', '2024-05-19 19:32:18', 1, 0, '08:00:00', 'MONICA', '2024-05-20 00:00:00', '2024-05-20 00:00:00', '');
+INSERT INTO `turnos` (`id`, `fecha`, `hora`, `paciente`, `id_prof`, `motivo`, `llego`, `atendido`, `observaciones`) VALUES
+(52, '2024-08-26', '07:30:00', 16, 12, 4, 'a', 'a', 'a'),
+(53, '2024-08-09', '07:30:00', 16, 12, 6, 'nada', 'nada', 'nada');
 
 --
 -- Índices para tablas volcadas
@@ -58,8 +55,10 @@ INSERT INTO `turnos` (`id_reserva`, `nombre_paciente`, `practica`, `fecha_turno`
 -- Indices de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  ADD PRIMARY KEY (`id_reserva`),
-  ADD KEY `id_prof` (`id_prof`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_profesional` (`id_prof`),
+  ADD KEY `fk_turno_paciente` (`paciente`),
+  ADD KEY `fk_motivo_actividad` (`motivo`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -69,7 +68,7 @@ ALTER TABLE `turnos`
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- Restricciones para tablas volcadas
@@ -79,7 +78,9 @@ ALTER TABLE `turnos`
 -- Filtros para la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  ADD CONSTRAINT `turnos_ibfk_1` FOREIGN KEY (`id_prof`) REFERENCES `profesional` (`id_prof`);
+  ADD CONSTRAINT `fk_motivo_actividad` FOREIGN KEY (`motivo`) REFERENCES `actividades` (`id`),
+  ADD CONSTRAINT `fk_profesional` FOREIGN KEY (`id_prof`) REFERENCES `profesional` (`id_prof`),
+  ADD CONSTRAINT `fk_turno_paciente` FOREIGN KEY (`paciente`) REFERENCES `paciente` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

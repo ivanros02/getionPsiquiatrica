@@ -6,15 +6,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = $_POST['id'];
     $codigo = $_POST['codigo'];
     $descripcion = $_POST['descripcion'];
+    $modalidad = $_POST['modalidad_paci'];
 
     // Consulta SQL para actualizar la especialidad
-    $sql = "UPDATE actividades SET codigo = ?, descripcion = ? WHERE id = ?";
+    $sql = "UPDATE actividades SET codigo = ?, descripcion = ?, modalidad = ? WHERE id = ?";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros (el orden y tipos deben ser correctos: "s" para string y "i" para integer)
-    $stmt->bind_param("ssi", $codigo, $descripcion, $id);
+    $stmt->bind_param("ssii", $codigo, $descripcion,$modalidad, $id);
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

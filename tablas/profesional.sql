@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-05-2024 a las 22:35:49
+-- Tiempo de generación: 12-06-2024 a las 01:27:06
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `profesional` (
   `id_prof` int(11) NOT NULL,
   `nombreYapellido` varchar(255) NOT NULL,
-  `especialidad` varchar(255) NOT NULL,
+  `id_especialidad` int(11) NOT NULL,
   `domicilio` varchar(255) NOT NULL,
   `localidad` varchar(255) NOT NULL,
   `codigo_pos` varchar(255) NOT NULL,
@@ -44,12 +44,11 @@ CREATE TABLE `profesional` (
 -- Volcado de datos para la tabla `profesional`
 --
 
-INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `especialidad`, `domicilio`, `localidad`, `codigo_pos`, `matricula_p`, `matricula_n`, `telefono`, `email`) VALUES
-(1, 'WALTER', 'TEST111', '143', 'Villa Espana', '1886', '123', '345', 2147483647, 'ivanrosendo1102@gmail.com'),
-(3, 'IVAN', 'TEST', '143', 'Berazategui', '1886', '123', '345', 2147483647, 'TEST34512ttt@gmail.com'),
-(8, 'WALTER ROSENDO', 'PRUEBA', '143', 'Berazategui', '1886', '123', '345', 1139114579, 'ivanrosendo@gmail.com'),
-(9, 'LIVINGSTON ESTELA BEATRIZ', 'TEST', '143', 'Berazategui', '1886', '123', '345', 2147483647, 'ivanrosendo@gmail.com'),
-(10, 'PEREZ MURGA CARLOS ISMAEL', 'Psiquiatria', '2651', 'Villa Espana', '1886', '123', '345', 2147483647, 'TEST34@gmail.com');
+INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `id_especialidad`, `domicilio`, `localidad`, `codigo_pos`, `matricula_p`, `matricula_n`, `telefono`, `email`) VALUES
+(11, 'PEREZ MURGA CARLOS ISMAEL', 22, '143', 'Berazategui', '1886', '124', '345', 1139114579, 'ivanrosendo1102@gmail.com'),
+(12, 'WALTER ROSENDO', 25, '143', 'Villa Espana', '1886', '218', '796', 243567189, 'infowss@gmail.com'),
+(15, 'LIVINGSTON ESTELA BEATRIZ', 22, '2651', 'Villa Espana', '1886', '123', '222', 2147483647, 'TEST34@gmail.com'),
+(16, 'MONICA CEJAS', 25, '143', 'Berazategui', '1886', '123', '345', 2147483647, 'moni@gmail.com');
 
 --
 -- Índices para tablas volcadas
@@ -60,7 +59,7 @@ INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `especialidad`, `domici
 --
 ALTER TABLE `profesional`
   ADD PRIMARY KEY (`id_prof`),
-  ADD KEY `especialidad` (`especialidad`);
+  ADD KEY `especialidad` (`id_especialidad`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -70,7 +69,17 @@ ALTER TABLE `profesional`
 -- AUTO_INCREMENT de la tabla `profesional`
 --
 ALTER TABLE `profesional`
-  MODIFY `id_prof` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_prof` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `profesional`
+--
+ALTER TABLE `profesional`
+  ADD CONSTRAINT `fk_profesional_especialidad` FOREIGN KEY (`id_especialidad`) REFERENCES `especialidad` (`id_especialidad`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

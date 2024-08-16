@@ -77,7 +77,7 @@ if (isset($_GET['id'])) {
 }
 
 // Obtener todas las especialidades
-$sql = "SELECT * FROM actividades";
+$sql = "SELECT a.id AS a_id,a.codigo AS a_codigo,a.descripcion AS a_desc,m.descripcion AS desc_modali,m.id AS id_modali FROM actividades a JOIN modalidad m ON a.modalidad = m.id";
 $result = $conn->query($sql);
 ?>
 
@@ -91,7 +91,7 @@ $result = $conn->query($sql);
     <!--icono pestana-->
     <link rel="icon" href="../../img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="../../img/logo.png" type="image/x-icon">
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -130,26 +130,28 @@ $result = $conn->query($sql);
         </div>
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
-                <tr>   
+                <tr>
                     <th>ID</th>
                     <th>Codigo</th>
                     <th>Descripcion</th>
+                    <th>Modalidad</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr>  
-                            <td><?= $row["id"] ?></td>  
-                            <td><?= $row["codigo"] ?></td>
-                            <td><?= $row["descripcion"] ?></td>
+                        <tr>
+                            <td><?= $row["a_id"] ?></td>
+                            <td><?= $row["a_codigo"] ?></td>
+                            <td><?= $row["a_desc"] ?></td>
+                            <td><?= $row["desc_modali"] ?></td>
                             <td>
                                 <button class="btn btn-custom-editar" onclick='editarActividad(<?= json_encode($row) ?>)'><i
                                         class="fas fa-pencil-alt"></i></button>
 
 
-                                <a href="?eliminar=<?= $row['id'] ?>" class="btn btn-danger"
+                                <a href="?eliminar=<?= $row['a_id'] ?>" class="btn btn-danger"
                                     onclick="return confirm('¿Estás seguro de que deseas eliminar esta actividad?');"><i
                                         class="fas fa-trash-alt"></i></a>
                             </td>
@@ -175,16 +177,20 @@ $result = $conn->query($sql);
                 </div>
                 <div class="modal-body">
                     <form id="formActividad" action="./agregarActividad.php" method="POST">
-                    <input type="hidden" id="id" name="id">
+                        <input type="hidden" id="id" name="id">
                         <div class="form-group">
                             <label for="codigo">Codigo</label>
-                            <input type="text" class="form-control" id="codigo" name="codigo"
-                                required>
+                            <input type="text" class="form-control" id="codigo" name="codigo" required>
                         </div>
                         <div class="form-group">
                             <label for="descripcion">Descripcion</label>
-                            <input type="text" class="form-control" id="descripcion" name="descripcion"
-                                required>
+                            <input type="text" class="form-control" id="descripcion" name="descripcion" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modalidad_paci">Modalidad:*</label>
+                            <select class="form-control" id="modalidad_paci" name="modalidad_paci" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -225,16 +231,16 @@ $result = $conn->query($sql);
             }
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             function editarActividad(actividad) {
                 document.getElementById('formActividad').action = './editarActividad.php'; // Asegúrate de que el formulario apunta a la URL correcta
 
                 // Rellenar los campos del formulario con los datos de la especialidad
                 // Rellenar los campos del formulario con los datos de la especialidad
-                document.getElementById('id').value = actividad.id;
-                document.getElementById('codigo').value = actividad.codigo;
-                document.getElementById('descripcion').value = actividad.descripcion;
-
+                document.getElementById('id').value = actividad.a_id;
+                document.getElementById('codigo').value = actividad.a_codigo;
+                document.getElementById('descripcion').value = actividad.a_desc;
+                document.getElementById('modalidad_paci').value = actividad.id_modali;
                 // Mostrar el modal de edición
                 var modal = new bootstrap.Modal(document.getElementById('agregarActividadModal'));
                 modal.show();
@@ -254,8 +260,21 @@ $result = $conn->query($sql);
             // Limpiar el formulario al abrir el modal para agregar profesional
             var btnAgregarActividadModal = document.querySelector('button[data-bs-target="#agregarActividadModal"]');
             btnAgregarActividadModal.addEventListener('click', limpiarFormulario);
+        });
 
-
+        $.ajax({
+            url: '../../pacientes/dato/get_modalidad.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                data.forEach(function (item) {
+                    var optionText = item.codigo + ' - ' + item.descripcion;
+                    $('#modalidad_paci').append(new Option(optionText, item.id));
+                });
+            },
+            error: function (error) {
+                console.error("Error fetching data: ", error);
+            }
         });
     </script>
 

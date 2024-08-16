@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #29dcc9;
+    --primary-color: #0d2f44;
     /* Define tu color aquí */
 }
 
@@ -14,14 +14,34 @@
 .btn-custom {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
-    color: white !important;
+    color: #bfe6f8 !important;
     /* Para asegurarte de que el texto sea legible */
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    transform: scale(1.05);
+    /* Aumenta ligeramente el tamaño */
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    /* Agrega una sombra suave */
+    background: linear-gradient(to bottom, #0d2f44 0%, rgba(56, 118, 233, 0.8) 100%);
+    /* Aplica un degradado */
 }
 
 .btn-custom-editar {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
-    color: white !important;
+    color: #bfe6f8 !important;
+    transition: all 0.3s ease;
+}
+
+.btn-custom-editar:hover {
+    transform: scale(1.05);
+    /* Aumenta ligeramente el tamaño */
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    /* Agrega una sombra suave */
+    background: linear-gradient(to bottom, #0d2f44 0%, rgba(56, 118, 233, 0.8) 100%);
+    /* Aplica un degradado */
 }
 
 /* Estilo para el enlace de eliminar */
@@ -38,7 +58,7 @@
     text-transform: uppercase;
     letter-spacing: 2.5px;
     font-weight: 500;
-    color: #000;
+    color: #bfe6f8;
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
     border: none;
@@ -54,20 +74,23 @@
 .btn-custom-save {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
-    color: #ffffff !important;
+    color: #bfe6f8 !important;
+    transition: all 0.3s ease;
 }
 
 .btn-custom-save:hover {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
-    color: #ffffff !important; 
+    box-shadow: 0px 15px 20px rgba(94, 170, 233, 0.4);
+    color: #bfe6f8;
+    transform: translateY(-7px);
 }
 
 .button:hover {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
     box-shadow: 0px 15px 20px rgba(94, 170, 233, 0.4);
-    color: #fff;
+    color: #bfe6f8;
     transform: translateY(-7px);
 }
 
@@ -82,4 +105,3 @@
         /* Oculta el botón */
     }
 }
-
