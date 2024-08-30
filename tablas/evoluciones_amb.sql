@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-07-2024 a las 02:24:34
+-- Tiempo de generación: 26-08-2024 a las 14:56:08
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `evoluciones`
+-- Estructura de tabla para la tabla `evoluciones_amb`
 --
 
-CREATE TABLE `evoluciones` (
+CREATE TABLE `evoluciones_amb` (
   `id_paciente` int(255) NOT NULL,
   `motivo` varchar(255) NOT NULL,
   `antecedentes` varchar(255) NOT NULL,
@@ -38,46 +38,41 @@ CREATE TABLE `evoluciones` (
   `duracion` varchar(255) NOT NULL,
   `frecuencia` varchar(255) NOT NULL,
   `fecha` date NOT NULL,
-  `id` int(11) NOT NULL
+  `id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `evoluciones`
---
-
-INSERT INTO `evoluciones` (`id_paciente`, `motivo`, `antecedentes`, `estado_actual`, `familia`, `diag`, `objetivo`, `duracion`, `frecuencia`, `fecha`, `id`) VALUES
-(16, 'test', 'test', 'test', 'test', 1, 'test', 'test', 'test', '2024-07-18', 1);
 
 --
 -- Índices para tablas volcadas
 --
 
 --
--- Indices de la tabla `evoluciones`
+-- Indices de la tabla `evoluciones_amb`
 --
-ALTER TABLE `evoluciones`
+ALTER TABLE `evoluciones_amb`
   ADD PRIMARY KEY (`id`,`id_paciente`),
-  ADD KEY `fk_diag_evoluciones` (`diag`);
+  ADD KEY `fk_diag_evoluciones` (`diag`),
+  ADD KEY `fk_id_paciente_evo` (`id_paciente`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT de la tabla `evoluciones`
+-- AUTO_INCREMENT de la tabla `evoluciones_amb`
 --
-ALTER TABLE `evoluciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `evoluciones_amb`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
--- Filtros para la tabla `evoluciones`
+-- Filtros para la tabla `evoluciones_amb`
 --
-ALTER TABLE `evoluciones`
-  ADD CONSTRAINT `fk_diag_evoluciones` FOREIGN KEY (`diag`) REFERENCES `diag` (`id`);
+ALTER TABLE `evoluciones_amb`
+  ADD CONSTRAINT `fk_diag_evoluciones` FOREIGN KEY (`diag`) REFERENCES `diag` (`id`),
+  ADD CONSTRAINT `fk_id_paciente_evo` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

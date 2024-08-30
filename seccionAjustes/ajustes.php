@@ -75,7 +75,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/crearProf/crearProf.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/iconoCrearProf.png" alt="Icono Crear Profesional">
+                <img src="../img/ajustes/profesional.png" alt="Icono Crear Profesional">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Profesional</h3>
@@ -91,7 +91,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/disponibilidad/disponibilidad.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/iconoCrearProf.png" alt="Icono agenda Profesional">
+                <img src="../img/ajustes/agendaProf.png" alt="Icono agenda Profesional">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Agenda profesional</h3>
@@ -107,7 +107,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/crearEspecialidad/crearEspecialidad.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/iconoCrearEsp.png" alt="Icono Crear Especialidad">
+                <img src="../img/ajustes/especialidad.png" alt="Icono Crear Especialidad">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Especialidad</h3>
@@ -123,7 +123,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/obraSocial/obraSocial.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/obraSocial.png" class="img-fluid" alt="Obra Social">
+                <img src="../img/ajustes/obraSocial.png" class="img-fluid" alt="Obra Social">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Obra Social</h3>
@@ -138,7 +138,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/medicacion/medicacion.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/medicacion.png" class="img-fluid" alt="medicacion">
+                <img src="../img/ajustes/medicamentos.png" class="img-fluid" alt="medicacion">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Medicamentos</h3>
@@ -153,7 +153,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/origen/origen.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/origen.png" class="img-fluid" alt="Origen">
+                <img src="../img/ajustes/origen.png" class="img-fluid" alt="Origen">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Origen de ingreso</h3>
@@ -171,7 +171,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/ingreso/ingreso.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/ingreso.png" class="img-fluid" alt="ingreso">
+                <img src="../img/ajustes/ingreso.png" class="img-fluid" alt="ingreso">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Motivo de ingreso</h3>
@@ -191,7 +191,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/egreso/egreso.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/egreso.png" class="img-fluid" alt="egreso">
+                <img src="../img/ajustes/egreso.png" class="img-fluid" alt="egreso">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Motivo de egresos</h3>
@@ -209,7 +209,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/actividades/actividades.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/actividad.png" class="img-fluid" alt="Actividad">
+                <img src="../img/ajustes/actividades.png" class="img-fluid" alt="Actividad">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Actividades</h3>
@@ -227,7 +227,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/categoria/categoria.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/categorias.png" class="img-fluid" alt="categoria">
+                <img src="../img/ajustes/categorias.png" class="img-fluid" alt="categoria">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Categorias</h3>
@@ -245,7 +245,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/tipoAfiliado/tipoAfiliado.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/tipoAfiliado.png" class="img-fluid" alt="tipo de Afiliado">
+                <img src="../img/ajustes/tipoAfiliado.png" class="img-fluid" alt="tipo de Afiliado">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Tipo de afiliado</h3>
@@ -263,7 +263,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/modalidad/modalidad.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/modalidad.png" class="img-fluid" alt="Modalidad">
+                <img src="../img/ajustes/modalidad.png" class="img-fluid" alt="Modalidad">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Modalidades</h3>
@@ -281,7 +281,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/familiar/familiar.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/familiar.png" class="img-fluid" alt="familiar">
+                <img src="../img/ajustes/familiares.png" class="img-fluid" alt="familiar">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Familiares</h3>
@@ -299,7 +299,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/diag/diag.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/diagnostico.png" class="img-fluid" alt="diagnostico">
+                <img src="../img/ajustes/diagnosticos.png" class="img-fluid" alt="diagnostico">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Diagnosticos</h3>
@@ -317,7 +317,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/judiciales/juzgados/juzgados.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+                <img src="../img/ajustes/juzgados.png" class="img-fluid" alt="judiciales">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Juzgados</h3>
@@ -335,7 +335,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/judiciales/secretarias/secretarias.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+                <img src="../img/ajustes/secretarias.png" class="img-fluid" alt="judiciales">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Secretarias</h3>
@@ -353,7 +353,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/judiciales/curadurias/curadurias.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+                <img src="../img/ajustes/curaduria.png" class="img-fluid" alt="judiciales">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Curadurias</h3>
@@ -371,7 +371,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/judiciales/tiposJuicios/tiposJuicios.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/judiciales.png" class="img-fluid" alt="judiciales">
+                <img src="../img/ajustes/judiciales.png" class="img-fluid" alt="judiciales">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Tipo de juicios</h3>
@@ -389,7 +389,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/habitaciones/habitaciones.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/habitaciones.png" class="img-fluid" alt="habitaciones">
+                <img src="../img/ajustes/habitaciones.png" class="img-fluid" alt="habitaciones">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Habitaciones</h3>
@@ -407,7 +407,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/rubros/rubros.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/rubros.png" class="img-fluid" alt="Rubros">
+                <img src="../img/ajustes/rubros.png" class="img-fluid" alt="Rubros">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Rubros</h3>
@@ -425,7 +425,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/cuentas/cuentas.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/cuentas.png" class="img-fluid" alt="cuentas">
+                <img src="../img/ajustes/cuentas.png" class="img-fluid" alt="cuentas">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Cuentas</h3>
@@ -443,7 +443,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/comprobantes/comprobantes.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/comprobante.png" class="img-fluid" alt="comprobantes">
+                <img src="../img/ajustes/comprobantes.png" class="img-fluid" alt="comprobantes">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Comprobantes</h3>
@@ -461,7 +461,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/periodo/periodo.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/periodo.png" class="img-fluid" alt="periodo">
+                <img src="../img/ajustes/periodo.png" class="img-fluid" alt="periodo">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Periodos de pagos</h3>
@@ -479,7 +479,7 @@ if (isset($_GET['cerrar_sesion'])) {
           <a href="../todosAjustes/parametros/parametros.php">
             <div class="card h-100">
               <div class="first-content">
-                <img src="../img/parametros.png" class="img-fluid" alt="periodo">
+                <img src="../img/ajustes/parametros.png" class="img-fluid" alt="periodo">
               </div>
               <div class="third-content">
                 <h3 class="mt-3">Parametros del sistema</h3>

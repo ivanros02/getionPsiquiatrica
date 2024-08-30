@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-06-2024 a las 01:27:06
+-- Tiempo de generación: 28-08-2024 a las 17:37:43
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -45,10 +45,12 @@ CREATE TABLE `profesional` (
 --
 
 INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `id_especialidad`, `domicilio`, `localidad`, `codigo_pos`, `matricula_p`, `matricula_n`, `telefono`, `email`) VALUES
-(11, 'PEREZ MURGA CARLOS ISMAEL', 22, '143', 'Berazategui', '1886', '124', '345', 1139114579, 'ivanrosendo1102@gmail.com'),
 (12, 'WALTER ROSENDO', 25, '143', 'Villa Espana', '1886', '218', '796', 243567189, 'infowss@gmail.com'),
 (15, 'LIVINGSTON ESTELA BEATRIZ', 22, '2651', 'Villa Espana', '1886', '123', '222', 2147483647, 'TEST34@gmail.com'),
-(16, 'MONICA CEJAS', 25, '143', 'Berazategui', '1886', '123', '345', 2147483647, 'moni@gmail.com');
+(16, 'MONICA CEJAS', 25, '143', 'Berazategui', '1886', '123', '345', 2147483647, 'moni@gmail.com'),
+(17, 'VALENTIN ROSENDO', 25, '143', 'Berazategui', '1886', '1232', '3453', 2147483647, 'valentin@gmail.com'),
+(18, 'IVAN ROSENDO', 22, '2651', 'Berazategui', '1886', '777', '743', 1139114579, 'ivanrosendo1102@gmail.com'),
+(19, 'Zoe', 22, '143', 'Villa Espana', '1886', '123', '345', 1139114579, 'ivanrosendo1102@gmail.com');
 
 --
 -- Índices para tablas volcadas
@@ -69,7 +71,7 @@ ALTER TABLE `profesional`
 -- AUTO_INCREMENT de la tabla `profesional`
 --
 ALTER TABLE `profesional`
-  MODIFY `id_prof` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_prof` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Restricciones para tablas volcadas

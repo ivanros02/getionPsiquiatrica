@@ -510,7 +510,7 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (pacientes) {
                 var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-                html += '<thead class="thead-dark">';
+                html += '<thead class="table-custom">';
                 html += '<tr>';
                 html += '<th>Nombre</th>';
                 html += '<th>Beneficio</th>';
@@ -857,8 +857,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png'; // URL de la imagen
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2; // Centrar horizontalmente
                     const yImg = doc.autoTable.previous.finalY + 10; // Posición vertical de la imagen debajo de la tabla
 
@@ -1015,8 +1015,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
                     const yImg = doc.internal.pageSize.height - imgHeight - 10;
 

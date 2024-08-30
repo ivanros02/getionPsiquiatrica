@@ -11,7 +11,7 @@ $usuario = $_POST['usuario'];
 $clave = $_POST['clave'];
 
 // Consulta SQL para obtener el hash de la contraseña del usuario
-$sql = "SELECT clave FROM usuarioAdmin WHERE usuario = '$usuario'";
+$sql = "SELECT clave FROM usuario_admin WHERE usuario = '$usuario'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -24,7 +24,7 @@ if ($result->num_rows > 0) {
         // Inicio de sesión exitoso
         session_start();
         $_SESSION['usuario'] = $usuario;
-        header("Location: inicio.php"); // Redireccionar a la página de inicio después de iniciar sesión
+        header("Location: ../registrarUsuario/registro.php"); // Redireccionar a la página de inicio después de iniciar sesión
     } else {
         // Credenciales incorrectas
         echo "Usuario o contraseña incorrectos.";

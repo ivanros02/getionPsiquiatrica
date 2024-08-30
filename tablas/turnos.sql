@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-08-2024 a las 17:13:29
+-- Tiempo de generación: 28-08-2024 a las 17:35:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -40,14 +40,6 @@ CREATE TABLE `turnos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `turnos`
---
-
-INSERT INTO `turnos` (`id`, `fecha`, `hora`, `paciente`, `id_prof`, `motivo`, `llego`, `atendido`, `observaciones`) VALUES
-(52, '2024-08-26', '07:30:00', 16, 12, 4, 'a', 'a', 'a'),
-(53, '2024-08-09', '07:30:00', 16, 12, 6, 'nada', 'nada', 'nada');
-
---
 -- Índices para tablas volcadas
 --
 
@@ -68,7 +60,7 @@ ALTER TABLE `turnos`
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- Restricciones para tablas volcadas

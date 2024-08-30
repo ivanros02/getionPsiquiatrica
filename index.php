@@ -1,10 +1,34 @@
+<?php
+// Conexión a la base de datos
+require_once "./conexion.php";
+
+// Verificar conexión
+if ($conn->connect_error) {
+    die("Conexión fallida: " . $conn->connect_error);
+}
+
+// Consultar el valor de 'inst'
+$sql = "SELECT inst FROM parametro_sistema LIMIT 1";
+$result = $conn->query($sql);
+
+// Obtener el valor
+$title = "Iniciar sesión"; // Valor por defecto
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $title = $row['inst'];
+}
+
+// Cerrar conexión
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesión WW</title>
+    <title><?php echo htmlspecialchars($title); ?></title>
     <!-- Icono de pestaña -->
     <link rel="icon" href="./img/logo.png" type="image/x-icon">
     
@@ -20,7 +44,7 @@
         html, body {
             width: 100vw;
             height: 100vh;
-            background-image: url("http://bit.ly/2gPLxZ4");
+            background-image: url("./img/login_back.png");
             background-repeat: no-repeat;
             background-attachment: fixed;
             background-size: cover;
@@ -112,7 +136,7 @@
                 <img src="./img/logoBlanco.png" alt="Logo MEDICAL" class="img-fluid" style="max-width: 15rem;">
             </div>
             <div class="card">
-                <div class="card-header">Iniciar sesión</div>
+                <div class="card-header"><?php echo htmlspecialchars($title); ?></div>
                 <div class="card-body">
                     <?php
                     if (isset($_GET['error'])) {
@@ -134,7 +158,7 @@
                         <div class="text-center mt-3 cutom-user">
                             <a href="./login/admin.php">Soy administrador</a>
                             <br>
-                            <a href="./historioaClinica/login_prof.php">Soy un profesional</a>
+                            <a href="./historiaClinica/loginHC/iniciar_sesion_prof.php">Soy un profesional</a>
                         </div>
                     </form>
                 </div>

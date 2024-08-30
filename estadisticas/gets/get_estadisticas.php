@@ -22,31 +22,62 @@ $sql = "SELECT DISTINCT
     t.fecha AS fecha_turno,
     NULL AS cantidad
 FROM paciente p
-LEFT JOIN modalidad m ON m.id = p.modalidad
+LEFT JOIN paci_modalidad pM ON pM.id_paciente = p.id
+LEFT JOIN modalidad m ON m.id = pM.modalidad
 LEFT JOIN turnos t ON t.paciente = p.id
 LEFT JOIN actividades act2 ON act2.id = t.motivo
-LEFT JOIN profesional prof ON prof.id_prof = t.id_prof
 LEFT JOIN obra_social o   ON o.id = p.obra_social
 WHERE (t.fecha BETWEEN ? AND ?) AND p.obra_social = ?
+
 
 UNION
 
 SELECT DISTINCT
-    CONCAT(p.nombre,' - ', o.siglas) AS nombre,
+    CONCAT(p.nombre, ' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    
-    m.descripcion AS modalidad_full,
+    COALESCE(
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha DESC
+            LIMIT 1
+        ),
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha > (
+                SELECT COALESCE(MAX(e.fecha_egreso), '9999-12-31')
+                FROM egresos e
+                WHERE e.id_paciente = p.id
+            )
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha ASC
+            LIMIT 1
+        )
+    ) AS modalidad_full,
     CONCAT(act.codigo, ' - ', act.descripcion) AS pract_full,
     pract.fecha AS fecha_pract,
     pract.cant AS cantidad
 FROM paciente p
-LEFT JOIN modalidad m ON m.id = p.modalidad
+LEFT JOIN obra_social o ON o.id = p.obra_social
 LEFT JOIN practicas pract ON pract.id_paciente = p.id
-LEFT JOIN profesional prof ON prof.id_prof = pract.profesional
 LEFT JOIN actividades act ON act.id = pract.actividad
-LEFT JOIN obra_social o   ON o.id = p.obra_social
-WHERE (pract.fecha BETWEEN ? AND ?) AND p.obra_social = ? ";
+WHERE (pract.fecha BETWEEN ? AND ?)
+AND p.obra_social = ?
+
+
+
+
+
+
+
+";
 
 // Preparar la consulta
 $stmt = $conn->prepare($sql);

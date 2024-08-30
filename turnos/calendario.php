@@ -208,8 +208,8 @@
                     <input type="date" id="fechaDesde" class="form-control">
                     <input type="date" id="fechaHasta" class="form-control">
 
-                    <button id="recordatorioBtn" class="btn  btn-custom">Turnos asignados</button>
-                    <button id="generatePdfBtn" class="btn  btn-custom">Recordatorios →</button>
+                    <button id="generatePdfBtn" class="btn  btn-custom">Turnos asignados</button>
+                    <button id="recordatorioBtn" class="btn  btn-custom">Recordatorios →</button>
                 </div>
             </div>
         </div>

@@ -37,7 +37,51 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('hijos').value = paciente.hijos;
         document.getElementById('ocupacion').value = paciente.ocupacion;
         document.getElementById('tipo_afiliado').value = paciente.tipo_afiliado;
-        document.getElementById('modalidad').value = paciente.modalidad;
+
+        $.ajax({
+            url: './dato/get_modalidad_paci_id.php',
+            type: 'GET',
+            data: { id_paciente: paciente.id },
+            success: function (response) {
+                // Parsear la respuesta JSON
+                var modalidades = JSON.parse(response);
+
+                // Variable para almacenar todos los resultados concatenados
+                var modalidadesConcatenadas = '';
+
+                // Recorrer todas las modalidades y concatenarlas
+                modalidades.forEach(function (modalidad) {
+                    modalidadesConcatenadas += modalidad.modalidad_full + ' | ';
+                });
+
+                // Eliminar el último separador " | " si es necesario
+                modalidadesConcatenadas = modalidadesConcatenadas.slice(0, -3);
+
+                document.getElementById('modalidad_act').value = modalidadesConcatenadas;
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud AJAX: " + error);
+            }
+        });
+
+        $.ajax({
+            url: './dato/verificar_egreso.php',
+            type: 'GET',
+            data: { id_paciente: paciente.id },
+            success: function (response) {
+                const data = JSON.parse(response);
+                if (data.egresado) {
+                    $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                } else {
+                    $('#bajaMensaje').html('');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en verificar egreso:', textStatus, errorThrown);
+            }
+        });
+
+
         var modal = new bootstrap.Modal(document.getElementById('agregarPacienteModal'));
         modal.show();
     }
@@ -63,9 +107,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('hijos').value = '';
         document.getElementById('ocupacion').value = '';
         document.getElementById('tipo_afiliado').value = '';
-        document.getElementById('modalidad').value = '';
         document.getElementById('op').value = '';
         document.getElementById('op').value = '';
+        document.getElementById('modalidad_paci').value = '';
     }
 
     window.editarPaciente = editarPaciente;
@@ -130,7 +174,7 @@ $(document).ready(function () {
                 var optionText = item.codigo + ' - ' + item.descripcion;
                 $('#respon_parent').append(new Option(optionText, item.id));
                 $('#visita_parent').append(new Option(optionText, item.id));
-
+                $('#hc_familiar').append(new Option(optionText, item.id));
             });
         },
         error: function (error) {
@@ -141,6 +185,13 @@ $(document).ready(function () {
     $('#agregarPracModal').on('shown.bs.modal', function () {
         var pacienteId = $('#id').val();
 
+        // Limpiar el select antes de agregar nuevas opciones
+        var $pracActividad = $('#pracActividad');
+        $pracActividad.empty(); // Elimina todas las opciones actuales
+
+        // Añadir la opción predeterminada
+        $pracActividad.append(new Option('Seleccionar...', ''));
+
         // Hacer la llamada AJAX para llenar el select de actividades
         $.ajax({
             url: './dato/get_todas_las_practicas.php',
@@ -148,17 +199,15 @@ $(document).ready(function () {
             dataType: 'json',
             data: { paciente_id: pacienteId },
             success: function (data) {
-                $('#pracActividad').empty(); // Limpiar el select antes de añadir nuevas opciones
-                $('#pracActividad').append(new Option('Seleccionar...', '')); // Añadir la opción predeterminada
                 data.forEach(function (item) {
                     var optionText = item.codigo + ' - ' + item.descripcion;
-                    $('#pracActividad').append(new Option(optionText, item.id));
+                    $pracActividad.append(new Option(optionText, item.id));
                 });
 
                 // Si se está editando una práctica, seleccionar la opción correcta
-                var pracActividadId = $('#pracActividad').data('selected-id');
+                var pracActividadId = $pracActividad.data('selected-id');
                 if (pracActividadId) {
-                    $('#pracActividad').val(pracActividadId);
+                    $pracActividad.val(pracActividadId);
                 }
             },
             error: function (error) {
@@ -166,6 +215,7 @@ $(document).ready(function () {
             }
         });
     });
+
 
 
 
@@ -208,7 +258,9 @@ $(document).ready(function () {
                 var optionText = item.codigo + ' - ' + item.descripcion;
                 $('#egreso_diag').append(new Option(optionText, item.id));
                 $('#evo_diag').append(new Option(optionText, item.id));
+                $('#evo_diag_int').append(new Option(optionText, item.id));
                 $('#paci_diag').append(new Option(optionText, item.id));
+                $('#hc_diag').append(new Option(optionText, item.id));
 
             });
         },
@@ -243,6 +295,7 @@ $(document).ready(function () {
             data.forEach(function (item) {
                 $('#id_prof').append(new Option(item.nombreYapellido, item.id_prof));
                 $('#pracProfesional').append(new Option(item.nombreYapellido, item.id_prof));
+                $('#hc_prof').append(new Option(item.nombreYapellido, item.id_prof));
             });
         },
         error: function (error) {
@@ -259,6 +312,7 @@ $(document).ready(function () {
                 $('#medicam1').append(new Option(item.descripcion, item.id));
                 $('#medicam2').append(new Option(item.descripcion, item.id));
                 $('#medicam3').append(new Option(item.descripcion, item.id));
+                $('#hc_medi').append(new Option(item.descripcion, item.id));
             });
         },
         error: function (error) {
@@ -350,6 +404,8 @@ $(document).ready(function () {
             console.error("Error fetching data: ", error);
         }
     });
+
+
 
 
 });
@@ -508,8 +564,8 @@ function generatePdf() {
             const imgUrl = '../img/logo.png';
             var img = new Image();
             img.onload = function () {
-                const imgWidth = 40;
-                const imgHeight = 40;
+                const imgWidth = 29;
+                const imgHeight = 25;
                 const xImg = (pageWidth - imgWidth) / 2;
                 const yImg = tableY + 10;
 
@@ -522,6 +578,30 @@ function generatePdf() {
             console.error('Error:', error);
         });
 }
+
+
+//MULTI FECHAS
+$(document).ready(function () {
+    $.fn.datepicker.dates['es'] = {
+        days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        daysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+        daysMin: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
+        months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        monthsShort: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+        today: "Hoy",
+        clear: "Limpiar",
+        format: "dd/mm/yyyy",
+        titleFormat: "MM yyyy", /* Leverages same syntax as 'format' */
+        weekStart: 1
+    };
+
+    $('#pracFechas').datepicker({
+        format: "dd/mm/yyyy",
+        language: "es", // Esto utilizará la configuración que acabamos de definir
+        multidate: true,
+        todayHighlight: true
+    });
+});
 
 
 

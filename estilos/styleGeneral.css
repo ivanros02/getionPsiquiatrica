@@ -34,11 +34,11 @@ a {
   background-color: var(--primary-color) !important;
 }
 
-.table-custom{
+/* Aplica el color de fondo al encabezado de la tabla */
+.table-custom th {
   background-color: var(--primary-color) !important;
-  border-color: var(--primary-color) !important;
-  color: var(--primary-color) !important;
-  /* Para asegurarte de que el texto sea legible */
+  color: white !important;
+  /* Para asegurar que el texto sea visible */
 }
 
 /* Efecto de transición para una transición suave */

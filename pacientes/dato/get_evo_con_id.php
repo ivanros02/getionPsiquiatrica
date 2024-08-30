@@ -11,7 +11,7 @@ if ($conn->connect_error) {
 
 // Preparar la consulta para obtener los datos de la práctica específica
 $sql = "SELECT e.* , paci.nombre AS nombre_paciente
-        FROM evoluciones e
+        FROM evoluciones_amb e
         LEFT JOIN paciente paci ON paci.id=e.id_paciente
         WHERE e.id = ?";
 $stmt = $conn->prepare($sql);

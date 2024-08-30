@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $fecha = $_POST['evoFecha'];
 
 
-    $sql = "UPDATE evoluciones SET motivo = ?, antecedentes = ?, estado_actual = ?, familia = ?, diag = ?, objetivo = ?, duracion = ?, frecuencia = ?, fecha = ? WHERE id = ?";
+    $sql = "UPDATE evoluciones_amb SET motivo = ?, antecedentes = ?, estado_actual = ?, familia = ?, diag = ?, objetivo = ?, duracion = ?, frecuencia = ?, fecha = ? WHERE id = ?";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssssissssi", $motivo, $antecedentes, $estadoActual, $familia, $diag, $objetivo, $duracion, $frecuencia, $fecha, $id);

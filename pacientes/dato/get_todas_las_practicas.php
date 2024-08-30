@@ -13,27 +13,9 @@ if ($pacienteId === '') {
     die("ID del paciente no proporcionado.");
 }
 
-// Preparar y ejecutar la consulta para obtener la modalidad del paciente
-$sqlModalidad = "SELECT modalidad FROM paciente WHERE id = ?";
-$stmtModalidad = $conn->prepare($sqlModalidad);
-$stmtModalidad->bind_param("s", $pacienteId);
-$stmtModalidad->execute();
-$resultModalidad = $stmtModalidad->get_result();
-
-if ($resultModalidad->num_rows === 0) {
-    die("Paciente no encontrado.");
-}
-
-// Obtener la modalidad del paciente
-$modalidadPaciente = $resultModalidad->fetch_assoc()['modalidad'];
-
-// Cerrar la consulta de modalidad
-$stmtModalidad->close();
-
 // Preparar y ejecutar la consulta para obtener las actividades filtradas por modalidad
-$sqlActividades = "SELECT * FROM actividades WHERE modalidad = ?";
+$sqlActividades = "SELECT * FROM actividades";
 $stmtActividades = $conn->prepare($sqlActividades);
-$stmtActividades->bind_param("s", $modalidadPaciente);
 $stmtActividades->execute();
 $resultActividades = $stmtActividades->get_result();
 

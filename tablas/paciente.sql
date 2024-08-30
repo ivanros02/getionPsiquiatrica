@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-07-2024 a las 18:17:05
+-- Tiempo de generación: 28-08-2024 a las 17:35:11
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -46,17 +46,15 @@ CREATE TABLE `paciente` (
   `parentesco` varchar(2) NOT NULL,
   `hijos` int(255) NOT NULL,
   `ocupacion` varchar(255) NOT NULL,
-  `tipo_afiliado` int(255) NOT NULL,
-  `modalidad` int(11) NOT NULL,
-  `op` int(255) NOT NULL
+  `tipo_afiliado` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `paciente`
 --
 
-INSERT INTO `paciente` (`id`, `nombre`, `obra_social`, `fecha_nac`, `sexo`, `domicilio`, `localidad`, `partido`, `c_postal`, `telefono`, `tipo_doc`, `nro_doc`, `admision`, `id_prof`, `benef`, `parentesco`, `hijos`, `ocupacion`, `tipo_afiliado`, `modalidad`, `op`) VALUES
-(16, 'AVOLIO ANDRES', 4, '2024-07-16', 'Masculino', '143', 'Villa Espana', 'Berazategui', 1884, '1139114579', 'DNI', 123, '2024-07-16', 12, 10030397406, '00', 2, 'ARTES DIGITALES', 1, 1, 0);
+INSERT INTO `paciente` (`id`, `nombre`, `obra_social`, `fecha_nac`, `sexo`, `domicilio`, `localidad`, `partido`, `c_postal`, `telefono`, `tipo_doc`, `nro_doc`, `admision`, `id_prof`, `benef`, `parentesco`, `hijos`, `ocupacion`, `tipo_afiliado`) VALUES
+(77, 'LIVINGSTON ESTELA BEATRIZ', 4, '2024-08-27', 'Femenino', '', '', '', 0, '', 'DNI', 44379377, '2024-08-27', 12, 10015604104, '00', 0, '', 1);
 
 --
 -- Índices para tablas volcadas
@@ -69,8 +67,7 @@ ALTER TABLE `paciente`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_obra_social_paciente` (`obra_social`),
   ADD KEY `fk_id_prof_paciente` (`id_prof`),
-  ADD KEY `fk_tipo_afiliado_paciente` (`tipo_afiliado`),
-  ADD KEY `fk_modalidad_paciente` (`modalidad`);
+  ADD KEY `fk_tipo_afiliado_paciente` (`tipo_afiliado`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -80,7 +77,7 @@ ALTER TABLE `paciente`
 -- AUTO_INCREMENT de la tabla `paciente`
 --
 ALTER TABLE `paciente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- Restricciones para tablas volcadas
@@ -91,7 +88,6 @@ ALTER TABLE `paciente`
 --
 ALTER TABLE `paciente`
   ADD CONSTRAINT `fk_id_prof_paciente` FOREIGN KEY (`id_prof`) REFERENCES `profesional` (`id_prof`),
-  ADD CONSTRAINT `fk_modalidad_paciente` FOREIGN KEY (`modalidad`) REFERENCES `modalidad` (`id`),
   ADD CONSTRAINT `fk_obra_social_paciente` FOREIGN KEY (`obra_social`) REFERENCES `obra_social` (`id`),
   ADD CONSTRAINT `fk_tipo_afiliado_paciente` FOREIGN KEY (`tipo_afiliado`) REFERENCES `tipo_afiliado` (`id`);
 COMMIT;

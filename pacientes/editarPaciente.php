@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hijos = $_POST['hijos'];
     $ocupacion = $_POST['ocupacion'];
     $tipo_afiliado = $_POST['tipo_afiliado'];
-    $modalidad = $_POST['modalidad'];
     
 
     $sql = "UPDATE paciente SET 
@@ -42,15 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 parentesco = ?, 
                 hijos = ?, 
                 ocupacion = ?, 
-                tipo_afiliado = ?, 
-                modalidad = ?
+                tipo_afiliado = ? 
             WHERE id = ?";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssssssssiisisiii", 
+    $stmt->bind_param("ssssssssssssiisisii", 
         $nombre, $obra_social, $fecha_nac, $sexo, $domicilio, $localidad, $partido, $c_postal, 
         $telefono, $tipo_doc, $nro_doc, $admision, $id_prof, $benef, $parentesco, 
-        $hijos, $ocupacion, $tipo_afiliado, $modalidad, $id);
+        $hijos, $ocupacion, $tipo_afiliado, $id);
 
     if ($stmt->execute()) {
         header("Location: ./paciente.php?success=true");

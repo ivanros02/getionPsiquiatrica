@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-08-2024 a las 17:27:52
+-- Tiempo de generación: 30-08-2024 a las 16:18:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -42,7 +42,11 @@ CREATE TABLE `practicas` (
 --
 
 INSERT INTO `practicas` (`id_paciente`, `fecha`, `hora`, `profesional`, `actividad`, `cant`, `id`) VALUES
-(16, '2024-08-01', '12:15:00', 12, 4, 1, 34);
+(78, '2024-08-28', '18:18:00', 16, 7, 1, 99),
+(78, '2024-08-29', '18:18:00', 16, 7, 1, 100),
+(78, '2024-08-30', '18:18:00', 16, 7, 1, 101),
+(78, '2024-08-14', '19:00:00', 15, 8, 1, 102),
+(78, '2024-08-15', '19:00:00', 15, 8, 1, 103);
 
 --
 -- Índices para tablas volcadas
@@ -65,7 +69,7 @@ ALTER TABLE `practicas`
 -- AUTO_INCREMENT de la tabla `practicas`
 --
 ALTER TABLE `practicas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- Restricciones para tablas volcadas

@@ -52,9 +52,9 @@ function cargarListaEgresos(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var egresos = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
-            html += '<th>Fecha</th>';
+            html += '<th>Fecha Egreso</th>';
             html += '<th>Modalidad</th>';
             html += '<th>Motivo</th>';
             html += '<th>Diagnóstico</th>';
@@ -66,7 +66,7 @@ function cargarListaEgresos(idPaciente) {
             egresos.forEach(function (egreso) {
                 html += '<tr>';
                 html += '<td>' + formatDate(egreso.fecha_egreso) + '</td>';
-                html += '<td>' + egreso.modalidad_full + '</td>';
+                html += '<td>' + (egreso.modalidad_full ? egreso.modalidad_full : '') + '</td>';
                 html += '<td>' + egreso.egreso_full + '</td>';
                 html += '<td>' + egreso.diag_full + '</td>';
                 html += '<td>';
@@ -133,7 +133,7 @@ $(document).ready(function () {
                 $('#egresoId').val(egreso.id);
                 $('#egresoIdPaciente').val(egreso.id_paciente);
                 $('#egresoNombreCarga').val(egreso.nombre_paciente);
-                $('#egresoFecha').val(egreso.fecha);
+                $('#egresoFecha').val(egreso.fecha_egreso);
                 $('#egreso_modalidad').val(egreso.modalidad);
                 $('#egreso_diag').val(egreso.diag);
                 $('#egreso_motivo').val(egreso.motivo);
@@ -164,6 +164,25 @@ $(document).ready(function () {
                 const idPaciente = $('#id').val();
                 cargarListaEgresos(idPaciente);
                 $('#agregarEgresoModal').modal('hide');
+
+                // Verificar si el paciente está egresado
+                $.ajax({
+                    url: './dato/verificar_egreso.php',
+                    type: 'GET',
+                    data: { id_paciente: idPaciente },
+                    success: function (response) {
+                        const data = JSON.parse(response);
+                        if (data.egresado) {
+                            $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                        } else {
+                            $('#bajaMensaje').html('');
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('Error en verificar egreso:', textStatus, errorThrown);
+                    }
+                });
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error en guardar egreso:', textStatus, errorThrown);
@@ -188,6 +207,23 @@ $(document).ready(function () {
                     // Recargar la lista de prácticas después de eliminar
                     const idPaciente = $('#id').val();
                     cargarListaEgresos(idPaciente);
+
+                    $.ajax({
+                        url: './dato/verificar_egreso.php',
+                        type: 'GET',
+                        data: { id_paciente: idPaciente },
+                        success: function (response) {
+                            const data = JSON.parse(response);
+                            if (data.egresado) {
+                                $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                            } else {
+                                $('#bajaMensaje').html('');
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log('Error en verificar egreso:', textStatus, errorThrown);
+                        }
+                    });
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log('Error al eliminar el egreso:', textStatus, errorThrown);
@@ -236,6 +272,8 @@ $('#responModal').on('click', '.btn-volver', function () {
 // Función para cargar la lista de egresos desde la base de datos
 function cargarListaResponsables(idPaciente) {
 
+
+
     $.ajax({
         url: './dato/get_respon.php',
         type: 'GET',
@@ -244,7 +282,7 @@ function cargarListaResponsables(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var respons = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Nombre</th>';
             html += '<th>Telefono</th>';
@@ -320,6 +358,8 @@ $(document).ready(function () {
     // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
     $(document).on('click', '#editRespon', function () {
         var pracId = $(this).data('id');
+
+
 
         $.ajax({
             url: './dato/get_respon_con_id.php',
@@ -445,7 +485,7 @@ function cargarListaJudiciales(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var judis = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem; ">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Juzgado</th>';
             html += '<th>Secretaria</th>';
@@ -644,7 +684,7 @@ function cargarListaSalidas(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var salidas = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha Salida</th>';
             html += '<th>Fecha Llegada</th>';
@@ -832,7 +872,7 @@ function cargarListaHabitacion(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var habis = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Habitacion</th>';
             html += '<th>Piso/Sala</th>';
@@ -1028,7 +1068,7 @@ function cargarListaVisita(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var visitas = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Apellido Y Nombre</th>';
@@ -1222,7 +1262,7 @@ function cargarListaTraslados(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var traslados = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Hora</th>';
@@ -1414,7 +1454,7 @@ function cargarListaDiag(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var diags = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Codigo</th>';
@@ -1603,7 +1643,7 @@ function cargarListaModalidad(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var modalidades = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Modalidad</th>';
@@ -1714,6 +1754,49 @@ $(document).ready(function () {
             }
         });
 
+        $.ajax({
+            url: './dato/get_modalidad_paci_id.php',
+            type: 'GET',
+            data: { id_paciente: $('#id').val() },
+            success: function (response) {
+                // Parsear la respuesta JSON
+                var modalidades = JSON.parse(response);
+
+                // Variable para almacenar todos los resultados concatenados
+                var modalidadesConcatenadas = '';
+
+                // Recorrer todas las modalidades y concatenarlas
+                modalidades.forEach(function (modalidad) {
+                    modalidadesConcatenadas += modalidad.modalidad_full + ' | ';
+                });
+
+                // Eliminar el último separador " | " si es necesario
+                modalidadesConcatenadas = modalidadesConcatenadas.slice(0, -3);
+
+                document.getElementById('modalidad_act').value = modalidadesConcatenadas;
+            },
+            error: function (xhr, status, error) {
+                console.error("Error en la solicitud AJAX: " + error);
+            }
+        });
+
+        $.ajax({
+            url: './dato/verificar_egreso.php',
+            type: 'GET',
+            data: { id_paciente: $('#id').val() },
+            success: function (response) {
+                const data = JSON.parse(response);
+                if (data.egresado) {
+                    $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                } else {
+                    $('#bajaMensaje').html('');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en verificar egreso:', textStatus, errorThrown);
+            }
+        });
+
 
     });
 
@@ -1794,7 +1877,7 @@ function cargarListaPracticas(idPaciente, page = 1, recordsPerPage = 100) {
             var practicas = data.practicas;
             var totalRecords = data.totalRecords;
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Hora</th>';
@@ -1841,14 +1924,14 @@ function cargarListaPracticas(idPaciente, page = 1, recordsPerPage = 100) {
 }
 
 // Controlar el cambio en la cantidad de registros por página
-$(document).on('change', '#recordsPerPage', function() {
+$(document).on('change', '#recordsPerPage', function () {
     var recordsPerPage = $(this).val();
     const idPaciente = document.getElementById('id').value;
     cargarListaPracticas(idPaciente, 1, recordsPerPage); // Recargar la tabla con la nueva cantidad de registros por página
 });
 
 // Controlar el cambio de página
-$(document).on('click', '#pagination .page-link', function(e) {
+$(document).on('click', '#pagination .page-link', function (e) {
     e.preventDefault();
     var page = $(this).data('page');
     var recordsPerPage = $('#recordsPerPage').val();
@@ -1876,7 +1959,7 @@ $(document).ready(function () {
         const nombre = $('#nombre').val();
 
         // Llenar los campos del nuevo modal con la información necesaria
-        $('#pracFecha').val('');
+        $('#pracFechas').val('');
         $('#pracHora').val('');
         $('#pracProfesional').val('');
         $('#pracActividad').val('');
@@ -1884,7 +1967,7 @@ $(document).ready(function () {
         $('#pracIdPaciente').val(id);
         $('#pracNombreCarga').val(nombre);
 
-
+        $('#pracFechas').datepicker('clearDates'); 
 
         // Establecer data-action a "add"
         $('#btnGuardarPractica').attr('data-action', 'add');
@@ -1908,7 +1991,7 @@ $(document).ready(function () {
                 $('#pracId').val(practica.id);
                 $('#pracIdPaciente').val(practica.id_paciente);
                 $('#pracNombreCarga').val(practica.nombre_paciente);
-                $('#pracFecha').val(practica.fecha);
+                $('#pracFechas').val(formatDate(practica.fecha)); // Usar solo la primera fecha
                 $('#pracHora').val(practica.hora);
                 $('#pracProfesional').val(practica.profesional);
 
@@ -1928,20 +2011,29 @@ $(document).ready(function () {
         });
     });
 
+
     // Guardar la práctica al hacer clic en "Guardar" dentro del modal
     $('#btnGuardarPractica').on('click', function () {
+        var fechas = $('#pracFechas').datepicker('getDates').map(function (fecha) {
+            return fecha.toISOString().slice(0, 10);
+        });
+
+        var formData = $('#formAgregarPrac').serializeArray();
+        formData.push({ name: 'fechas', value: JSON.stringify(fechas) }); // Convertir las fechas a JSON
+
         var action = $(this).attr('data-action');
         var url = action === 'edit' ? './submenu/practicas/editar_practica.php' : './submenu/practicas/agregar_practica.php';
-        var formData = $('#formAgregarPrac').serialize();
 
         $.ajax({
             url: url,
             type: 'POST',
-            data: formData,
+            data: $.param(formData),
             success: function (response) {
+
                 const idPaciente = $('#id').val();
                 cargarListaPracticas(idPaciente);
                 $('#agregarPracModal').modal('hide');
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error en guardar práctica:', textStatus, errorThrown);
@@ -1949,8 +2041,9 @@ $(document).ready(function () {
             }
         });
 
-
     });
+
+
 
     // Eliminar práctica al hacer clic en "Eliminar"
     $(document).on('click', '#deletePrac', function () {
@@ -2024,7 +2117,7 @@ function cargarListaEvoluciones(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var evoluciones = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Motivo</th>';
@@ -2192,6 +2285,481 @@ $(document).ready(function () {
 
 //FIN EVOLUCIONES
 
+//EVOLUCIONES INT
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadEvolucionIntModal() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/evoluciones_int/evoluciones_int.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('evoIntModalBody').innerHTML = response;
+            $('#evoIntModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#evoIntModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#evoIntModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaEvolucionesInt(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_evoluciones_int.php',
+        type: 'GET',
+        data: { id_paciente: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var evoluciones_int = JSON.parse(response);
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>Fecha</th>';
+            html += '<th>Motivo</th>';
+            html += '<th>Antecedentes</th>';
+            html += '<th>Estado Act.</th>';
+            html += '<th>Familia</th>';
+            html += '<th>Diagnostico</th>';
+            html += '<th>Obj.</th>';
+            html += '<th>Dur.</th>';
+            html += '<th>Frec.</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            evoluciones_int.forEach(function (evo) {
+                html += '<tr>';
+                html += '<td>' + formatDate(evo.fecha) + '</td>';
+                html += '<td>' + evo.motivo + '</td>';
+                html += '<td>' + evo.antecedentes + '</td>';
+                html += '<td>' + evo.estado_actual + '</td>';
+                html += '<td>' + evo.familia + '</td>';
+                html += '<td>' + evo.diag_full + '</td>';
+                html += '<td>' + evo.objetivo + '</td>';
+                html += '<td>' + evo.duracion + '</td>';
+                html += '<td>' + evo.frecuencia + '</td>';
+                html += '<td>';
+                html += '<button id="editEvoInt" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + evo.id + '">Editar</button> ';
+                html += '<button id="deleteEvoInt"  class="btn btn-danger btn-sm btn-delete" data-id="' + evo.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaEvoInt').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#evoIntModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaEvolucionesInt(idPaciente); // Cargar la lista de egresos al mostrar el modal
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#evoIntModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevaEvoInt').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+        $('#antecedentes_int').val('');
+        $('#estado_actual_int').val('');
+        $('#familia_int').val('');
+        $('#evo_diag_int').val('');
+        $('#objetivo_int').val('');
+        $('#duracion_int').val('');
+        $('#frecuencia_int').val('');
+        $('#evoFecha_int').val('');
+        $('#motivo_evo_int').val('');
+        $('#evoIntIdPaciente').val(id);
+        $('#evoIntNombreCarga').val(nombre);
+
+
+
+        // Establecer data-action a "add"
+        $('#btnGuardarEvoInt').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregarEvoIntModal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editEvoInt', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_evo_int_con_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var evo = JSON.parse(response);
+
+                // Llenar los campos del modal de edición con los datos de la práctica
+                $('#evoIntId').val(evo.id);
+                $('#evoIntNombreCarga').val(evo.nombre_paciente);
+                $('#antecedentes_int').val(evo.antecedentes);
+                $('#estado_actual_int').val(evo.estado_actual);
+                $('#familia_int').val(evo.familia);
+                $('#evo_diag_int').val(evo.diag);
+                $('#objetivo_int').val(evo.objetivo);
+                $('#duracion_int').val(evo.duracion);
+                $('#frecuencia_int').val(evo.frecuencia);
+                $('#evoFecha_int').val(evo.fecha);
+                $('#motivo_evo_int').val(evo.motivo);
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarEvoInt').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregarEvoIntModal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    $('#btnGuardarEvoInt').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/evoluciones_int/editar_evolucion_int.php' : './submenu/evoluciones_int/agregar_evolucion_int.php';
+        var formData = $('#formAgregarEvolucionInt').serialize();
+
+        console.log('Datos del formulario:', formData);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                console.log('Respuesta del servidor:', response);
+                const idPaciente = $('#id').val();
+                cargarListaEvolucionesInt(idPaciente);
+                $('#agregarEvoIntModal').modal('hide');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en guardar evolucion:', textStatus, errorThrown);
+                console.log('Detalles del error:', jqXHR.responseText);
+            }
+        });
+    });
+
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteEvoInt', function () {
+        var pracId = $(this).data('id');
+        if (confirm('¿Estás seguro de que deseas eliminar esta evolucion?')) {
+            $.ajax({
+                url: './submenu/evoluciones_int/borrar_evolucion_int.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+
+                    // Recargar la lista de prácticas después de eliminar
+                    const idPaciente = $('#id').val();
+                    cargarListaEvolucionesInt(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+
+//FIN EVOLUCIONES INT
+
+//ADMISION AMB
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadAdmiAmbModal() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/admision_amb/admision_amb.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('admiAmbModalBody').innerHTML = response;
+            $('#admiAmbModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#admiAmbModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#admiAmbModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaAdmisionAmb(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_admision_amb.php',
+        type: 'GET',
+        data: { id: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var historia = JSON.parse(response);
+
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>Fecha</th>';
+            html += '<th>Profesional</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            historia.forEach(function (hist) {
+                html += '<tr>';
+                html += '<td>' + formatDate(hist.hc_fecha) + '</td>';
+                html += '<td>' + hist.id_prof + '</td>';
+                html += '<td>';
+                html += '<button id="editAdmiAmb" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + hist.id + '">Editar</button> ';
+                html += '<button id="deleteAdmiAmb"  class="btn btn-danger btn-sm btn-delete" data-id="' + hist.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaAdmiAmb').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#admiAmbModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaAdmisionAmb(idPaciente);
+
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#admiAmbModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevaAdmiAmb').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+
+        $('#admiAmbIdPaciente').val(id);
+        $('#admiAmbNombreCarga').val(nombre);
+
+        // Establecer data-action a "add"
+        $('#btnGuardarAdmiAmb').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregarAdmiAmbModal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editAdmiAmb', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_admision_amb_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var data = JSON.parse(response);
+                console.log(data)
+                $('#admiAmbId').val(data.id);
+                $('#admiAmbNombreCarga').val(data.nombre_paciente);
+                $('#admiAmbIdPaciente').val(data.id_paciente);
+
+                $('#hc_familiar').val(data.antecedentes);
+                $('#hc_prof').val(data.id_prof);
+
+                $('input[name="aspectoPsiquico"][value="' + data.asc_psiquico + '"]').prop('checked', true);
+                $('input[name="actPsiquica"][value="' + data.act_psiquica + '"]').prop('checked', true);
+                $('input[name="act"][value="' + data.act + '"]').prop('checked', true);
+                $('input[name="orientacion"][value="' + data.orientacion + '"]').prop('checked', true);
+                $('input[name="conciencia"][value="' + data.conciencia + '"]').prop('checked', true);
+                $('input[name="memoria"][value="' + data.memoria + '"]').prop('checked', true);
+                $('input[name="atencion"][value="' + data.atencion + '"]').prop('checked', true);
+                $('input[name="pensamiento"][value="' + data.pensamiento + '"]').prop('checked', true);
+                $('input[name="cont_pensamiento"][value="' + data.cont_pensamiento + '"]').prop('checked', true);
+                $('input[name="sensopercepcion"][value="' + data.sensopercepcion + '"]').prop('checked', true);
+                $('input[name="afectividad"][value="' + data.afectividad + '"]').prop('checked', true);
+                $('input[name="inteligencia"][value="' + data.inteligencia + '"]').prop('checked', true);
+                $('input[name="juicio"][value="' + data.juicio + '"]').prop('checked', true);
+                $('input[name="esfinteres"][value="' + data.esfinteres + '"]').prop('checked', true);
+                $('input[name="tratamiento"][value="' + data.tratamiento + '"]').prop('checked', true);
+                $('input[name="evolucion"][value="' + data.evolucion + '"]').prop('checked', true);
+
+                $('#hc_diag').val(data.diag_full)
+                $('#hc_cada_medi').val(data.hc_cada_medi);
+                $('#hc_desc_medi').val(data.hc_desc_medi);
+                $('#hc_fecha').val(data.hc_fecha);
+
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarAdmiAmb').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregarAdmiAmbModal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    $('#btnGuardarAdmiAmb').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/admision_amb/editar_admi_amb.php' : './submenu/admision_amb/agregar_admi_amb.php';
+
+        // Recoger solo el valor del checkbox seleccionado
+        var aspectoPsiquico = $('input[name="aspectoPsiquico"]:checked').val();
+        var act_psiquica = $('input[name="act_psiquica"]:checked').val();
+        var act = $('input[name="act"]:checked').val();
+        var orientacion = $('input[name="orientacion"]:checked').val();
+        var conciencia = $('input[name="conciencia"]:checked').val();
+        var memoria = $('input[name="memoria"]:checked').val();
+        var atencion = $('input[name="atencion"]:checked').val();
+        var pensamiento = $('input[name="pensamiento"]:checked').val();
+        var cont_pensamiento = $('input[name="cont_pensamiento"]:checked').val();
+        var sensopercepcion = $('input[name="sensopercepcion"]:checked').val();
+        var afectividad = $('input[name="afectividad"]:checked').val();
+        var inteligencia = $('input[name="inteligencia"]:checked').val();
+        var juicio = $('input[name="juicio"]:checked').val();
+        var esfinteres = $('input[name="esfinteres"]:checked').val();
+        var tratamiento = $('input[name="tratamiento"]:checked').val();
+        var evolucion = $('input[name="evolucion"]:checked').val();
+
+
+        // Verificar que todos los campos obligatorios están completos
+        if (!aspectoPsiquico || !act_psiquica || !act || !orientacion || !conciencia || !memoria ||
+            !atencion || !pensamiento || !cont_pensamiento || !sensopercepcion || !afectividad ||
+            !inteligencia || !juicio || !esfinteres || !tratamiento || !evolucion ||
+            !$('#hc_diag').val() || !$('#hc_medi').val()) {
+
+            alert('Por favor complete todos los campos obligatorios.');
+            return; // Detiene la ejecución si falta algún dato
+        }
+
+        formData = {
+            id_paciente: $('#admiAmbIdPaciente').val(),
+            asc_psiquico: aspectoPsiquico,
+            act_psiquica: act_psiquica,
+            act: act,
+            orientacion: orientacion,
+            conciencia: conciencia,
+            memoria: memoria,
+            atencion: atencion,
+            pensamiento: pensamiento,
+            cont_pensamiento: cont_pensamiento,
+            sensopercepcion: sensopercepcion,
+            afectividad: afectividad,
+            inteligencia: inteligencia,
+            juicio: juicio,
+            esfinteres: esfinteres,
+            tratamiento: tratamiento,
+            evolucion: evolucion,
+            hc_fecha: $('#hc_fecha').val(),
+            id_diag: $('#hc_diag').val() || '',
+            id_medicamento: $('#hc_medi').val(),
+            id_prof: $('#hc_prof').val(),
+            hc_desc_medi: $('#hc_desc_medi').val() || '',
+            hc_cada_medi: $('#hc_cada_medi').val() || '',
+            antecedentes: $('#hc_familiar').val()
+
+        };
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                console.log(response)
+                const idPaciente = $('#id').val();
+                cargarListaAdmisionAmb(idPaciente);
+                $('#agregarAdmiAmbModal').modal('hide');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en guardar práctica:', textStatus, errorThrown);
+                alert('Error al guardar la práctica');
+            }
+        });
+
+
+    });
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteAdmiAmb', function () {
+        var pracId = $(this).data('id');;
+        if (confirm('¿Estás seguro de que deseas eliminar este traslado?')) {
+            $.ajax({
+                url: './submenu/admision_amb/eliminar_admision_amb.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+                    console.log('Op eliminada:', response);
+
+                    // Recargar la lista de prácticas después de eliminar
+                    const idPaciente = $('#id').val();
+                    cargarListaAdmisionAmb(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+
+//FIN ADMISION AMB
+
 //ORDENES DE PRESTACION
 
 // Función para cargar el modal de egreso y ocultar el formulario principal
@@ -2237,7 +2805,7 @@ function cargarListaOrdenes(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var orden = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Nro. Orden</th>';
@@ -2317,7 +2885,7 @@ $(document).ready(function () {
                 $('#op_cant').val(orden.cant);
                 $('#ordenNombreCarga').val(orden.nombre_paciente);
                 $('#ordenIdPaciente').val(orden.id_paciente);
-                
+
 
                 // Establecer data-action a "edit"
                 $('#btnGuardarOrden').attr('data-action', 'edit');
@@ -2451,7 +3019,7 @@ function cargarListaMedi(idPaciente) {
             // Parsear la respuesta JSON si es necesario
             var medicaciones = JSON.parse(response);
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
-            html += '<thead class="thead-dark">';
+            html += '<thead class="table-custom">';
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Hora</th>';

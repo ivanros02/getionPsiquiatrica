@@ -7,7 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $diag = $_POST['egreso_diag'];
     $modalidad = $_POST['egreso_modalidad'];
     $motivo = $_POST['egreso_motivo'];
-
+    
+    $motivo = !empty($_POST['egreso_motivo']) ? $_POST['egreso_motivo'] : NULL;
 
     $sql = "UPDATE egresos SET fecha_egreso = ?, diag = ?, modalidad = ?, motivo = ? WHERE id = ?";
 

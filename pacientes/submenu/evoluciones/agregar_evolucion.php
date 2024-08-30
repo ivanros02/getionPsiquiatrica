@@ -20,7 +20,7 @@ if ($conn->connect_error) {
 }
 
 // Preparar y ejecutar la consulta para insertar la nueva práctica
-$sql = "INSERT INTO evoluciones (id_paciente, motivo, antecedentes, estado_actual, familia, diag, objetivo, duracion, frecuencia, fecha )
+$sql = "INSERT INTO evoluciones_amb (id_paciente, motivo, antecedentes, estado_actual, familia, diag, objetivo, duracion, frecuencia, fecha )
         VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($sql);

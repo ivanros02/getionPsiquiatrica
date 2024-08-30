@@ -48,8 +48,29 @@
 
         hr {
             border: 0;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid var(--primary-color);
             margin: 20px 0;
+        }
+
+        #loading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background-color: rgba(255, 255, 255, 0.8);
+            /* Fondo semi-transparente para dar efecto de deshabilitar la página */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .loading-text {
+            margin-left: 10px;
+            font-size: 1.2em;
+            color: #000;
         }
     </style>
 </head>
@@ -92,10 +113,11 @@
         <h2>Resultados</h2>
         <div id="results" class="mt-3"></div>
 
-        <div id="loading-spinner" style="display:none;">
+        <div id="loading-container" style="display: none;">
             <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
+            <div class="loading-text">Cargando...</div>
         </div>
         <div id="results"></div>
 
@@ -110,7 +132,7 @@
                 const clave = $('#clave').val();
 
                 // Mostrar el spinner
-                $('#loading-spinner').show();
+                document.getElementById('loading-container').style.display = 'flex';
                 $('#results').html('');
 
                 $.ajax({
@@ -121,11 +143,11 @@
                         clave: clave
                     },
                     success: function (response) {
-                        $('#loading-spinner').hide(); // Ocultar el spinner
+
                         processOps(response);
                     },
                     error: function (error) {
-                        $('#loading-spinner').hide(); // Ocultar el spinner
+                        document.getElementById('loading-container').style.display = 'none'; // Ocultar el spinner
                         console.error('Error:', error);
                         $('#results').html('<div class="alert alert-danger">Error al buscar el beneficio. Datos Erroneos</div>');
                     }
@@ -145,8 +167,8 @@
                 let index = 0;
 
                 function fetchNextOp() {
-                    if (index >= ops.length) {
-                        $('#loading-spinner').hide();
+                    if (index == ops.length) {
+                        document.getElementById('loading-container').style.display = 'none'; // Ocultar el spinner
                         //$('#generate-pdf').show();
                         return;
                     }
@@ -204,7 +226,7 @@
                 html += `<h4>OP</h4>`;
                 html += '<div class="table-container">';
                 html += '<table class="table table-striped">';
-                html += '<thead><tr><th>Nro OP</th><th>Estado</th><th>Fecha Activacion</th><th>Código</th><th>Cantidad</th><th>Acción</th><th>Estado</th><th>Renovar el Día</th></tr></thead>';
+                html += '<thead><tr><th>Nro OP</th><th>Estado</th><th>Fecha Activacion</th><th>Código</th><th>Cant. Meses</th><th>Acción</th><th>Estado</th><th>Renovar el Día</th></tr></thead>';
                 html += '<tbody>';
 
                 // Agregar la última OP
@@ -249,77 +271,103 @@
                 // Crear un objeto Date a partir de la fecha
                 const date = new Date(fecha.split('/').reverse().join('/')); // Asumiendo formato dd/mm/yyyy
 
-                // Validar cantidad
-                if (cantidad == 3 || cantidad == 6) {
-                    date.setMonth(date.getMonth() + cantidad);
-                    // Formatear la fecha
-                    return date.toLocaleDateString('es-AR');
+                // Validar cantidad y sumar días correspondientes
+                let diasAAdicionar;
+                if (cantidad === 6) {
+                    diasAAdicionar = 180; // 6 meses equivalen a 180 días
+                } else if (cantidad === 3) {
+                    diasAAdicionar = 90;  // 3 meses equivalen a 90 días
                 } else {
                     return null; // Mensaje especial si la cantidad no es 3 ni 6
                 }
+
+                // Sumar los días a la fecha
+                date.setDate(date.getDate() + diasAAdicionar);
+
+                // Formatear la fecha en el formato dd/mm/yyyy
+                return date.toLocaleDateString('es-AR');
             }
+
         });
 
-        document.getElementById('generate-pdf').addEventListener('click', function () {
+        function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Agregar título
-            doc.setFontSize(22);
-            doc.text('Resultados de la Búsqueda', 14, 20);
+            let sections = document.querySelectorAll('.result-section');
+            let pageHeight = doc.internal.pageSize.height;
+            let yPosition = 20; // Posición Y inicial
 
-            let y = 30; // Posición vertical inicial
+            sections.forEach((section, index) => {
+                let title = section.querySelector('h4').textContent;
+                let tables = section.querySelectorAll('table');
 
-            document.querySelectorAll('.result-section').forEach((section) => {
-                const title = section.querySelector('h4').textContent;
-                doc.setFontSize(18);
-                doc.text(title, 14, y);
-                y += 10;
+                // Agregar título centrado
+                doc.setFontSize(16);
+                doc.text(title, doc.internal.pageSize.getWidth() / 2, yPosition, { align: 'center' });
+                yPosition += 10;
 
-                const table = section.querySelector('table');
-                if (table) {
-                    // Obtener encabezados de la tabla
-                    const headers = Array.from(table.querySelectorAll('thead th'))
-                        .map(th => th.textContent);
+                tables.forEach((table, tableIndex) => {
+                    let rows = [];
+                    let headers = [];
+
+                    // Obtener encabezados
+                    table.querySelectorAll('thead tr th').forEach(header => {
+                        headers.push(header.innerText);
+                    });
+
                     // Obtener filas de la tabla
-                    const rows = Array.from(table.querySelectorAll('tbody tr')).map(row =>
-                        Array.from(row.querySelectorAll('td')).map(td => td.textContent)
-                    );
-
-                    // Añadir encabezados
-                    doc.setFontSize(12);
-                    const headerY = y;
-                    let headerX = 14;
-                    headers.forEach((header, index) => {
-                        doc.text(header, headerX, headerY);
-                        headerX += 30;
-                    });
-                    y += 10;
-
-                    // Añadir filas
-                    rows.forEach(row => {
-                        let rowX = 14;
-                        row.forEach((cell, index) => {
-                            doc.text(cell, rowX, y);
-                            rowX += 30;
+                    table.querySelectorAll('tbody tr').forEach(row => {
+                        let rowData = [];
+                        row.querySelectorAll('td').forEach((cell, cellIndex) => {
+                            // Extraer el texto de la celda
+                            rowData.push(cell.innerText);
                         });
-                        y += 10;
-
-                        // Verifica si se necesita espacio adicional para evitar solapamiento
-                        if (y > 270) { // Si se acerca al final de la página
-                            doc.addPage();
-                            y = 20; // Reiniciar la posición vertical
-                        }
+                        rows.push(rowData);
                     });
-                    y += 10; // Espacio después de la tabla
+
+                    // Identificar el índice de la columna de "Renovar el Día"
+                    let renovarIndex = headers.indexOf('Renovar el Día');
+
+                    // Ordenar las filas por la fecha en la columna "Renovar el Día"
+                    rows.sort((a, b) => {
+                        let fechaA = new Date(a[renovarIndex]);
+                        let fechaB = new Date(b[renovarIndex]);
+                        return fechaA - fechaB; // Ordenar de menor a mayor
+                    });
+
+                    // Agregar la tabla al PDF
+                    doc.autoTable({
+                        head: [headers],
+                        body: rows,
+                        startY: yPosition,
+                        theme: 'striped', // Opcional: Puedes personalizar el tema
+                        margin: { top: 10 }
+                    });
+
+                    yPosition = doc.autoTable.previous.finalY + 10;
+
+                    // Verificar si se necesita una nueva página
+                    if (yPosition > pageHeight - 20 && tableIndex < tables.length - 1) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                });
+
+                // Nueva página para la siguiente sección si es necesario
+                if (index < sections.length - 1) {
+                    doc.addPage();
+                    yPosition = 20;
                 }
             });
 
-            // Descargar el PDF
             window.open(doc.output('bloburl'));
+        }
 
-            console.log('PDF generado y descargado.');
-        });
+        // Llamar a la función cuando sea necesario, por ejemplo, con un botón
+        document.getElementById('generate-pdf').addEventListener('click', generatePDF);
+
+
 
 
 

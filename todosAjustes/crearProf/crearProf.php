@@ -100,7 +100,7 @@ $result = $conn->query($sql);
 
         </div>
         <table class="table table-striped table-bordered">
-            <thead class="thead-dark">
+            <thead class="table-custom">
                 <tr>
                     <th>Nombre y Apellido</th>
                     <th>Especialidad</th>

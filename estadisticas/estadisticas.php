@@ -49,6 +49,11 @@ if (isset($_GET['cerrar_sesion'])) {
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script src="script.js"></script>
+  <style>
+    body {
+      overflow-x: hidden !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -83,7 +88,7 @@ if (isset($_GET['cerrar_sesion'])) {
         <a href="#" id="openOmesModalLink">
           <div class="card h-100">
             <div class="first-content">
-              <img src="../img/reportes/reporte_ome.png" alt="Icono Crear Profesional">
+              <img src="../img/reportes/ome.png" alt="Icono Crear Profesional">
             </div>
             <div class="third-content">
               <h3 class="mt-3">OME</h3>
@@ -154,7 +159,7 @@ if (isset($_GET['cerrar_sesion'])) {
               <img src="../img/reportes/prestaciones.png" alt="Prestaciones por profesional">
             </div>
             <div class="third-content">
-              <h3 class="mt-3">Estadisticas por prestaciones </h3>
+              <h3 class="mt-3">Estadisticas por prestaciones</h3>
             </div>
           </div>
         </a>
@@ -421,7 +426,7 @@ if (isset($_GET['cerrar_sesion'])) {
               <select class="form-control" id="obra_social_prac" name="obra_social_prac" required>
                 <option value="">Seleccionar...</option>
               </select>
-            </div>o
+            </div>
           </form>
         </div>
         <div class="modal-footer">

@@ -14,12 +14,13 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Preparar y ejecutar la consulta para insertar la nueva práctica
+$motivo = !empty($_POST['egreso_motivo']) ? $_POST['egreso_motivo'] : NULL;
+
 $sql = "INSERT INTO egresos (id_paciente, fecha_egreso, diag, modalidad, motivo)
         VALUES (?, ?, ?, ?, ?)";
-
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('isiii', $idPaciente, $fecha, $diag, $modalidad, $motivo);
+
 
 if ($stmt->execute()) {
     echo "Egreso agregado correctamente.";

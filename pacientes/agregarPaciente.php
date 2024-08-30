@@ -20,17 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hijos = $_POST['hijos'];
     $ocupacion = $_POST['ocupacion'];
     $tipo_afiliado = $_POST['tipo_afiliado'];
-    $modalidad = $_POST['modalidad'];
     
 
-    $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado, modalidad) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssssssssiisisii", 
+    $stmt->bind_param("ssssssssssssiisisi", 
         $nombre, $obra_social, $fecha_nac, $sexo, $domicilio, $localidad, $partido, $c_postal, 
         $telefono, $tipo_doc, $nro_doc, $admision, $id_prof, $benef, $parentesco, 
-        $hijos, $ocupacion, $tipo_afiliado, $modalidad);
+        $hijos, $ocupacion, $tipo_afiliado);
 
     if ($stmt->execute()) {
         header("Location: ./paciente.php?success=true");

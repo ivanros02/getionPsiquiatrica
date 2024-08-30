@@ -34,13 +34,14 @@ $sql = "WITH ValidRecords AS (
             ELSE NULL
         END AS valid_date
     FROM paciente p
-    LEFT JOIN modalidad m ON m.id = p.modalidad
+    
     LEFT JOIN turnos t ON t.paciente = p.id
     LEFT JOIN practicas pract ON pract.id_paciente = p.id
     LEFT JOIN actividades act_t ON t.motivo = act_t.id
     LEFT JOIN actividades act_pract ON pract.actividad = act_pract.id
     LEFT JOIN obra_social o ON o.id = p.obra_social
     LEFT JOIN egresos e ON e.id_paciente = p.id
+    LEFT JOIN modalidad m ON m.id = e.modalidad
     LEFT JOIN paci_diag d ON d.id_paciente = p.id
     LEFT JOIN diag d_id ON d_id.id = d.codigo
     WHERE (t.fecha BETWEEN ? AND ? OR pract.fecha BETWEEN ? AND ?)

@@ -14,7 +14,8 @@ $sql = "SELECT pM.*, CONCAT(m.codigo, ' - ', m.descripcion) AS modalidad_full
         FROM paci_modalidad pM
         JOIN paciente p ON pM.id_paciente=p.id 
         LEFT JOIN modalidad m ON pM.modalidad = m.id
-        WHERE pM.id_paciente = $idPaciente";
+        WHERE pM.id_paciente = $idPaciente
+        ORDER BY pM.fecha DESC";
 $result = $conn->query($sql);
 
 // Manejo de errores para la consulta

@@ -4,7 +4,7 @@ require_once "../../../conexion.php";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_POST['id']; // Asegúrate de que el formulario incluya el campo 'id'
 
-    $sql = "DELETE FROM evoluciones WHERE id = ?";
+    $sql = "DELETE FROM evoluciones_amb WHERE id = ?";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);

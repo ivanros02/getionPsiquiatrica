@@ -129,7 +129,7 @@ $result = $conn->query($sql);
             </button>
         </div>
         <table class="table table-striped table-bordered">
-            <thead class="thead-dark">
+            <thead class="table-custom">
                 <tr>
                     <th>ID</th>
                     <th>Nro de Curaduria</th>

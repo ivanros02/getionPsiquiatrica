@@ -18,10 +18,17 @@ $hashed_clave = password_hash($clave, PASSWORD_DEFAULT);
 $sql = "INSERT INTO usuarios (usuario, clave) VALUES ('$usuario', '$hashed_clave')";
 
 if ($conn->query($sql) === TRUE) {
-    echo "Usuario registrado correctamente.";
+    // Si la consulta fue exitosa, muestra una alerta y redirige a la misma página
+    echo "<script>
+            alert('Usuario registrado correctamente.');
+            window.location.href = 'registro.php';
+          </script>";
 } else {
-    echo "Error al registrar el usuario: " . $conn->error;
+    // Si hubo un error, muestra una alerta y redirige a la misma página
+    echo "<script>
+            alert('Error al registrar el usuario: " . $conn->error . "');
+            window.location.href = 'registro.php';
+          </script>";
 }
-
 $conn->close();
 ?>

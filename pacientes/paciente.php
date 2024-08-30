@@ -52,8 +52,23 @@ if (isset($_GET['eliminar'])) {
 }
 
 // Obtener todos los pacientes
-$sql = "SELECT * FROM paciente ORDER BY nombre ASC";
+$sql = "SELECT p.*
+        FROM paciente p
+        ORDER BY p.nombre ASC";
 $result = $conn->query($sql);
+
+// Consultar el valor de 'inst'
+$sqlTitle = "SELECT inst FROM parametro_sistema LIMIT 1";
+$resultTitle = $conn->query($sqlTitle);
+
+// Obtener el valor
+$title = "Iniciar sesión"; // Valor por defecto
+if ($resultTitle && $resultTitle->num_rows > 0) {
+    $row = $resultTitle->fetch_assoc();
+    $title = $row['inst'];
+}
+
+
 
 $conn->close();
 
@@ -66,7 +81,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pacientes</title>
+    <title>Pacientes|<?php echo htmlspecialchars($title); ?></title>
     <link rel="icon" href="../img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -82,7 +97,16 @@ $conn->close();
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    
+    <!--FECHAS -->
+    <!-- Bootstrap Datepicker CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+        rel="stylesheet">
+
+    <!-- Bootstrap Datepicker JS -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+
     <link rel="stylesheet" href="../estilos/styleBotones.css">
     <link rel="stylesheet" href="../estilos/styleGeneral.css">
     <script src="./script/scriptPaciente.js" defer></script>
@@ -141,7 +165,7 @@ $conn->close();
             border-color: var(--primary-color);
         }
 
-        .custom-modal-paciente{
+        .custom-modal-paciente {
             margin-top: 1rem;
         }
     </style>
@@ -159,7 +183,7 @@ $conn->close();
 
     <div class="container">
         <div class="title-container">
-            <h2>Pacientes</h2>
+            <h2>Pacientes|<?php echo htmlspecialchars($title); ?></h2>
             <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o beneficio"
                 style="margin-bottom: 15px; width: 300px; display: inline-block;">
             <button type="button" class="btn btn-custom btn-lg" data-bs-toggle="modal"
@@ -237,12 +261,6 @@ $conn->close();
                             <span class="icon-text">Egresos</span>
                         </a>
 
-                        <a href="#" class="btn btn-link" title="evoluciones" data-bs-toggle="modal"
-                            data-bs-target="#evoModal" onclick="loadEvolucionModal()">
-                            <i class="fas fa-chart-line custom-icon"></i>
-                            <span class="icon-text">Evoluciones</span>
-                        </a>
-
                         <a href="#" class="btn btn-link" title="diagnosticos" data-bs-toggle="modal"
                             data-bs-target="#diagModal" onclick="loadDiagnosticoModal()">
                             <i class="fas fa-notes-medical custom-icon"></i>
@@ -298,10 +316,37 @@ $conn->close();
                             <i class="fas fa-list-alt custom-icon"></i>
                             <span class="icon-text">Ordenes de prestacion</span>
                         </a>
+
+                        <a href="#" class="btn btn-link" title="evoluciones" data-bs-toggle="modal"
+                            data-bs-target="#evoModal" onclick="loadEvolucionModal()">
+                            <i class="fa-solid fa-laptop-medical custom-icon"></i>
+                            <span class="icon-text">Evoluciones Amb.</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="evoluciones Int" data-bs-toggle="modal"
+                            data-bs-target="#evoIntModal" onclick="loadEvolucionIntModal()">
+                            <i class="fa-solid fa-laptop-medical custom-icon"></i>
+                            <span class="icon-text">Evoluciones Int.</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="admision Int" data-bs-toggle="modal"
+                            data-bs-target="#admiIntModal" onclick="loadAdmiIntModal()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Admision Int.</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="admision Amb" data-bs-toggle="modal"
+                            data-bs-target="#admiAmbModal" onclick="loadAdmiAmbModal()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Admision Amb.</span>
+                        </a>
+
+
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="bajaMensaje"></div> <!-- Aquí se insertará el mensaje de BAJA -->
                     <form id="formPaciente" action="./agregarPaciente.php" method="POST">
                         <input type="hidden" id="id" name="id">
 
@@ -357,8 +402,17 @@ $conn->close();
                             </div>
                             <div class="col-md-4 form-group">
                                 <label for="tipo_doc">Tipo de Doc.:*</label>
-                                <input type="text" class="form-control" id="tipo_doc" name="tipo_doc" required>
+                                <select class="form-control" id="tipo_doc" name="tipo_doc" required>
+                                    <option value="">Seleccione un tipo de documento</option>
+                                    <option value="DNI">DNI (Documento Nacional de Identidad)</option>
+                                    <option value="LC">LC (Libreta de Enrolamiento)</option>
+                                    <option value="LE">LE (Libreta Cívica)</option>
+                                    <option value="CI">CI (Cédula de Identidad)</option>
+                                    <option value="PAS">PAS (Pasaporte)</option>
+                                    <option value="OTRO">OTRO (Otro tipo de documento)</option>
+                                </select>
                             </div>
+
                             <div class="col-md-4 form-group">
                                 <label for="nro_doc">Número de Documento:*</label>
                                 <input type="number" class="form-control" id="nro_doc" name="nro_doc" required>
@@ -373,24 +427,26 @@ $conn->close();
                                 <input type="date" class="form-control" id="admision" name="admision" required>
                             </div>
                             <div class="col-md-4 form-group">
-                                <label for="modalidad">Modalidad:*</label>
-                                <select class="form-control" id="modalidad" name="modalidad" required>
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 form-group">
                                 <label for="id_prof">Profesional:*</label>
                                 <select class="form-control" id="id_prof" name="id_prof" required>
                                     <option value="">Seleccionar...</option>
                                 </select>
                             </div>
+                            <div class="col-md-4 form-group">
+                                <label for="modalidad_act" class="form-label">Modalidad Activa:</label>
+                                <input type="text" class="form-control" id="modalidad_act" name="modalidad_act" readonly>
+                            </div>
                         </div>
-
+                        <hr>
                         <div class="row">
 
                             <div class="col-md-4 form-group">
                                 <label for="ocupacion">Ocupación:</label>
                                 <input type="text" class="form-control" id="ocupacion" name="ocupacion">
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="telefono">Teléfono:</label>
+                                <input type="text" class="form-control" id="telefono" name="telefono">
                             </div>
 
                             <div class="col-md-4 form-group">
@@ -402,36 +458,29 @@ $conn->close();
 
 
                         <div class="row">
-
-
-
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-3 form-group">
                                 <label for="partido">Partido:</label>
                                 <input type="text" class="form-control" id="partido" name="partido">
                             </div>
-                            <div class="col-md-4 form-group">
+
+                            <div class="col-md-3 form-group">
                                 <label for="localidad">Localidad:</label>
                                 <input type="text" class="form-control" id="localidad" name="localidad">
                             </div>
 
-                        </div>
-
-                        <div class="row">
-
-
-                            <div class="col-md-4 form-group">
-                                <label for="telefono">Teléfono:</label>
-                                <input type="text" class="form-control" id="telefono" name="telefono">
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="c_postal">Código Postal:</label>
-                                <input type="number" class="form-control" id="c_postal" name="c_postal">
-                            </div>
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-3 form-group">
                                 <label for="domicilio">Domicilio:</label>
                                 <input type="text" class="form-control" id="domicilio" name="domicilio">
                             </div>
+
+                            <div class="col-md-3 form-group">
+                                <label for="c_postal">Código Postal:</label>
+                                <input type="number" class="form-control" id="c_postal" name="c_postal">
+                            </div>
                         </div>
+
+
+
 
 
 
@@ -508,9 +557,10 @@ $conn->close();
                             <input type="text" class="form-control" id="pracNombreCarga" name="nombre" readonly>
                         </div>
                         <div class="col-md-4">
-                            <label for="pracFecha" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="pracFecha" name="fecha" required>
+                            <label for="pracFechas" class="form-label">Fechas</label>
+                            <input type="text" class="form-control" id="pracFechas" name="fechas" required>
                         </div>
+
                         <div class="col-md-4">
                             <label for="pracHora" class="form-label">Hora</label>
                             <input type="time" class="form-control" id="pracHora" name="hora" required>
@@ -670,8 +720,8 @@ $conn->close();
                         </div>
 
                         <div class="col-md-4">
-                            <label for="egresoFecha" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="egresoFecha" name="fecha" required>
+                            <label for="egresoFecha" class="form-label">Fecha Egreso</label>
+                            <input type="date" class="form-control" id="egresoFecha" name="fecha">
                         </div>
 
                         <div class="col-md-4 form-group">
@@ -689,8 +739,8 @@ $conn->close();
                         </div>
 
                         <div class="col-md-4 form-group">
-                            <label for="egreso_motivo">Motivo:*</label>
-                            <select class="form-control" id="egreso_motivo" name="egreso_motivo" required>
+                            <label for="egreso_motivo">Motivo:</label>
+                            <select class="form-control" id="egreso_motivo" name="egreso_motivo">
                                 <option value="">Seleccionar...</option>
                             </select>
                         </div>
@@ -713,7 +763,7 @@ $conn->close();
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="evoModalLabel">Evoluciones</h5>
+                    <h5 class="modal-title" id="evoModalLabel">Evoluciones Amb.</h5>
                     <div class="modal-header-center">
                         <img src="../img/logo.png" alt="Logo" class="modal-logo">
                     </div>
@@ -820,6 +870,620 @@ $conn->close();
         </div>
     </div>
     <!-- FIN EVOLUCIONES-->
+
+    <!-- Modal de EVOLUCIONES INTERNACION-->
+    <div class="modal fade" id="evoIntModal" tabindex="-1" aria-labelledby="evoIntModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="IntModalLabel">Evoluciones Int.</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="evoIntModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaEvoInt" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save" id="nuevaEvoInt">Agregar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregarEvoIntModal" tabindex="-1" aria-labelledby="agregarEvoIntModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarEvoIntModalLabel">Agregar Evolucion Int.</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregarEvolucionInt" class="row g-3">
+                        <input type="hidden" id="evoIntIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="evoIntId">
+
+                        <div class="col-md-4">
+                            <label for="evoIntNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="evoIntNombreCarga" name="nombre" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="antecedentes_int">Antecedentes:</label>
+                            <input type="text" class="form-control" id="antecedentes_int" name="antecedentes_int">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="motivo_evo_int">Motivo de consulta:</label>
+                            <input type="text" class="form-control" id="motivo_evo_int" name="motivo_evo_int">
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <label for="estado_actual_int">Estado Actual:</label>
+                            <input type="text" class="form-control" id="estado_actual_int" name="estado_actual_int">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="familia_int">Familia:</label>
+                            <input type="text" class="form-control" id="familia_int" name="familia_int">
+                        </div>
+
+                        <div class="col-md-4 form-group">
+                            <label for="evo_diag_int">Diagnostico:*</label>
+                            <select class="form-control" id="evo_diag_int" name="evo_diag_int" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="objetivo_int">Objetivo del tratamiento:</label>
+                            <input type="text" class="form-control" id="objetivo_int" name="objetivo_int">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="duracion_int">Duracion estimada del tratamiento:</label>
+                            <input type="text" class="form-control" id="duracion_int" name="duracion_int">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="frecuencia_int">Frecuencia de entrevista:</label>
+                            <input type="text" class="form-control" id="frecuencia_int" name="frecuencia_int">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="evoFecha_int" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="evoFecha_int" name="evoFecha_int" required>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom-save" id="btnGuardarEvoInt">Guardar</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- FIN EVOLUCIONES INTERNACION-->
+
+    <!--ADMISION AMBULATORIO -->
+    <div class="modal fade" id="admiAmbModal" tabindex="-1" aria-labelledby="admiAmbModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AmbModalLabel">Admision Amb.</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="admiAmbModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaAdmiAmb" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save" id="nuevaAdmiAmb">Agregar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregarAdmiAmbModal" tabindex="-1" aria-labelledby="agregarAdmiAmbModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarAdmiAmbModalLabel">Agregar Admision Ambulatorio</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregarAdmiAmb" class="row g-3">
+                        <input type="hidden" id="admiAmbIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="admiAmbId">
+
+                        <div class="col-md-4">
+                            <label for="admiAmbNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="admiAmbNombreCarga" name="nombre" readonly>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>PROFESIONAL:</h5>
+                                <div class="col-md-4 form-group">
+                                    <label for="hc_prof">Profesional:*</label>
+                                    <select class="form-control" id="hc_prof" name="hc_prof" required>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+
+                                <h5>1-Aspecto Psíquico</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="normal" value="Normal"
+                                        name="aspectoPsiquico">
+                                    <label class="form-check-label" for="normal">Normal</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="indiferente" value="Indiferente"
+                                        name="aspectoPsiquico">
+                                    <label class="form-check-label" for="indiferente">Indiferente</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="excitado" value="Excitado"
+                                        name="aspectoPsiquico">
+                                    <label class="form-check-label" for="excitado">Excitado</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="obnubilado" value="Obnubilado"
+                                        name="aspectoPsiquico">
+                                    <label class="form-check-label" for="obnubilado">Obnubilado</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="deprimido" value="Deprimido"
+                                        name="aspectoPsiquico">
+                                    <label class="form-check-label" for="deprimido">Deprimido</label>
+                                </div>
+
+
+                                <h5>2-Actitud Psíquica</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="activa" value="Activa"
+                                        name="act_psiquica">
+                                    <label class="form-check-label" for="activa">Activa</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="pasiva" value="Pasiva"
+                                        name="act_psiquica">
+                                    <label class="form-check-label" for="pasiva">Pasiva</label>
+                                </div>
+
+                                <h5>3-Actividad</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="actividad-normal" value="Normal"
+                                        name="act">
+                                    <label class="form-check-label" for="actividad-normal">Normal</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="abulia" value="Abulia" name="act">
+                                    <label class="form-check-label" for="abulia">Abulia</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="hiperbulia" value="Hiperbulia"
+                                        name="act">
+                                    <label class="form-check-label" for="hiperbulia">Hiperbulia</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="hipobulia" value="Hipobulia"
+                                        name="act">
+                                    <label class="form-check-label" for="hipobulia">Hipobulia</label>
+                                </div>
+
+                                <h5>4-Orientación</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="global" value="Global"
+                                        name="orientacion">
+                                    <label class="form-check-label" for="global">Global</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="desorientacion-autosiquica"
+                                        value="Desorientación Autosíquica" name="orientacion">
+                                    <label class="form-check-label" for="desorientacion-autosiquica">Desorientación
+                                        Autosíquica</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="desorientacion-tiempo"
+                                        value="Desorientación en el Tiempo" name="orientacion">
+                                    <label class="form-check-label" for="desorientacion-tiempo">Desorientación en el
+                                        Tiempo</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="desorientacion-lugar"
+                                        value="Desorientación en el Lugar" name="orientacion">
+                                    <label class="form-check-label" for="desorientacion-lugar">Desorientación en el
+                                        Lugar</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="desorientacion-global"
+                                        value="Desorientación Global" name="orientacion">
+                                    <label class="form-check-label" for="desorientacion-global">Desorientación
+                                        Global</label>
+                                </div>
+
+                                <h5>5-Conciencia</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="lucida" value="Lúcida"
+                                        name="conciencia">
+                                    <label class="form-check-label" for="lucida">Lúcida</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="sin-conciencia-enfermedad"
+                                        value="Sin Conciencia de Enfermedad ni de Situación" name="conciencia">
+                                    <label class="form-check-label" for="sin-conciencia-enfermedad">Sin Conciencia
+                                        de Enfermedad ni de Situación</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="sin-conciencia-enfermedad2"
+                                        value="Sin Conciencia de Enfermedad" name="conciencia">
+                                    <label class="form-check-label" for="sin-conciencia-enfermedad2">Sin Conciencia
+                                        de Enfermedad</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="sin-conciencia-situacion"
+                                        value="Sin Conciencia de Situación" name="conciencia">
+                                    <label class="form-check-label" for="sin-conciencia-situacion">Sin Conciencia de
+                                        Situación</label>
+                                </div>
+
+                                <h5>6-Memoria</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="memoria-normal" value="Normal"
+                                        name="memoria">
+                                    <label class="form-check-label" for="memoria-normal">Normal</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="fallas-anterogradas"
+                                        value="Fallas Anterógradas" name="memoria">
+                                    <label class="form-check-label" for="fallas-anterogradas">Fallas
+                                        Anterógradas</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="fallas-globales"
+                                        value="Fallas Globales" name="memoria">
+                                    <label class="form-check-label" for="fallas-globales">Fallas Globales</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="amnesia-lacunar"
+                                        value="Fallas Globales" name="memoria">
+                                    <label class="form-check-label" for="fallas-globales">Amnesia lacunar</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="amnesia" value="Fallas Retrógradas"
+                                        name="memoria">
+                                    <label class="form-check-label" for="fallas-retrogradas">Amnesia</label>
+                                </div>
+
+                                <h5>7-Atención</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="atencion-normal" value="Normal"
+                                        name="atencion">
+                                    <label class="form-check-label" for="atencion-normal">Normal</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="hiperprosexia"
+                                        value="hiperprosexia" name="atencion">
+                                    <label class="form-check-label" for="hiperprosexia">Hiperprosexia</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="paraprosexia" value="paraprosexia"
+                                        name="atencion">
+                                    <label class="form-check-label" for="paraprosexia">Paraprosexia</label>
+                                </div>
+
+                                <h5>8-Curso del pensamiento</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="pensamiento-normal" value="Normal"
+                                        name="pensamiento" required>
+                                    <label class="form-check-label" for="pensamiento-normal">Normal</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="pensamiento-acelerado"
+                                        value="acelerado" name="pensamiento">
+                                    <label class="form-check-label" for="pensamiento-acelerado">Acelerado</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="pensamiento-interceptado"
+                                        value="interceptado" name="pensamiento" required>
+                                    <label class="form-check-label" for="pensamiento-interceptado">Interceptado</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="pensamiento-retardado"
+                                        value="retardado" name="pensamiento" required>
+                                    <label class="form-check-label" for="pensamiento-retardado">Retardado</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="pensamiento-disgregado"
+                                        value="disgregado" name="pensamiento">
+                                    <label class="form-check-label" for="pensamiento-disgregado">Disgregado</label>
+                                </div>
+
+                                <label for="hc_diag">Diagnostico:*</label>
+                                <select class="form-control" id="hc_diag" name="hc_diag" required>
+                                    <option value="">Seleccionar...</option>
+                                </select>
+
+                                <div class="col-md-6">
+                                    <label for="hc_medi">Que medicacion esta tomando el paciente:</label>
+                                    <select class="form-control" id="hc_medi" name="hc_medi" required>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="hc_desc_medi">Para que lo toma:</label>
+                                    <input type="text" class="form-control" id="hc_desc_medi" name="hc_desc_medi"
+                                        placeholder="Completar">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="hc_cada_medi">Cada cuanto lo toma:</label>
+                                    <input type="text" class="form-control" id="hc_cada_medi" name="hc_cada_medi"
+                                        placeholder="Completar">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="hc_familiar">Antecedentes Familiares:</label>
+                                    <input type="text" class="form-control" id="hc_familiar" name="hc_familiar"
+                                        placeholder="Completar">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="hc_fecha" class="form-label">Fecha:</label>
+                                    <input type="date" class="form-control" id="hc_fecha" name="hc_fecha" required>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-6">
+                                <h5>9-Contenido del pensamiento</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="contenido-coherente"
+                                        value="coherente" name="cont_pensamiento">
+                                    <label class="form-check-label" for="contenido-coherente">Coherente</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="contenido-incoherente"
+                                        value="incoherente" name="cont_pensamiento">
+                                    <label class="form-check-label" for="contenido-incoherente">Incoherente</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input type="radio" id="contenid-delirante" name="cont_pensamiento"
+                                        value="Delirante">
+                                    <label for="contenid-delirante"> Delirante</label><br>
+                                </div>
+
+                                <div class="form-check">
+                                    <input type="radio" id="contenido-autoeliminacion" name="cont_pensamiento"
+                                        value="Ideas de autoeliminación">
+                                    <label for="contenido-autoeliminacion"> Ideas de autoeliminación</label><br>
+                                </div>
+
+
+                                <h5>10-Sensopercepción</h5>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="senso-alteraciones"
+                                        name="sensopercepcion" value="Sin alteraciones">
+                                    <label class="form-check-label" for="senso-alteraciones">Sin
+                                        alteraciones</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="senso-ilusiones"
+                                        name="sensopercepcion" value="Ilusiones">
+                                    <label class="form-check-label" for="senso-ilusiones">Ilusiones</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="senso-alucinaciones"
+                                        value="Alucinaciones auditivas/visuales Cenestésicas" name="sensopercepcion">
+                                    <label class="form-check-label" for="senso-alucinaciones">Alucinaciones
+                                        auditivas/visuales
+                                        Cenestésicas</label>
+                                </div>
+
+                                <h5>11-Afectividad</h5>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="afectividad-sin-alteracion"
+                                        name="afectividad" value="Sin alteración">
+                                    <label class="form-check-label" for="afectividad-sin-alteracion">Sin
+                                        alteración</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="afectividad-hipertimia-placentera"
+                                        name="afectividad" value="Hipertimia placentera">
+                                    <label class="form-check-label" for="afectividad-hipertimia-placentera">Hipertimia
+                                        placentera</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio"
+                                        id="afectividad-hipertimia-displacentera" name="afectividad"
+                                        value="Hipertimia displacentera">
+                                    <label class="form-check-label"
+                                        for="afectividad-hipertimia-displacentera">Hipertimia displacentera</label>
+                                </div>
+
+                                <h5>12-Inteligencia</h5>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="inteligencia-normal"
+                                        name="inteligencia" value="Normal">
+                                    <label class="form-check-label" for="inteligencia-normal">Normal</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="inteligencia-superior"
+                                        name="inteligencia" value="Superior">
+                                    <label class="form-check-label" for="inteligencia-superior">Superior</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="inteligencia-inferior"
+                                        name="inteligencia" value="Inferior">
+                                    <label class="form-check-label" for="inteligencia-inferior">Inferior</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="inteligencia-marcada-deficiencia"
+                                        name="inteligencia" value="Marcada deficiencia">
+                                    <label class="form-check-label" for="inteligencia-marcada-deficiencia">Marcada
+                                        deficiencia</label>
+                                </div>
+
+                                <h5>13-Juicio</h5>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="juicio-normal" name="juicio"
+                                        value="Normal">
+                                    <label class="form-check-label" for="juicio-normal">Normal</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="juicio-insuficiencia" name="juicio"
+                                        value="Insuficiencia">
+                                    <label class="form-check-label" for="juicio-insuficiencia">Insuficiencia</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="juicio-debilitado" name="juicio"
+                                        value="Debilitado">
+                                    <label class="form-check-label" for="juicio-debilitado">Debilitado</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="juicio-suspendido" name="juicio"
+                                        value="Suspendido">
+                                    <label class="form-check-label" for="juicio-suspendido">Suspendido</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="juicio-desviado" name="juicio"
+                                        value="Desviado">
+                                    <label class="form-check-label" for="juicio-desviado">Desviado</label>
+                                </div>
+
+                                <h5>14-Control de esfínteres</h5>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="control-esfinteres-normal"
+                                        name="esfinteres" value="Normal">
+                                    <label class="form-check-label" for="control-esfinteres-normal">Normal</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="control-esfinteres-incontinencia"
+                                        name="esfinteres" value="Incontinencia Vesical/Rectal/Vésico-rectal">
+                                    <label class="form-check-label" for="control-esfinteres-incontinencia">Incontinencia
+                                        Vesical/Rectal/Vésico-rectal</label>
+                                </div>
+
+                                <h5>15-Tratamiento</h5>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="tratamiento-clinico"
+                                        name="tratamiento" value="Clínico">
+                                    <label class="form-check-label" for="tratamiento-clinico">Clínico</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="tratamiento-psicofarmacologico"
+                                        name="tratamiento" value="Psicofarmacológico reflejos">
+                                    <label class="form-check-label"
+                                        for="tratamiento-psicofarmacologico">Psicofarmacológico reflejos</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="tratamiento-biologico"
+                                        name="tratamiento" value="Biológico">
+                                    <label class="form-check-label" for="tratamiento-biologico">Biológico</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="tratamiento-ech-insulina"
+                                        name="tratamiento" value="ECH/c.Insulina">
+                                    <label class="form-check-label"
+                                        for="tratamiento-ech-insulina">ECH/c.Insulina</label>
+                                </div>
+
+                                <h5>16-Evolución</h5>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="evolucion-buena" name="evolucion"
+                                        value="Buena">
+                                    <label class="form-check-label" for="evolucion-buena">Buena</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="evolucion-regular" name="evolucion"
+                                        value="Regular">
+                                    <label class="form-check-label" for="evolucion-regular">Regular</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="evolucion-mala" name="evolucion"
+                                        value="Mala">
+                                    <label class="form-check-label" for="evolucion-mala">Mala</label>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom-save"
+                        id="btnGuardarAdmiAmb">Guardar</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--FIN ADMISION AMBULATORIO -->
 
     <!-- Modal de DIAGNOSTICOS -->
     <div class="modal fade" id="diagModal" tabindex="-1" aria-labelledby="diagModalLabel" aria-hidden="true">

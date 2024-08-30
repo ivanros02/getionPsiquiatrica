@@ -11,7 +11,7 @@ if ($conn->connect_error) {
 
 // Preparar la consulta para obtener los egresos del paciente específico
 $sql = "SELECT e.*,CONCAT(d.codigo, ' - ', d.descripcion) AS diag_full
-        FROM evoluciones e 
+        FROM evoluciones_amb e 
         JOIN paciente p ON e.id_paciente=p.id 
         LEFT JOIN diag d ON e.diag = d.id
         WHERE e.id_paciente = $idPaciente";

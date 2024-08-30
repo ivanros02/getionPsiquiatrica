@@ -541,10 +541,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
@@ -716,10 +716,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
@@ -833,10 +833,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
@@ -997,10 +997,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
@@ -1230,10 +1230,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
@@ -1448,10 +1448,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
@@ -1533,11 +1533,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         Promise.all([fetchData(fechaDesde, fechaHasta, obraSocialId)])
             .then(([resumen]) => {
+                
                 const groupedByModality = resumen.reduce((acc, item) => {
                     if (!acc[item.modalidad_full]) {
                         acc[item.modalidad_full] = { data: [], totalQuantity: 0 };
                     }
-                    console.log('item.cantidad', item.cantidad)
                     if (item.pract_full) {
                         acc[item.modalidad_full].data.push([
                             item.nombre,
@@ -1562,6 +1562,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     return acc;
+                    
                 }, {});
 
                 const formattedFechaDesde = formatDate(fechaDesde);
@@ -1649,15 +1650,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Add grand total at the end of the document
                 doc.setFontSize(14);
-                doc.text(`Total General: ${grandTotal}`, pageWidth / 2, startY + 10, { align: 'center' });
+                doc.text(`Total General: ${grandTotal}`, pageWidth / 2, startY + 2, { align: 'center' });
 
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 25;
+                    const imgHeight = 20;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 5;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
@@ -1874,10 +1875,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
     
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
     
@@ -2024,10 +2025,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
-                    const imgWidth = 40;
-                    const imgHeight = 40;
+                    const imgWidth = 29;
+                    const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY;
+                    const yImg = startY + 15;
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
 
