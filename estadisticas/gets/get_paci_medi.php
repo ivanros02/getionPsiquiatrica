@@ -17,7 +17,6 @@ $sql = "SELECT
     CONCAT(p.nombre,' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    m.descripcion AS modalidad_full,
     medi.descripcion AS medicamento,
     mP.fecha,
     mP.hora,
@@ -27,7 +26,6 @@ FROM paciente p
 LEFT JOIN medicacion_paci mP ON mP.id_paciente = p.id
 LEFT JOIN medicacion medi ON medi.id = mP.medicamento
 LEFT JOIN obra_social o ON o.id = p.obra_social
-LEFT JOIN modalidad m ON m.id = p.modalidad
 WHERE (mP.fecha BETWEEN ? AND ?) AND p.obra_social = ?
 
 ";

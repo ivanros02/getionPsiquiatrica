@@ -1031,49 +1031,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-//envio de recordatorio
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('recordatorioBtn').addEventListener('click', function () {
 
-        const profesionalId = document.getElementById('profesionalSelect').value;
-        const fechaDesde = document.getElementById('fechaDesde').value;
-        const fechaHasta = document.getElementById('fechaHasta').value;
-
-        function fetchDataProf(profesionalId, fechaDesde, fechaHasta) {
-            return new Promise((resolve, reject) => {
-                fetch(`./gets/get_nums.php?id_prof=${profesionalId}&fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`)
-                    .then(response => response.json())
-                    .then(data => resolve(data))
-                    .catch(error => reject(error));
-            });
-        }
-
-        fetchDataProf(profesionalId, fechaDesde, fechaHasta).then(data => {
-            sendWhatsAppReminders(data);
-        }).catch(error => {
-            console.error('Error fetching data:', error);
-        });
-
-        function sendWhatsAppReminders(data) {
-            const phoneNumbers = data.map(item => item.tel);
-            const nombres = data.map(item => item.nombre_paci);
-            const profes = data.map(item => item.nom_prof);
-            const fechas = data.map(item => formatDate(item.fecha_turno));
-
-
-            phoneNumbers.forEach((phoneNumber, index) => {
-                const nombre = nombres[index];
-                const prof = profes[index];
-                const fecha = fechas[index];
-                const message = encodeURIComponent(`Hola ${nombre}, recuerda que el ${fecha} tienes una cita con el profesional ${prof}.`);
-                const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
-
-                // Abre una ventana para enviar el mensaje
-                window.open(url, '_blank');
-            });
-        }
-    });
-});
 
 
 

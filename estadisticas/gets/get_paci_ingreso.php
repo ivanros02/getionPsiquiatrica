@@ -17,12 +17,14 @@ $sql = "SELECT DISTINCT
     CONCAT(p.nombre,' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    m.descripcion AS modalidad_full,
+    CONCAT(m.codigo,' - ',m.descripcion) AS modalidad_full,
     p.admision
 FROM paciente p
 LEFT JOIN obra_social o   ON o.id = p.obra_social
-LEFT JOIN modalidad m ON m.id = p.modalidad
-WHERE (p.admision BETWEEN ? AND ?) AND p.obra_social = ?
+LEFT JOIN paci_modalidad pM ON pM.id_paciente = p.id
+LEFT JOIN modalidad m ON m.id = pM.modalidad
+WHERE (p.admision BETWEEN ? AND ?) AND p.obra_social = ? AND pM.fecha = p.admision
+
 ORDER BY p.admision ASC
 ";
 

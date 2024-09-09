@@ -17,13 +17,36 @@ $sql = "SELECT DISTINCT
     CONCAT(p.nombre,' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    m.descripcion AS modalidad_full,
+    COALESCE(
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha <= t.fecha
+            ORDER BY pm.fecha DESC
+            LIMIT 1
+        ),
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha > (
+                SELECT COALESCE(MAX(e.fecha_egreso), '9999-12-31')
+                FROM egresos e
+                WHERE e.id_paciente = p.id
+            )
+            AND pm.fecha <= t.fecha
+            ORDER BY pm.fecha ASC
+            LIMIT 1
+        )
+    ) AS modalidad_full,
     CONCAT(act2.codigo, ' - ', act2.descripcion) AS turno_pract,
     t.fecha AS fecha_turno,
     NULL AS cantidad
 FROM paciente p
 LEFT JOIN paci_modalidad pM ON pM.id_paciente = p.id
-LEFT JOIN modalidad m ON m.id = pM.modalidad
 LEFT JOIN turnos t ON t.paciente = p.id
 LEFT JOIN actividades act2 ON act2.id = t.motivo
 LEFT JOIN obra_social o   ON o.id = p.obra_social

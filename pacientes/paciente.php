@@ -358,13 +358,15 @@ $conn->close();
                                 </select>
                             </div>
                             <div class="col-md-4 form-group">
-                                <label for="benef">Beneficiario(12):*</label>
+                                <label for="benef">Beneficiario (12):*</label>
                                 <input type="number" class="form-control" id="benef" name="benef" required>
                             </div>
+
                             <div class="col-md-4 form-group">
                                 <label for="parentesco">Parentesco(2):*</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="parentesco" name="parentesco" required>
+                                    <input type="text" class="form-control" id="parentesco" name="parentesco" required
+                                        maxlength="2">
                                     <div class="input-group-append" id="btnBuscar">
                                         <span class="input-group-text">
                                             <i class="fas fa-search"></i>
@@ -372,6 +374,7 @@ $conn->close();
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="row">
@@ -432,10 +435,14 @@ $conn->close();
                                     <option value="">Seleccionar...</option>
                                 </select>
                             </div>
+
                             <div class="col-md-4 form-group">
-                                <label for="modalidad_act" class="form-label">Modalidad Activa:</label>
-                                <input type="text" class="form-control" id="modalidad_act" name="modalidad_act" readonly>
+                                <label for="modalidad_act">Modalidad Activa:*</label>
+                                <select class="form-control" id="modalidad_act" name="modalidad_act" required>
+                                    <option value="">Seleccionar...</option>
+                                </select>
                             </div>
+
                         </div>
                         <hr>
                         <div class="row">
@@ -489,7 +496,10 @@ $conn->close();
                             <div class="modal-header-center">
                                 <img src="../img/logo.png" alt="Logo" class="modal-logo">
                             </div>
+                            <button type="button" class="btn btn-warning" id="btnCompletarManualmente">Completar
+                                manualmente</button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
                             <button type="submit" class="btn btn-primary btn-custom-save">Guardar</button>
                         </div>
                     </form>

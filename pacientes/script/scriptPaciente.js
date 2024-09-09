@@ -17,7 +17,11 @@ function formatDate(dateString) {
 
 document.addEventListener("DOMContentLoaded", function () {
     function editarPaciente(paciente) {
-        document.getElementById('formPaciente').action = './editarPaciente.php';
+        // Configura el formulario para la edición
+        var form = document.getElementById('formPaciente');
+        form.action = './editarPaciente.php';
+        form.dataset.mode = 'edit'; // Agrega un atributo de datos para identificar el modo
+
         document.getElementById('id').value = paciente.id;
         document.getElementById('nombre').value = paciente.nombre;
         document.getElementById('obra_social').value = paciente.obra_social;
@@ -38,29 +42,35 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('ocupacion').value = paciente.ocupacion;
         document.getElementById('tipo_afiliado').value = paciente.tipo_afiliado;
 
+        // Primero, carga las modalidades
         $.ajax({
-            url: './dato/get_modalidad_paci_id.php',
+            url: './dato/get_modalidad.php',
             type: 'GET',
-            data: { id_paciente: paciente.id },
-            success: function (response) {
-                // Parsear la respuesta JSON
-                var modalidades = JSON.parse(response);
-
-                // Variable para almacenar todos los resultados concatenados
-                var modalidadesConcatenadas = '';
-
-                // Recorrer todas las modalidades y concatenarlas
-                modalidades.forEach(function (modalidad) {
-                    modalidadesConcatenadas += modalidad.modalidad_full + ' | ';
+            dataType: 'json',
+            success: function (data) {
+                // Carga todas las opciones disponibles
+                $('#modalidad_act').empty();
+                data.forEach(function (item) {
+                    var optionText = item.codigo + ' - ' + item.descripcion;
+                    $('#modalidad_act').append(new Option(optionText, item.id));
                 });
 
-                // Eliminar el último separador " | " si es necesario
-                modalidadesConcatenadas = modalidadesConcatenadas.slice(0, -3);
-
-                document.getElementById('modalidad_act').value = modalidadesConcatenadas;
+                // Luego, selecciona la modalidad actual del paciente
+                $.ajax({
+                    url: './dato/get_modalidad_paci_id.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id_paciente: paciente.id },
+                    success: function (data) {
+                        // Limpia las opciones actuales del select
+                        $('#modalidad_act').val(data[0]?.id || '').trigger('change');
+                    },
+                    error: function (xhr, status, error) {
+                    }
+                });
             },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud AJAX: " + error);
+            error: function (error) {
+                console.error("Error fetching data: ", error);
             }
         });
 
@@ -87,35 +97,77 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function limpiarFormulario() {
-        document.getElementById('formPaciente').action = './agregarPaciente.php';
-        document.getElementById('id').value = '';
-        document.getElementById('nombre').value = '';
-        document.getElementById('obra_social').value = '';
-        document.getElementById('fecha_nac').value = '';
-        document.getElementById('sexo').value = '';
-        document.getElementById('domicilio').value = '';
-        document.getElementById('localidad').value = '';
-        document.getElementById('partido').value = '';
-        document.getElementById('c_postal').value = '';
-        document.getElementById('telefono').value = '';
-        document.getElementById('tipo_doc').value = '';
-        document.getElementById('nro_doc').value = '';
-        document.getElementById('admision').value = '';
-        document.getElementById('id_prof').value = '';
-        document.getElementById('benef').value = '';
-        document.getElementById('parentesco').value = '';
-        document.getElementById('hijos').value = '';
-        document.getElementById('ocupacion').value = '';
-        document.getElementById('tipo_afiliado').value = '';
-        document.getElementById('op').value = '';
-        document.getElementById('op').value = '';
-        document.getElementById('modalidad_paci').value = '';
+        var form = document.getElementById('formPaciente');
+        form.reset();
+        form.action = './agregarPaciente.php'; // Restablece la acción del formulario
+        form.dataset.mode = 'add'; // Restablece el modo
     }
 
     window.editarPaciente = editarPaciente;
 
     var btnAgregarPacienteModal = document.querySelector('button[data-bs-target="#agregarPacienteModal"]');
     btnAgregarPacienteModal.addEventListener('click', limpiarFormulario);
+
+    function actualizarTablaPacientes() {
+        $.ajax({
+            url: './dato/obtenerPacientes.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var tableBody = $('#pacientesTable tbody');
+                tableBody.empty(); // Limpia el cuerpo de la tabla
+
+                if (data.length > 0) {
+                    data.forEach(function (paciente) {
+                        var row = '<tr>' +
+                            '<td>' + paciente.id + '</td>' +
+                            '<td>' + paciente.nombre + '</td>' +
+                            '<td>' + paciente.benef + '</td>' +
+                            '<td>' + paciente.parentesco + '</td>' +
+                            '<td>' +
+                            '<button class="btn btn-custom-editar" onclick=\'editarPaciente(' + JSON.stringify(paciente) + ')\'><i class="fas fa-pencil-alt"></i></button>' +
+                            '<a href="?eliminar=' + paciente.id + '" class="btn btn-danger" onclick="return confirm(\'¿Estás seguro de que deseas eliminar este paciente?\');"><i class="fas fa-trash-alt"></i></a>' +
+                            '<button class="btn btn-info" onclick="openReportModal(' + paciente.id + ')"><i class="fas fa-file-alt"></i></button>' +
+                            '</td>' +
+                            '</tr>';
+                        tableBody.append(row);
+                    });
+                } else {
+                    tableBody.append('<tr><td colspan="5">No se encontraron resultados</td></tr>');
+                }
+            },
+            error: function (error) {
+                console.error("Error fetching data: ", error);
+            }
+        });
+    }
+
+    document.getElementById('formPaciente').addEventListener('submit', function (event) {
+        event.preventDefault(); // Previene el envío del formulario de la manera tradicional
+        var formData = $(this).serialize(); // Serializa los datos del formulario
+        var formAction = $(this).attr('action'); // Obtiene la acción del formulario
+
+
+        $.ajax({
+            url: formAction,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    actualizarTablaPacientes(); // Actualiza la tabla con los nuevos datos
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                console.error("Error al enviar datos: ", error);
+            }
+        });
+    });
+
+    // Carga inicial de la tabla
+    actualizarTablaPacientes();
 });
 
 document.getElementById('btnBuscar').addEventListener('click', function () {
@@ -280,6 +332,7 @@ $(document).ready(function () {
                 $('#modalidad').append(new Option(optionText, item.id));
                 $('#modalidad_paci').append(new Option(optionText, item.id));
                 $('#egreso_modalidad').append(new Option(optionText, item.id));
+                $('#modalidad_act').append(new Option(optionText, item.id));
             });
         },
         error: function (error) {
@@ -605,6 +658,16 @@ $(document).ready(function () {
 
 
 
+document.getElementById('btnCompletarManualmente').addEventListener('click', function() {
+    var nombreInput = document.getElementById('nombre');
+    nombreInput.removeAttribute('readonly');  // Elimina el atributo readonly
+    nombreInput.focus();  // Opcional: pone el foco en el campo para que el usuario pueda escribir
+});
 
-
-
+ // Limitar a 12 dígitos en el campo "benef"
+ document.getElementById('benef').addEventListener('input', function () {
+    var benefInput = this;
+    if (benefInput.value.length > 12) {
+        benefInput.value = benefInput.value.slice(0, 12); // Recorta a 12 dígitos
+    }
+});

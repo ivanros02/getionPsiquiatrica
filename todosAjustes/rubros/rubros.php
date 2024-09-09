@@ -132,7 +132,6 @@ $result = $conn->query($sql);
             <thead class="table-custom">
                 <tr>   
                     <th>ID</th>
-                    <th>Codigo</th>
                     <th>Descripcion</th>
                     <th>Acciones</th>
                 </tr>
@@ -141,8 +140,7 @@ $result = $conn->query($sql);
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>  
-                            <td><?= $row["id"] ?></td>  
-                            <td><?= $row["codigo"] ?></td>
+                            <td><?= $row["id"] ?></td>
                             <td><?= $row["descripcion"] ?></td>
                             <td>
                                 <button class="btn btn-custom-editar" onclick='editarRubro(<?= json_encode($row) ?>)'><i
@@ -176,11 +174,6 @@ $result = $conn->query($sql);
                 <div class="modal-body">
                     <form id="formRubro" action="./agregarRubro.php" method="POST">
                     <input type="hidden" id="id" name="id">
-                        <div class="form-group">
-                            <label for="codigo">Codigo</label>
-                            <input type="text" class="form-control" id="codigo" name="codigo"
-                                required>
-                        </div>
                         <div class="form-group">
                             <label for="descripcion">Descripcion</label>
                             <input type="text" class="form-control" id="descripcion" name="descripcion"

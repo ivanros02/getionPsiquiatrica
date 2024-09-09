@@ -15,51 +15,103 @@ if (empty($fecha_desde) || empty($fecha_hasta)) {
 
 // Inicializar la consulta SQL base
 $sql = "SELECT DISTINCT
-    CONCAT(p.nombre,' - ', o.siglas) AS nombre,
+    CONCAT(p.nombre, ' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    m.descripcion AS modalidad_full,
+    COALESCE(
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha > (
+                SELECT COALESCE(MAX(e.fecha_egreso), '9999-12-31')
+                FROM egresos e
+                WHERE e.id_paciente = p.id
+            )
+            AND pm.fecha <= t.fecha
+            ORDER BY pm.fecha ASC
+            LIMIT 1
+        ),
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha <= t.fecha
+            ORDER BY pm.fecha DESC
+            LIMIT 1
+        )
+    ) AS modalidad_full,
     CONCAT(act.codigo, ' - ', act.descripcion) AS turno_pract,
     t.fecha AS fecha_turno,
     d_id.codigo AS diag,
     prof.nombreYapellido AS prof,
     NULL AS cantidad
 FROM paciente p
-LEFT JOIN modalidad m ON m.id = p.modalidad
 LEFT JOIN turnos t ON t.paciente = p.id
 LEFT JOIN actividades act ON act.id = t.motivo
-LEFT JOIN profesional prof ON prof.id_prof= t.id_prof
-LEFT JOIN obra_social o   ON o.id = p.obra_social
+LEFT JOIN profesional prof ON prof.id_prof = t.id_prof
+LEFT JOIN obra_social o ON o.id = p.obra_social
 LEFT JOIN paci_diag d ON d.id_paciente = p.id
 LEFT JOIN diag d_id ON d_id.id = d.codigo
 WHERE (t.fecha BETWEEN ? AND ?) AND p.obra_social = ?";
 
-$sql .= $profesional ? " AND t.id_prof = ?" : "";
+if ($profesional) {
+    $sql .= " AND t.id_prof = ?";
+}
 
-$sql .= " GROUP BY m.id" . ($profesional ? ", t.id_prof" : "") . ", p.benef
+$sql .= " GROUP BY nombre, p.benef, p.parentesco, modalidad_full, turno_pract, t.fecha, d_id.codigo, prof.nombreYapellido";
 
-UNION
-
-SELECT DISTINCT
-    CONCAT(p.nombre,' - ', o.siglas) AS nombre,
+$sql .= " UNION SELECT DISTINCT
+    CONCAT(p.nombre, ' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    m.descripcion AS modalidad_full,
+    COALESCE(
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha > (
+                SELECT COALESCE(MAX(e.fecha_egreso), '9999-12-31')
+                FROM egresos e
+                WHERE e.id_paciente = p.id
+            )
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha ASC
+            LIMIT 1
+        ),
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha DESC
+            LIMIT 1
+        )
+    ) AS modalidad_full,
     CONCAT(act.codigo, ' - ', act.descripcion) AS pract_full,
     pract.fecha AS fecha_pract,
     d_id.codigo AS diag,
     prof.nombreYapellido AS prof,
     pract.cant AS cantidad
 FROM paciente p
-LEFT JOIN modalidad m ON m.id = p.modalidad
 LEFT JOIN practicas pract ON pract.id_paciente = p.id
 LEFT JOIN actividades act ON act.id = pract.actividad
-LEFT JOIN obra_social o   ON o.id = p.obra_social
+LEFT JOIN obra_social o ON o.id = p.obra_social
 LEFT JOIN paci_diag d ON d.id_paciente = p.id
 LEFT JOIN diag d_id ON d_id.id = d.codigo
-LEFT JOIN profesional prof ON prof.id_prof= pract.profesional
-WHERE (pract.fecha BETWEEN ? AND ?) AND p.obra_social = ?" . ($profesional ? " AND pract.profesional = ?" : "") . "
-GROUP BY m.id" . ($profesional ? ", pract.profesional" : "") . ", p.benef";
+LEFT JOIN profesional prof ON prof.id_prof = pract.profesional
+WHERE (pract.fecha BETWEEN ? AND ?) AND p.obra_social = ?";
+
+if ($profesional) {
+    $sql .= " AND pract.profesional = ?";
+}
+
+$sql .= " GROUP BY nombre, p.benef, p.parentesco, modalidad_full, pract_full, pract.fecha, d_id.codigo, prof.nombreYapellido";
+
 
 // Preparar la consulta
 $stmt = $conn->prepare($sql);

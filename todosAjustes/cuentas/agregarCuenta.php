@@ -6,17 +6,16 @@ require_once "../../conexion.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recibir los datos del formulario
     $desc_rubro = $_POST["desc_rubro"];
-    $c_cuenta = $_POST["c_cuenta"];
     $desc_cuenta = $_POST["desc_cuenta"];
 
     // Preparar la consulta SQL para insertar una especialidad
-    $sql = "INSERT INTO cuentas (desc_rubro, c_cuenta , desc_cuenta) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO cuentas (desc_rubro , desc_cuenta) VALUES (?, ?)";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros
-    $stmt->bind_param("sss", $desc_rubro, $c_cuenta, $desc_cuenta);
+    $stmt->bind_param("is", $desc_rubro, $desc_cuenta);
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

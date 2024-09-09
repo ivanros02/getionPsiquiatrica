@@ -7,28 +7,44 @@ $idPaciente = $_POST['id_paciente'];
 $fecha = $_POST['fecha'];
 $diag = $_POST['egreso_diag'];
 $modalidad = $_POST['egreso_modalidad'];
-$motivo = $_POST['egreso_motivo'];
+$motivo = !empty($_POST['egreso_motivo']) ? $_POST['egreso_motivo'] : NULL;
 
 // Verificar si la conexión se estableció correctamente
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    echo json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $conn->connect_error]);
+    exit;
 }
 
-$motivo = !empty($_POST['egreso_motivo']) ? $_POST['egreso_motivo'] : NULL;
+// Obtener la fecha máxima de las prácticas del paciente
+$sqlMaxFecha = "SELECT MAX(fecha) AS max_fecha FROM practicas WHERE id_paciente = ?";
+$stmtMaxFecha = $conn->prepare($sqlMaxFecha);
+$stmtMaxFecha->bind_param('i', $idPaciente);
+$stmtMaxFecha->execute();
+$resultMaxFecha = $stmtMaxFecha->get_result();
+$row = $resultMaxFecha->fetch_assoc();
+$maxFecha = $row['max_fecha'];
 
-$sql = "INSERT INTO egresos (id_paciente, fecha_egreso, diag, modalidad, motivo)
-        VALUES (?, ?, ?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param('isiii', $idPaciente, $fecha, $diag, $modalidad, $motivo);
-
-
-if ($stmt->execute()) {
-    echo "Egreso agregado correctamente.";
+// Verificar si la fecha del egreso es mayor que la fecha máxima de las prácticas
+if ($fecha <= $maxFecha) {
+    echo json_encode(['status' => 'error', 'message' => 'La fecha de egreso debe ser mayor que la fecha máxima de las prácticas del paciente.']);
 } else {
-    echo "Error: " . $stmt->error;
+    // Preparar la consulta para insertar el egreso
+    $sqlInsert = "INSERT INTO egresos (id_paciente, fecha_egreso, diag, modalidad, motivo)
+                  VALUES (?, ?, ?, ?, ?)";
+    $stmtInsert = $conn->prepare($sqlInsert);
+    $stmtInsert->bind_param('isiii', $idPaciente, $fecha, $diag, $modalidad, $motivo);
+
+    if ($stmtInsert->execute()) {
+        echo json_encode(['status' => 'success', 'message' => 'Egreso agregado correctamente.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Error al agregar el egreso: ' . $stmtInsert->error]);
+    }
+
+    // Cerrar la sentencia de inserción
+    $stmtInsert->close();
 }
 
 // Cerrar la conexión
-$stmt->close();
+$stmtMaxFecha->close();
 $conn->close();
 ?>

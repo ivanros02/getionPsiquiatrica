@@ -5,17 +5,16 @@ require_once "../../conexion.php";
 // Verificar si se han enviado datos del formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recibir los datos del formulario
-    $codigo = $_POST["codigo"];
     $descripcion = $_POST["descripcion"];
 
     // Preparar la consulta SQL para insertar una especialidad
-    $sql = "INSERT INTO rubros (codigo, descripcion) VALUES (?, ?)";
+    $sql = "INSERT INTO rubros  (descripcion) VALUES (?)";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros
-    $stmt->bind_param("ss", $codigo, $descripcion);
+    $stmt->bind_param("s", $descripcion);
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

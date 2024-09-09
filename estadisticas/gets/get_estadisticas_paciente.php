@@ -20,12 +20,74 @@ $sql = "WITH ValidRecords AS (
         o.siglas,
         p.benef,
         p.parentesco,
-        p.admision,
+        COALESCE(
+        (
+            SELECT pm.fecha
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha DESC
+            LIMIT 1
+        ),
+        (
+            SELECT pm.fecha
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha > (
+                SELECT COALESCE(MAX(e.fecha_egreso), '9999-12-31')
+                FROM egresos e
+                WHERE e.id_paciente = p.id
+            )
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha ASC
+            LIMIT 1
+        )
+        ) AS ingreso_modalidad,
         p.sexo,
-        m.descripcion AS modalidad_full,
+        COALESCE(
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha > (
+                SELECT COALESCE(MAX(e.fecha_egreso), '9999-12-31')
+                FROM egresos e
+                WHERE e.id_paciente = p.id
+            )
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha ASC
+            LIMIT 1
+        ),
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha <= pract.fecha
+            ORDER BY pm.fecha DESC
+            LIMIT 1
+        )
+        ) AS modalidad_full,
         t.fecha AS fecha_turno,
         pract.fecha AS fecha_pract,
-        e.fecha_egreso AS egreso,
+        (
+            SELECT e.fecha_egreso
+            FROM egresos e
+            WHERE e.id_paciente = p.id
+            AND e.modalidad = (
+                SELECT pm.modalidad
+                FROM paci_modalidad pm
+                WHERE pm.id_paciente = p.id
+                AND pm.fecha <= pract.fecha
+                ORDER BY pm.fecha DESC
+                LIMIT 1
+            )
+            ORDER BY e.fecha_egreso DESC
+            LIMIT 1
+        ) AS egreso,
         d_id.codigo AS diag,
         COALESCE(pract.cant, 0) AS cantidad,
         CASE
@@ -52,7 +114,7 @@ SELECT
     nombre,
     benef,
     parentesco,
-    admision,
+    ingreso_modalidad,
     sexo,
     modalidad_full,
     MAX(valid_date) AS ult_atencion,
@@ -61,7 +123,7 @@ SELECT
     diag,
     SUM(cantidad) AS cantidad
 FROM ValidRecords
-GROUP BY nombre, benef, parentesco, admision, sexo, modalidad_full, egreso, diag
+GROUP BY nombre, benef, parentesco, ingreso_modalidad, sexo, modalidad_full, egreso, diag
 ORDER BY ult_atencion DESC;
 
 ";

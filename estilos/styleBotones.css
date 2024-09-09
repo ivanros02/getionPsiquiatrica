@@ -3,6 +3,13 @@
     /* Define tu color aquí */
 }
 
+body,
+html {
+  background-color: #bfe6f8 !important;
+  font-family: 'Cabin Condensed', sans-serif !important;
+}
+
+
 .title-container {
     display: flex;
     align-items: center;

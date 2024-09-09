@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-08-2024 a las 02:16:42
+-- Tiempo de generación: 06-09-2024 a las 16:18:32
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -45,6 +45,13 @@ CREATE TABLE `parametro_sistema` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Volcado de datos para la tabla `parametro_sistema`
+--
+
+INSERT INTO `parametro_sistema` (`id`, `inst`, `razon_social`, `c_interno`, `c_pami`, `cuit`, `u_efect`, `clave_efect`, `mail`, `boca_ate`, `dir`, `localidad`, `cod_sucursal`, `tel`) VALUES
+(2, 'Clinica Comunidad Tandil', 'test', 1, 1, 231321, 'test', 'test', 'test@test.com', 12, 'San Martin 114', 'Tandil', 24, 249486902);
+
+--
 -- Índices para tablas volcadas
 --
 
@@ -62,7 +69,7 @@ ALTER TABLE `parametro_sistema`
 -- AUTO_INCREMENT de la tabla `parametro_sistema`
 --
 ALTER TABLE `parametro_sistema`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

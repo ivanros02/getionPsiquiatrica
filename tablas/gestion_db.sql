@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-08-2024 a las 15:49:18
+-- Tiempo de generación: 09-09-2024 a las 17:00:31
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,7 +43,8 @@ INSERT INTO `actividades` (`descripcion`, `id`, `codigo`, `modalidad`) VALUES
 ('PRUEBA', 8, '506001', 3),
 ('PSICOTERAPIA INDIVIDUAL (SESIONES DE 30 A 60 MINUTOS)', 9, '520101', 1),
 ('PRESCRIPCION FARMACOLOGICA Y SEGUIMIENTO DE CONTROL DE TRATAMIENTO', 10, '521001', 1),
-('HOLA', 11, '501001', 4);
+('HOLA', 11, '501001', 4),
+('PRUEBA AGUDA', 12, '1593', 2);
 
 -- --------------------------------------------------------
 
@@ -91,7 +92,7 @@ INSERT INTO `comprobantes` (`id`, `codigo`, `descripcion`) VALUES
 
 CREATE TABLE `cuentas` (
   `id` int(11) NOT NULL,
-  `desc_rubro` varchar(255) NOT NULL,
+  `desc_rubro` int(255) NOT NULL,
   `c_cuenta` int(255) NOT NULL,
   `desc_cuenta` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -101,7 +102,8 @@ CREATE TABLE `cuentas` (
 --
 
 INSERT INTO `cuentas` (`id`, `desc_rubro`, `c_cuenta`, `desc_cuenta`) VALUES
-(1, 'SERVICIOS', 12, 'EDESUR');
+(5, 2, 0, 'EDESUR'),
+(6, 1, 0, 'AGUA');
 
 -- --------------------------------------------------------
 
@@ -185,7 +187,7 @@ CREATE TABLE `egresos` (
   `fecha_egreso` date NOT NULL,
   `diag` int(255) NOT NULL,
   `modalidad` int(255) NOT NULL,
-  `motivo` int(255) NOT NULL,
+  `motivo` int(255) DEFAULT NULL,
   `id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -194,7 +196,7 @@ CREATE TABLE `egresos` (
 --
 
 INSERT INTO `egresos` (`id_paciente`, `fecha_egreso`, `diag`, `modalidad`, `motivo`, `id`) VALUES
-(16, '2024-08-06', 1, 1, 1, 1);
+(108, '2024-09-07', 1, 2, 1, 30);
 
 -- --------------------------------------------------------
 
@@ -419,7 +421,8 @@ INSERT INTO `medicacion_paci` (`id`, `id_paciente`, `medicamento`, `fecha`, `hor
 (13, 16, 2, '2024-08-21', '14:22:22', 1),
 (14, 16, 3, '2024-08-13', '15:41:03', 1),
 (15, 16, 2, '2024-08-21', '16:40:56', 1),
-(16, 16, 2, '2024-08-26', '23:31:29', 1);
+(16, 16, 2, '2024-08-26', '23:31:29', 1),
+(18, 108, 2, '2024-09-09', '12:00:00', 1);
 
 -- --------------------------------------------------------
 
@@ -442,6 +445,27 @@ INSERT INTO `modalidad` (`id`, `codigo`, `descripcion`) VALUES
 (2, 'IA', 'Internacion Aguda'),
 (3, 'IC', 'Internacion Cronica'),
 (4, 'T', 'Test');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `movimientos`
+--
+
+CREATE TABLE `movimientos` (
+  `id` int(11) NOT NULL,
+  `fecha` date NOT NULL,
+  `detalle` int(11) NOT NULL,
+  `ingreso` decimal(10,0) DEFAULT NULL,
+  `egreso` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `movimientos`
+--
+
+INSERT INTO `movimientos` (`id`, `fecha`, `detalle`, `ingreso`, `egreso`) VALUES
+(11, '2024-09-04', 6, 0, 7000);
 
 -- --------------------------------------------------------
 
@@ -507,38 +531,20 @@ CREATE TABLE `paciente` (
   `parentesco` varchar(2) NOT NULL,
   `hijos` int(255) NOT NULL,
   `ocupacion` varchar(255) NOT NULL,
-  `tipo_afiliado` int(255) NOT NULL,
-  `modalidad` int(11) NOT NULL
+  `tipo_afiliado` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `paciente`
 --
 
-INSERT INTO `paciente` (`id`, `nombre`, `obra_social`, `fecha_nac`, `sexo`, `domicilio`, `localidad`, `partido`, `c_postal`, `telefono`, `tipo_doc`, `nro_doc`, `admision`, `id_prof`, `benef`, `parentesco`, `hijos`, `ocupacion`, `tipo_afiliado`, `modalidad`) VALUES
-(16, 'AVOLIO ANDRES', 4, '2002-07-16', 'Masculino', '143', 'Villa Espana', 'Buenos Aires', 1884, '1139114579', 'DNI', 123, '2024-07-16', 12, 10030397406, '00', 2, 'ARTES DIGITALES', 1, 1),
-(19, 'RIOS HECTOR ARGENTINO', 4, '2006-01-29', 'Masculino', '', '', '', 0, '', 'DNI', 324156, '2024-07-30', 12, 150576104304, '00', 0, '', 1, 2),
-(20, 'VILLEGAS ROSA', 4, '2002-11-11', 'Masculino', '', '', '', 0, '', 'DNI', 443322, '2024-07-31', 12, 140047151707, '00', 0, '', 1, 2),
-(21, 'BECERRA NOEMI ESTER', 4, '1990-12-11', 'Femenino', '', '', '', 0, '', 'DNI', 500129, '2024-07-31', 12, 150664502103, '00', 0, '', 1, 4),
-(25, 'HALEK LILIANA MONICA', 4, '2001-01-01', 'Femenino', '', '', '', 0, '', 'DNI', 23123123, '2024-07-31', 12, 140105007605, '00', 0, '', 1, 1),
-(26, 'CARDENAS SILVIA DEL CARMEN', 4, '2012-12-31', 'Femenino', '', '', '', 0, '', 'DNI', 2313123, '2024-07-31', 12, 150972236700, '00', 0, '', 1, 1),
-(27, 'DAURIA RODOLFO ESTEBAN ROSARIO', 4, '1999-12-31', 'Masculino', '', '', '', 0, '', 'DNI', 21331223, '2024-07-31', 12, 150672504606, '00', 0, '', 1, 3),
-(28, 'GARCIA OSCAR FELIX', 4, '2001-05-14', 'Masculino', '', '', '', 0, '', 'DNI', 123123123, '2024-07-31', 12, 140133287200, '00', 0, '', 1, 1),
-(29, 'HERRERA NORMA ISABEL', 4, '2024-07-31', 'Femenino', '', '', '', 0, '', 'DNI', 2147483647, '2024-07-31', 12, 150386676201, '99', 0, '', 1, 1),
-(30, 'MONTES JUAN CARLOS', 4, '2024-07-31', 'Masculino', '', '', '', 0, '', 'DNI', 1243132132, '2024-07-31', 12, 140216050804, '00', 0, '', 1, 3),
-(33, 'ALVAREZ OLGA RITA', 4, '2024-07-31', 'Femenino', '', '', '', 0, '1161536595', 'DNI', 231, '2024-07-31', 12, 150348949804, '00', 1, '', 1, 1),
-(38, 'ORAZIETTI ELENA ESTER', 4, '2024-07-31', 'Masculino', '', '', '', 0, '', 'DNI', 2133223, '2024-07-31', 12, 150348298600, '00', 0, '', 1, 1),
-(39, 'OLIVERO ENZO ERICK', 4, '2024-07-31', 'Femenino', '', '', '', 0, '', 'DNI', 23123132, '2024-07-31', 12, 140117287303, '02', 0, '', 1, 2),
-(44, 'MOYANO MIRTA GRACIELA', 4, '2024-07-31', 'Masculino', '', '', '', 0, '', 'DNI', 312123132, '2024-07-31', 12, 150541815200, '00', 0, '', 1, 2),
-(68, 'GUTIERREZ PABLO LUIS', 4, '2024-08-01', 'Femenino', '', '', '', 0, '', 'DNI', 123132123, '2024-08-01', 12, 140087509305, '00', 0, '', 1, 2),
-(69, 'ASENJO DORA LUCILA', 4, '2024-08-01', 'Femenino', '', '', '', 0, '1131463499', 'DNI', 123123123, '2024-08-01', 12, 155997628508, '00', 1, '', 1, 3),
-(70, 'MARIN VELASQUEZ', 4, '2024-08-01', 'Femenino', '', '', '', 0, '', 'DNI', 213132123, '2024-08-01', 15, 150672020306, '00', 0, '', 1, 3),
-(71, 'BERTOLO SUSANA GRACIELA', 4, '2024-08-01', 'Masculino', '', '', '', 0, '', 'DNI', 123123123, '2024-08-01', 12, 150544344405, '00', 0, '', 1, 3),
-(72, 'GIMENEZ JORGE LUIS', 5, '2024-08-01', 'Femenino', '', '', '', 0, '', 'DNI', 132123123, '2024-08-01', 12, 140165363908, '00', 0, '', 1, 3),
-(73, 'NICOLAO SUSANA CLOTILDE', 4, '2024-08-01', 'Femenino', '', '', '', 0, '', 'DNI', 213123, '2024-08-01', 12, 150818501003, '00', 0, '', 1, 1),
-(74, 'MALDONADO BUSTAMANTE MISAEL SEGUNDO', 4, '2024-08-01', 'Masculino', '', '', '', 0, '', 'DNI', 32121332, '2024-08-01', 12, 150374174502, '00', 0, '', 1, 2),
-(75, 'MESTICA MARTHA DEL CARMEN', 4, '2024-08-01', 'Masculino', '', '', '', 0, '', 'DNI', 32121332, '2024-08-01', 12, 150584652701, '00', 0, '', 1, 2),
-(76, 'MICHELIS ALFREDO GUILLERMO', 4, '2024-08-01', 'Masculino', '', '746280', '74', 0, '', 'DNI', 132123213, '2024-08-01', 12, 150533557701, '00', 0, '', 1, 2);
+INSERT INTO `paciente` (`id`, `nombre`, `obra_social`, `fecha_nac`, `sexo`, `domicilio`, `localidad`, `partido`, `c_postal`, `telefono`, `tipo_doc`, `nro_doc`, `admision`, `id_prof`, `benef`, `parentesco`, `hijos`, `ocupacion`, `tipo_afiliado`) VALUES
+(108, 'ARROYO ABEL JOAQUIN', 4, '2000-09-05', 'Masculino', '', '', '', 0, '', 'DNI', 44379388, '2024-09-05', 12, 465030023507, '00', 0, '', 1),
+(109, 'SALINA OLIMPIA CONCE', 4, '2001-09-05', 'Femenino', '', '', '', 0, '', 'DNI', 44379788, '2024-09-05', 12, 150131098303, '00', 0, '', 1),
+(110, 'BALDOVINO EMILIA AGUSTINA', 4, '2004-09-05', 'Femenino', '', '', '', 0, '', 'DNI', 44379788, '2024-09-05', 12, 150145549803, '00', 0, '', 1),
+(112, 'LOPEZ MIRIAM LILIANA', 4, '1950-09-05', 'Femenino', '', '', '', 0, '', 'DNI', 44379888, '2024-09-05', 12, 150968752408, '00', 0, '', 1),
+(113, 'Wally Wally', 4, '1970-09-05', 'Masculino', '', '', '', 0, '1161536595', 'DNI', 21879630, '2024-09-05', 19, 111111111111, '00', 0, '', 1),
+(114, 'Moni Cejas', 4, '1975-09-06', 'Femenino', '', '', '', 0, '1131463499', 'DNI', 22355582, '2024-09-06', 12, 155555555555, '00', 0, '', 1);
 
 -- --------------------------------------------------------
 
@@ -564,7 +570,8 @@ INSERT INTO `paci_diag` (`id_paciente`, `fecha`, `codigo`, `id`) VALUES
 (16, '2024-08-21', 1, 12),
 (16, '2024-08-26', 2, 13),
 (16, '2024-08-21', 1, 14),
-(16, '2024-08-26', 1, 15);
+(16, '2024-08-26', 1, 15),
+(108, '2024-09-05', 1, 17);
 
 -- --------------------------------------------------------
 
@@ -607,7 +614,12 @@ CREATE TABLE `paci_modalidad` (
 --
 
 INSERT INTO `paci_modalidad` (`id_paciente`, `modalidad`, `fecha`, `id`) VALUES
-(16, 2, '2024-07-28', 1);
+(108, 3, '2024-09-05', 58),
+(109, 2, '2024-09-05', 59),
+(110, 1, '2024-09-05', 60),
+(112, 1, '2024-09-05', 62),
+(113, 2, '2024-09-05', 64),
+(114, 2, '2024-09-06', 65);
 
 -- --------------------------------------------------------
 
@@ -701,10 +713,15 @@ CREATE TABLE `practicas` (
 --
 
 INSERT INTO `practicas` (`id_paciente`, `fecha`, `hora`, `profesional`, `actividad`, `cant`, `id`) VALUES
-(16, '2024-08-07', '17:51:00', 12, 7, 1, 59),
-(16, '2024-08-14', '17:51:00', 12, 7, 1, 60),
-(16, '2024-08-21', '17:51:00', 12, 7, 1, 61),
-(16, '2024-08-28', '17:51:00', 12, 7, 1, 62);
+(108, '2024-09-06', '15:00:00', 12, 12, 1, 109),
+(108, '2024-09-06', '15:30:00', 12, 8, 1, 110),
+(109, '2024-09-10', '15:34:00', 12, 8, 1, 111),
+(109, '2024-09-07', '15:34:00', 12, 8, 1, 112),
+(110, '2024-09-18', '15:43:00', 12, 8, 1, 113),
+(110, '2024-09-19', '15:43:00', 12, 8, 1, 114),
+(110, '2024-09-20', '15:43:00', 12, 8, 1, 115),
+(108, '2024-09-27', '15:56:00', 12, 7, 1, 116),
+(108, '2024-09-28', '15:56:00', 12, 7, 1, 117);
 
 -- --------------------------------------------------------
 
@@ -771,7 +788,6 @@ INSERT INTO `responsable` (`id_paciente`, `nombreYapellido`, `tel`, `tipo_famili
 
 CREATE TABLE `rubros` (
   `id` int(11) NOT NULL,
-  `codigo` varchar(255) NOT NULL,
   `descripcion` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -779,8 +795,9 @@ CREATE TABLE `rubros` (
 -- Volcado de datos para la tabla `rubros`
 --
 
-INSERT INTO `rubros` (`id`, `codigo`, `descripcion`) VALUES
-(1, '2', 'Gastos generales');
+INSERT INTO `rubros` (`id`, `descripcion`) VALUES
+(1, 'GASTOS GENERALES'),
+(2, 'SERVICIOS');
 
 -- --------------------------------------------------------
 
@@ -977,12 +994,10 @@ CREATE TABLE `turnos` (
 --
 
 INSERT INTO `turnos` (`id`, `fecha`, `hora`, `paciente`, `id_prof`, `motivo`, `llego`, `atendido`, `observaciones`) VALUES
-(79, '2024-08-03', '11:30:00', 16, 12, 9, 'SI', 'NO', ''),
-(80, '2024-08-03', '12:00:00', 21, 12, 10, 'SI', 'SI', ''),
-(81, '2024-08-30', '12:24:00', 21, 12, 10, 'SI', 'SI', ''),
-(82, '2024-08-05', '06:00:00', 33, 19, 7, 'SI', 'SI', ''),
-(83, '2024-08-05', '06:20:00', 71, 19, 9, 'SI', 'SI', ''),
-(85, '2024-08-05', '06:40:00', 16, 19, 10, 'SI', 'SI', '');
+(88, '2024-09-20', '13:00:00', 108, 12, 9, 'SI', 'SI', ''),
+(89, '2024-09-27', '13:00:00', 110, 12, 8, 'SI', 'SI', ''),
+(90, '2024-09-20', '07:00:00', 113, 19, 9, 'NO', 'NO', ''),
+(91, '2024-09-20', '07:20:00', 114, 19, 9, 'NO', 'NO', '');
 
 -- --------------------------------------------------------
 
@@ -1116,7 +1131,8 @@ ALTER TABLE `comprobantes`
 -- Indices de la tabla `cuentas`
 --
 ALTER TABLE `cuentas`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_cuentas_desc_rubro` (`desc_rubro`);
 
 --
 -- Indices de la tabla `curaduria`
@@ -1221,6 +1237,13 @@ ALTER TABLE `modalidad`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `movimientos`
+--
+ALTER TABLE `movimientos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_movimientos_detalle` (`detalle`);
+
+--
 -- Indices de la tabla `obra_social`
 --
 ALTER TABLE `obra_social`
@@ -1239,8 +1262,7 @@ ALTER TABLE `paciente`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_obra_social_paciente` (`obra_social`),
   ADD KEY `fk_id_prof_paciente` (`id_prof`),
-  ADD KEY `fk_tipo_afiliado_paciente` (`tipo_afiliado`),
-  ADD KEY `fk_modalidad_paciente` (`modalidad`);
+  ADD KEY `fk_tipo_afiliado_paciente` (`tipo_afiliado`);
 
 --
 -- Indices de la tabla `paci_diag`
@@ -1420,7 +1442,7 @@ ALTER TABLE `visita`
 -- AUTO_INCREMENT de la tabla `actividades`
 --
 ALTER TABLE `actividades`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
@@ -1438,7 +1460,7 @@ ALTER TABLE `comprobantes`
 -- AUTO_INCREMENT de la tabla `cuentas`
 --
 ALTER TABLE `cuentas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `curaduria`
@@ -1462,7 +1484,7 @@ ALTER TABLE `disponibilidad`
 -- AUTO_INCREMENT de la tabla `egresos`
 --
 ALTER TABLE `egresos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidad`
@@ -1516,13 +1538,19 @@ ALTER TABLE `medicacion`
 -- AUTO_INCREMENT de la tabla `medicacion_paci`
 --
 ALTER TABLE `medicacion_paci`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `modalidad`
 --
 ALTER TABLE `modalidad`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `movimientos`
+--
+ALTER TABLE `movimientos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `obra_social`
@@ -1540,13 +1568,13 @@ ALTER TABLE `origen_ingreso`
 -- AUTO_INCREMENT de la tabla `paciente`
 --
 ALTER TABLE `paciente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT de la tabla `paci_diag`
 --
 ALTER TABLE `paci_diag`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `paci_habitacion`
@@ -1558,7 +1586,7 @@ ALTER TABLE `paci_habitacion`
 -- AUTO_INCREMENT de la tabla `paci_modalidad`
 --
 ALTER TABLE `paci_modalidad`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT de la tabla `paci_op`
@@ -1582,7 +1610,7 @@ ALTER TABLE `periodo`
 -- AUTO_INCREMENT de la tabla `practicas`
 --
 ALTER TABLE `practicas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
 
 --
 -- AUTO_INCREMENT de la tabla `profesional`
@@ -1600,7 +1628,7 @@ ALTER TABLE `responsable`
 -- AUTO_INCREMENT de la tabla `rubros`
 --
 ALTER TABLE `rubros`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `salidas`
@@ -1654,7 +1682,7 @@ ALTER TABLE `traslados`
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- AUTO_INCREMENT de la tabla `t_juicio`
@@ -1701,6 +1729,12 @@ ALTER TABLE `visita`
 --
 ALTER TABLE `actividades`
   ADD CONSTRAINT `fk_actividad_modalidad` FOREIGN KEY (`modalidad`) REFERENCES `modalidad` (`id`);
+
+--
+-- Filtros para la tabla `cuentas`
+--
+ALTER TABLE `cuentas`
+  ADD CONSTRAINT `fk_cuentas_desc_rubro` FOREIGN KEY (`desc_rubro`) REFERENCES `rubros` (`id`);
 
 --
 -- Filtros para la tabla `disponibilidad`
@@ -1756,11 +1790,16 @@ ALTER TABLE `medicacion_paci`
   ADD CONSTRAINT `fk_medicamento_paciente` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id`);
 
 --
+-- Filtros para la tabla `movimientos`
+--
+ALTER TABLE `movimientos`
+  ADD CONSTRAINT `fk_movimientos_detalle` FOREIGN KEY (`detalle`) REFERENCES `cuentas` (`id`);
+
+--
 -- Filtros para la tabla `paciente`
 --
 ALTER TABLE `paciente`
   ADD CONSTRAINT `fk_id_prof_paciente` FOREIGN KEY (`id_prof`) REFERENCES `profesional` (`id_prof`),
-  ADD CONSTRAINT `fk_modalidad_paciente` FOREIGN KEY (`modalidad`) REFERENCES `modalidad` (`id`),
   ADD CONSTRAINT `fk_obra_social_paciente` FOREIGN KEY (`obra_social`) REFERENCES `obra_social` (`id`),
   ADD CONSTRAINT `fk_tipo_afiliado_paciente` FOREIGN KEY (`tipo_afiliado`) REFERENCES `tipo_afiliado` (`id`);
 

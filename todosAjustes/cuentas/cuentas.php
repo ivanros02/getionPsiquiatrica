@@ -77,7 +77,7 @@ if (isset($_GET['id'])) {
 }
 
 // Obtener todas las especialidades
-$sql = "SELECT * FROM cuentas";
+$sql = "SELECT c.* , r.descripcion FROM cuentas c LEFT JOIN rubros r ON r.id = c.desc_rubro";
 $result = $conn->query($sql);
 ?>
 
@@ -91,7 +91,7 @@ $result = $conn->query($sql);
     <!--icono pestana-->
     <link rel="icon" href="../../img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="../../img/logo.png" type="image/x-icon">
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -130,20 +130,19 @@ $result = $conn->query($sql);
         </div>
         <table class="table table-striped table-bordered">
             <thead class="table-custom">
-                <tr>   
+                <tr>
                     <th>ID</th>
                     <th>Descripcion de rubros</th>
-                    <th>Codigo de Cuenta</th>
                     <th>Descripcion de cuentas</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr>  
-                            <td><?= $row["id"] ?></td>  
-                            <td><?= $row["desc_rubro"] ?></td>
-                            <td><?= $row["c_cuenta"] ?></td>
+                        <tr>
+                            <td><?= $row["id"] ?></td>
+                            <td><?= $row["descripcion"] ?></td>
                             <td><?= $row["desc_cuenta"] ?></td>
                             <td>
                                 <button class="btn btn-custom-editar" onclick='editarCuenta(<?= json_encode($row) ?>)'><i
@@ -176,21 +175,18 @@ $result = $conn->query($sql);
                 </div>
                 <div class="modal-body">
                     <form id="formCuenta" action="./agregarCuenta.php" method="POST">
-                    <input type="hidden" id="id" name="id">
+                        <input type="hidden" id="id" name="id">
+
                         <div class="form-group">
-                            <label for="desc_rubro">Descripcion de rubros</label>
-                            <input type="text" class="form-control" id="desc_rubro" name="desc_rubro"
-                                required>
+                            <label for="desc_rubro">Descripcion de rubros:*</label>
+                            <select class="form-control" id="desc_rubro" name="desc_rubro" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
                         </div>
-                        <div class="form-group">
-                            <label for="c_cuenta">Codigo de Cuenta</label>
-                            <input type="text" class="form-control" id="c_cuenta" name="c_cuenta"
-                                required>
-                        </div>
+
                         <div class="form-group">
                             <label for="desc_cuenta">Descripcion de cuentas</label>
-                            <input type="text" class="form-control" id="desc_cuenta" name="desc_cuenta"
-                                required>
+                            <input type="text" class="form-control" id="desc_cuenta" name="desc_cuenta" required>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -231,13 +227,12 @@ $result = $conn->query($sql);
             }
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             function editarCuenta(cuenta) {
                 document.getElementById('formCuenta').action = './editarCuenta.php'; // Asegúrate de que el formulario apunta a la URL correcta
 
                 document.getElementById('id').value = cuenta.id;
                 document.getElementById('desc_rubro').value = cuenta.desc_rubro;
-                document.getElementById('c_cuenta').value = cuenta.c_cuenta;
                 document.getElementById('desc_cuenta').value = cuenta.desc_cuenta;
 
                 // Mostrar el modal de edición
@@ -250,7 +245,6 @@ $result = $conn->query($sql);
                 document.getElementById('formCuenta').action = './agregarCuenta.php';
                 document.getElementById('id').value = '';
                 document.getElementById('desc_rubro').value = '';
-                document.getElementById('c_cuenta').value = '';
                 document.getElementById('desc_cuenta').value = '';
             }
 
@@ -258,9 +252,23 @@ $result = $conn->query($sql);
             window.editarCuenta = editarCuenta;
 
             // Limpiar el formulario al abrir el modal para agregar profesional
-            var btnAgregarCuentaModal= document.querySelector('button[data-bs-target="#agregarCuentaModal"]');
+            var btnAgregarCuentaModal = document.querySelector('button[data-bs-target="#agregarCuentaModal"]');
             btnAgregarCuentaModal.addEventListener('click', limpiarFormulario);
 
+        });
+
+        $.ajax({
+            url: './gets/rubros.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                data.forEach(function (item) {
+                    $('#desc_rubro').append(new Option(item.descripcion, item.id));
+                });
+            },
+            error: function (error) {
+                console.error("Error fetching data: ", error);
+            }
         });
     </script>
 

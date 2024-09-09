@@ -1,5 +1,7 @@
 <?php
 // Inicia la sesión
+require_once "../conexion.php";
+
 session_start();
 
 // Verifica si el usuario ha iniciado sesión
@@ -17,6 +19,24 @@ if (isset($_GET['cerrar_sesion'])) {
   header("Location: ../index.php");
   exit;
 }
+
+// Obtener todos los pacientes
+$sql = "SELECT p.*
+        FROM paciente p
+        ORDER BY p.nombre ASC";
+$result = $conn->query($sql);
+
+// Consultar el valor de 'inst'
+$sqlTitle = "SELECT inst FROM parametro_sistema LIMIT 1";
+$resultTitle = $conn->query($sqlTitle);
+
+// Obtener el valor
+$title = "Iniciar sesión"; // Valor por defecto
+if ($resultTitle && $resultTitle->num_rows > 0) {
+    $row = $resultTitle->fetch_assoc();
+    $title = $row['inst'];
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +45,7 @@ if (isset($_GET['cerrar_sesion'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estadisticas</title>
+  <title>Estadisticas|<?php echo htmlspecialchars($title); ?></title>
   <!--icono pestana-->
   <link rel="icon" href="../img/logo.png" type="image/x-icon">
   <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon">
@@ -228,7 +248,7 @@ if (isset($_GET['cerrar_sesion'])) {
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="ingplanModalLabel">Diagnostico</h5>
+          <h5 class="modal-title" id="ingplanModalLabel">Plan de medicacion</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">

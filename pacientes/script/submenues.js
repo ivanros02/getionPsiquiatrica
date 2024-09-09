@@ -150,7 +150,7 @@ $(document).ready(function () {
         });
     });
 
-    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    // Guardar el egreso al hacer clic en "Guardar" dentro del modal
     $('#btnGuardarEgreso').on('click', function () {
         var action = $(this).attr('data-action');
         var url = action === 'edit' ? './submenu/egreso/editar_egreso.php' : './submenu/egreso/agregar_egreso.php';
@@ -161,37 +161,43 @@ $(document).ready(function () {
             type: 'POST',
             data: formData,
             success: function (response) {
-                const idPaciente = $('#id').val();
-                cargarListaEgresos(idPaciente);
-                $('#agregarEgresoModal').modal('hide');
+                const result = JSON.parse(response); // Asumiendo que la respuesta es JSON
 
-                // Verificar si el paciente está egresado
-                $.ajax({
-                    url: './dato/verificar_egreso.php',
-                    type: 'GET',
-                    data: { id_paciente: idPaciente },
-                    success: function (response) {
-                        const data = JSON.parse(response);
-                        if (data.egresado) {
-                            $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
-                        } else {
-                            $('#bajaMensaje').html('');
+                // Mostrar mensaje de éxito o error según la respuesta del servidor
+                if (result.status === 'success') {
+                    alert(result.message); // Mostrar mensaje de éxito
+                    const idPaciente = $('#id').val();
+                    cargarListaEgresos(idPaciente);
+                    $('#agregarEgresoModal').modal('hide');
+
+                    // Verificar si el paciente está egresado
+                    $.ajax({
+                        url: './dato/verificar_egreso.php',
+                        type: 'GET',
+                        data: { id_paciente: idPaciente },
+                        success: function (response) {
+                            const data = JSON.parse(response);
+                            if (data.egresado) {
+                                $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                            } else {
+                                $('#bajaMensaje').html('');
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log('Error en verificar egreso:', textStatus, errorThrown);
                         }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log('Error en verificar egreso:', textStatus, errorThrown);
-                    }
-                });
-
+                    });
+                } else {
+                    alert(result.message); // Mostrar mensaje de error
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error en guardar egreso:', textStatus, errorThrown);
                 alert('Error al guardar el egreso');
             }
         });
-
-
     });
+
 
     // Eliminar práctica al hacer clic en "Eliminar"
     $(document).on('click', '#deleteEgreso', function () {
@@ -1747,6 +1753,23 @@ $(document).ready(function () {
                 const idPaciente = $('#id').val();
                 cargarListaModalidad(idPaciente);
                 $('#agregarModaliModal').modal('hide');
+
+                // Actualizar solo el campo de fecha de admisión
+                actualizarFechaAdmision(idPaciente);
+
+                $.ajax({
+                    url: './dato/get_modalidad_paci_id.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { id_paciente: $('#id').val() },
+                    success: function (data) {
+                        // Limpia las opciones actuales del select
+                        $('#modalidad_act').val(data[0]?.id || '').trigger('change');
+                    },
+                    error: function (xhr, status, error) {
+                    }
+                });
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error en guardar práctica:', textStatus, errorThrown);
@@ -1754,31 +1777,8 @@ $(document).ready(function () {
             }
         });
 
-        $.ajax({
-            url: './dato/get_modalidad_paci_id.php',
-            type: 'GET',
-            data: { id_paciente: $('#id').val() },
-            success: function (response) {
-                // Parsear la respuesta JSON
-                var modalidades = JSON.parse(response);
 
-                // Variable para almacenar todos los resultados concatenados
-                var modalidadesConcatenadas = '';
 
-                // Recorrer todas las modalidades y concatenarlas
-                modalidades.forEach(function (modalidad) {
-                    modalidadesConcatenadas += modalidad.modalidad_full + ' | ';
-                });
-
-                // Eliminar el último separador " | " si es necesario
-                modalidadesConcatenadas = modalidadesConcatenadas.slice(0, -3);
-
-                document.getElementById('modalidad_act').value = modalidadesConcatenadas;
-            },
-            error: function (xhr, status, error) {
-                console.error("Error en la solicitud AJAX: " + error);
-            }
-        });
 
         $.ajax({
             url: './dato/verificar_egreso.php',
@@ -1791,6 +1791,7 @@ $(document).ready(function () {
                 } else {
                     $('#bajaMensaje').html('');
                 }
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error en verificar egreso:', textStatus, errorThrown);
@@ -1814,6 +1815,20 @@ $(document).ready(function () {
                     // Recargar la lista de prácticas después de eliminar
                     const idPaciente = $('#id').val();
                     cargarListaModalidad(idPaciente);
+
+                    $.ajax({
+                        url: './dato/get_modalidad_paci_id.php',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { id_paciente: $('#id').val() },
+                        success: function (data) {
+                            // Limpia las opciones actuales del select
+                            $('#modalidad_act').val(data[0]?.id || '').trigger('change');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error fetching data: ", error);
+                        }
+                    });
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log('Error al eliminar la práctica:', textStatus, errorThrown);
@@ -1823,6 +1838,24 @@ $(document).ready(function () {
     });
 
 });
+
+// Función para actualizar el campo de fecha de admisión
+function actualizarFechaAdmision(idPaciente) {
+    $.ajax({
+        url: './dato/get_fecha_admision.php', // Archivo PHP para obtener la fecha de admisión
+        type: 'GET',
+        data: { id: idPaciente },
+        dataType: 'json',
+        success: function (data) {
+            if (data && data.fecha_admision) {
+                $('#admision').val(data.fecha_admision);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Error en recargar fecha de admisión:', textStatus, errorThrown);
+        }
+    });
+}
 
 //FIN MODALIDAD
 
@@ -1967,7 +2000,7 @@ $(document).ready(function () {
         $('#pracIdPaciente').val(id);
         $('#pracNombreCarga').val(nombre);
 
-        $('#pracFechas').datepicker('clearDates'); 
+        $('#pracFechas').datepicker('clearDates');
 
         // Establecer data-action a "add"
         $('#btnGuardarPractica').attr('data-action', 'add');
@@ -1979,29 +2012,37 @@ $(document).ready(function () {
     // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
     $(document).on('click', '#editPrac', function () {
         var pracId = $(this).data('id');
-
+    
         $.ajax({
             url: './dato/get_practica_con_id.php',
             type: 'GET',
             data: { id: pracId },
             success: function (response) {
                 var practica = JSON.parse(response);
-
+    
+                // Asumir que la fecha está en formato YYYY-MM-DD
+                var fechaStr = practica.fecha; // Ejemplo: '2024-09-06'
+                
+                // Convertir la fecha en formato YYYY-MM-DD a un objeto Date
+                var fecha = new Date(fechaStr + 'T00:00:00'); // Añadir una hora para crear un objeto Date válido
+    
+                // Establecer la fecha en el datepicker
+                $('#pracFechas').datepicker('setDates', [fecha]);
+    
                 // Llenar los campos del modal de edición con los datos de la práctica
                 $('#pracId').val(practica.id);
                 $('#pracIdPaciente').val(practica.id_paciente);
                 $('#pracNombreCarga').val(practica.nombre_paciente);
-                $('#pracFechas').val(formatDate(practica.fecha)); // Usar solo la primera fecha
                 $('#pracHora').val(practica.hora);
                 $('#pracProfesional').val(practica.profesional);
-
+    
                 // Establecer el ID de la actividad seleccionada
                 $('#pracActividad').data('selected-id', practica.actividad);
                 $('#pracCantidad').val(practica.cant);
-
+    
                 // Establecer data-action a "edit"
                 $('#btnGuardarPractica').attr('data-action', 'edit');
-
+    
                 // Mostrar el modal de agregar práctica (se reutiliza para editar)
                 $('#agregarPracModal').modal('show');
             },
@@ -2010,6 +2051,7 @@ $(document).ready(function () {
             }
         });
     });
+    
 
 
     // Guardar la práctica al hacer clic en "Guardar" dentro del modal
@@ -2019,7 +2061,14 @@ $(document).ready(function () {
         });
 
         var formData = $('#formAgregarPrac').serializeArray();
-        formData.push({ name: 'fechas', value: JSON.stringify(fechas) }); // Convertir las fechas a JSON
+        // Primero, eliminamos cualquier entrada anterior de 'fechas'
+        formData = formData.filter(function (item) {
+            return item.name !== 'fechas';
+        });
+
+        // Luego, agregamos la nueva entrada de 'fechas'
+        formData.push({ name: 'fechas', value: JSON.stringify(fechas) });
+
 
         var action = $(this).attr('data-action');
         var url = action === 'edit' ? './submenu/practicas/editar_practica.php' : './submenu/practicas/agregar_practica.php';
@@ -2028,12 +2077,15 @@ $(document).ready(function () {
             url: url,
             type: 'POST',
             data: $.param(formData),
+            dataType: 'json', // Asegurarse de que la respuesta se interprete como JSON
             success: function (response) {
-
-                const idPaciente = $('#id').val();
-                cargarListaPracticas(idPaciente);
-                $('#agregarPracModal').modal('hide');
-
+                if (response.status === 'success') {
+                    const idPaciente = $('#id').val();
+                    cargarListaPracticas(idPaciente);
+                    $('#agregarPracModal').modal('hide');
+                } else {
+                    alert(response.message); // Mostrar el mensaje de error
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error en guardar práctica:', textStatus, errorThrown);
@@ -3127,7 +3179,7 @@ $(document).ready(function () {
             type: 'POST',
             data: formData,
             success: function (response) {
-                console.log('Medicamento:', response);
+                alert(response);
                 const idPaciente = $('#id').val();
                 cargarListaMedi(idPaciente);
                 $('#agregarMediModal').modal('hide');

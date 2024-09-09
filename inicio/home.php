@@ -229,6 +229,7 @@ if (isset($_GET['cerrar_sesion'])) {
 
       <!-- CUARTA CARD -->
       <div class="col d-flex justify-content-center">
+        <a href="../caja/caja.php">
         <div class="card h-100">
           <div class="first-content">
             <img src="../img/home/caja.png" class="img-fluid" alt="">
@@ -237,6 +238,7 @@ if (isset($_GET['cerrar_sesion'])) {
             <h3 class="mt-3">Caja</h3>
           </div>
         </div>
+        </a>
       </div>
       <!--CARD -->
 
@@ -273,7 +275,7 @@ if (isset($_GET['cerrar_sesion'])) {
 
 
   <!-- Chatbox -->
-  <div class="fixed-tooltip">Chatea con Wally!</div>
+  <div class="fixed-tooltip">Chatea con Zoe!</div>
   <div class="chat-button" id="chatButton"></div>
   <div class="chat-container" id="chatContainer">
     <div class="chat-header">

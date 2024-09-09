@@ -17,12 +17,35 @@ $sql = "SELECT
     CONCAT(p.nombre,' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    m.descripcion AS modalidad_full,
+    COALESCE(
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha <= t.fecha
+            ORDER BY pm.fecha DESC
+            LIMIT 1
+        ),
+        (
+            SELECT m.descripcion
+            FROM paci_modalidad pm
+            JOIN modalidad m ON m.id = pm.modalidad
+            WHERE pm.id_paciente = p.id
+            AND pm.fecha > (
+                SELECT COALESCE(MAX(e.fecha_egreso), '9999-12-31')
+                FROM egresos e
+                WHERE e.id_paciente = p.id
+            )
+            AND pm.fecha <= t.fecha
+            ORDER BY pm.fecha ASC
+            LIMIT 1
+        )
+    ) AS modalidad_full,
     CONCAT(act.codigo, ' - ', act.descripcion) AS turno_pract,
     prof.nombreYapellido AS prof,
     t.fecha AS fecha_turno
 FROM paciente p
-LEFT JOIN modalidad m ON m.id = p.modalidad
 LEFT JOIN turnos t ON t.paciente = p.id
 LEFT JOIN actividades act ON act.id = t.motivo
 LEFT JOIN profesional prof ON prof.id_prof = t.id_prof

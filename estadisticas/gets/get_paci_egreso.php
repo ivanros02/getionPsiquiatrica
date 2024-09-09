@@ -17,13 +17,11 @@ $sql = "SELECT DISTINCT
     CONCAT(p.nombre,' - ', o.siglas) AS nombre,
     p.benef,
     p.parentesco,
-    m.descripcion AS modalidad_full,
     e.fecha_egreso AS fecha_egreso,
     CONCAT(t.codigo,' - ',t.descripcion) AS motivo_egreso
 FROM paciente p
 LEFT JOIN egresos e ON e.id_paciente = p.id
 LEFT JOIN obra_social o   ON o.id = p.obra_social
-LEFT JOIN modalidad m ON m.id = p.modalidad
 LEFT JOIN tipo_egreso t ON t.id = e.motivo
 WHERE (e.fecha_egreso BETWEEN ? AND ?) AND p.obra_social = ?
 ";

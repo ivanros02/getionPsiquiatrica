@@ -2,21 +2,14 @@ const puppeteer = require('puppeteer');
 
 async function scrapePamiPage(valor_n_op, user, password) {
     const browser = await puppeteer.launch({
-        headless: true, args: [
+        headless: true,
+        executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', // Ruta al ejecutable de Edge
+        args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-password-manager-reauthentication',
-            '--disable-save-password-bubble',
-            '--disable-features=PasswordManagerOnComplete',
-            '--disable-features=AutofillServerCommunication',
-            '--disable-prompt-on-repost',
-            '--user-data-dir=./tmp'  // Usa un perfil temporal limpio
-        ],
-        defaultViewport: null,
+        ]
     });
     const page = await browser.newPage();
-    
-
 
     try {
         await page.goto('https://efectores.pami.org.ar/pami_efectores/login.php');
@@ -26,9 +19,11 @@ async function scrapePamiPage(valor_n_op, user, password) {
         await page.type('#password', password);
         await page.click('#ingresar');
         await page.waitForNavigation();
+       
+        
+
         await page.goto('https://efectores.pami.org.ar/pami_nc/OP/op_panel_listado.php');
         await page.waitForSelector('input[name="n_op"]');
-
 
         await page.evaluate((valor_n_op) => {
             const input = document.querySelector('input[name="n_op"]');
@@ -69,7 +64,6 @@ async function scrapePamiPage(valor_n_op, user, password) {
         await esperarSegundoAsync();
         await page.waitForSelector('table.estilo_tabla');
         await esperarSegundoAsync();
-        await page.screenshot({ path: 'before_click.png' });
         await page.waitForSelector('a[title="Detalle"]');
         await page.click('a[title="Detalle"]');
         await esperarSegundoAsync();

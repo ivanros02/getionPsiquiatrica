@@ -26,7 +26,7 @@ LEFT JOIN actividades act2 ON act2.id = t.motivo
 LEFT JOIN profesional prof ON prof.id_prof = t.id_prof
 LEFT JOIN obra_social o   ON o.id = p.obra_social
 WHERE (t.fecha BETWEEN ? AND ?) AND p.obra_social = ?
-GROUP BY t.motivo
+
 
 UNION
 
@@ -43,7 +43,7 @@ LEFT JOIN profesional prof ON prof.id_prof = pract.profesional
 LEFT JOIN actividades act ON act.id = pract.actividad
 LEFT JOIN obra_social o   ON o.id = p.obra_social
 WHERE (pract.fecha BETWEEN ? AND ?) AND p.obra_social = ? 
-GROUP BY pract.actividad ";
+";
 
 // Preparar la consulta
 $stmt = $conn->prepare($sql);

@@ -12,11 +12,20 @@ if ($conn->connect_error) {
 }
 
 // Preparar la consulta para obtener los datos de los turnos
-$sql = "SELECT paci.telefono AS tel,paci.nombre as nombre_paci,p.nombreYapellido AS nom_prof,t.fecha as fecha_turno
+$sql = "SELECT paci.telefono AS tel,
+               paci.nombre as nombre_paci,
+               p.nombreYapellido AS nom_prof,
+               t.fecha as fecha_turno,
+               t.hora AS hora_turno,
+               ps.dir AS direccion_inst,
+               ps.tel AS tel_inst,
+               ps.inst AS nombre_inst
         FROM turnos t
         LEFT JOIN paciente paci ON paci.id = t.paciente
         LEFT JOIN profesional p ON p.id_prof = t.id_prof
-        WHERE t.id_prof = ? AND t.fecha BETWEEN ? AND ?
+        LEFT JOIN parametro_sistema ps ON 1 = 1 -- Join sin condición para obtener datos de una sola fila
+        WHERE t.id_prof = ? 
+        AND t.fecha BETWEEN ? AND ?
         ";
 
 // Preparar la consulta

@@ -1560,14 +1560,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         ]);
                         acc[item.modalidad_full].totalQuantity += item.cantidad || 1;
                     }
-
+                    console.log(item)
                     return acc;
                     
                 }, {});
 
                 const formattedFechaDesde = formatDate(fechaDesde);
                 const formattedFechaHasta = formatDate(fechaHasta);
-
+                
                 const title = 'LISTADO DE PRESTACIONES REALIZADAS POR PACIENTE Y MODALIDAD';
                 const pageWidth = doc.internal.pageSize.getWidth();
 
@@ -1592,7 +1592,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const { data, totalQuantity } = groupedByModality[modality];
                     const modalityUpperCase = modality.toUpperCase(); // Convierte la variable a mayúsculas
                     const subtitle = `MODALIDAD: ${modalityUpperCase}`;
-
+                    
                     doc.text(subtitle, pageWidth / 2, startY, { align: 'center' });
 
                     startY += 10; // Move down for tables
@@ -1620,17 +1620,18 @@ document.addEventListener('DOMContentLoaded', function () {
                                     overflow: 'linebreak'
                                 },
                                 columnStyles: {
-                                    0: { cellWidth: 70 },
-                                    1: { cellWidth: 45 },
-                                    2: { cellWidth: 80 },
-                                    3: { cellWidth: 25 },
-                                    4: { cellWidth: 23 }
+                                    0: { cellWidth: 'wrap' }, // Adjust or use 'auto' to wrap text
+                                    1: { cellWidth: 'wrap' },
+                                    2: { cellWidth: 'wrap' },
+                                    3: { cellWidth: 'wrap' },
+                                    4: { cellWidth: 'wrap' }
                                 },
                                 didDrawPage: function (data) {
                                     tableStartY = data.cursor.y;
                                 },
                                 pageBreak: 'auto'
                             });
+                            
 
                             if (i + maxRowsPerPage < data.length) {
                                 doc.addPage(); // Add a new page if there is more data
@@ -1683,7 +1684,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const ult_atencion = item.ult_atencion ? formatDate(item.ult_atencion) : '';
                     return [
                         item.nombre,
-                        item.benef,
+                        `${item.benef}${item.parentesco}`,
                         admision,
                         item.diag,
                         egreso,
@@ -1785,6 +1786,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                         acc[sex]++;
                         return acc;
+                        
                     }, {});
     
                     const modalityUpperCase = modality.toUpperCase();
@@ -1802,13 +1804,13 @@ document.addEventListener('DOMContentLoaded', function () {
     
                         for (let i = 0; i < modalityData.length; i += maxRowsPerPage) {
                             const chunk = modalityData.slice(i, i + maxRowsPerPage);
-    
+                            console.log(chunk)
                             doc.autoTable({
                                 head: [headers],
                                 body: chunk.map(item => [
                                     item.nombre,
-                                    item.benef,
-                                    formatDate(item.admision),
+                                    `${item.benef}${item.parentesco}`,
+                                    formatDate(item.ingreso_modalidad),
                                     item.diag || ' ',
                                     item.egreso ? formatDate(item.egreso) : ' ',
                                     formatDate(item.ult_atencion)
@@ -1922,7 +1924,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     acc[item.modalidad_full].data.push([
                         item.nombre,
-                        item.benef,
+                        `${item.benef}${item.parentesco}`,
                         item.turno_pract,
                         formatDate(item.fecha_turno),
                         item.prof
@@ -2051,7 +2053,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     acc[item.modalidad_full].data.push([
                         item.nombre,
-                        item.benef,
+                        `${item.benef}${item.parentesco}`,
                         item.turno_pract,
                         formatDate(item.fecha_turno),
                         item.prof,
