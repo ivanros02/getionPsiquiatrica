@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $u_efect = $_POST['u_efect'];
     $clave_efect = $_POST['clave_efect'];
     $mail = $_POST['mail'];
-    $boca_ate = $_POST['boca_ate'];
+    $puerta = $_POST['puerta'];
     $dir = $_POST['dir'];
     $localidad = $_POST['localidad'];
     $cod_sucursal = $_POST['cod_sucursal'];
@@ -21,13 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Preparar la consulta SQL para insertar los datos
     $query = "INSERT INTO parametro_sistema 
-              (id, inst, razon_social, c_interno, c_pami, cuit, u_efect, clave_efect, mail, boca_ate, dir, localidad, cod_sucursal, tel) 
+              (id, inst, razon_social, c_interno, c_pami, cuit, u_efect, clave_efect, mail, puerta, dir, localidad, cod_sucursal, tel) 
               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Preparar la sentencia
     if ($stmt = $conn->prepare($query)) {
         // Bind parameters
-        $stmt->bind_param("issiiisssissis", $id, $inst, $razon_social, $c_interno, $c_pami, $cuit, $u_efect, $clave_efect, $mail, $boca_ate, $dir, $localidad, $cod_sucursal, $tel);
+        $stmt->bind_param("issssssssissis", $id, $inst, $razon_social, $c_interno, $c_pami, $cuit, $u_efect, $clave_efect, $mail, $puerta, $dir, $localidad, $cod_sucursal, $tel);
 
         // Ejecutar la sentencia
         if ($stmt->execute()) {

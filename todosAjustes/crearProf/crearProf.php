@@ -42,7 +42,7 @@ $sql_especialidades = "SELECT id_especialidad, desc_especialidad FROM especialid
 $result_especialidades = $conn->query($sql_especialidades);
 
 // Consulta SQL
-$sql = "SELECT p.id_prof, p.nombreYapellido, e.id_especialidad, e.desc_especialidad, p.domicilio, p.localidad, p.codigo_pos, p.matricula_p, p.matricula_n, p.telefono, p.email 
+$sql = "SELECT  p.*,e.id_especialidad, e.desc_especialidad
         FROM profesional p
         JOIN especialidad e ON p.id_especialidad = e.id_especialidad";
 $result = $conn->query($sql);
@@ -67,7 +67,7 @@ $result = $conn->query($sql);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -111,6 +111,8 @@ $result = $conn->query($sql);
                     <th>Matrícula Nacional</th>
                     <th>Teléfono</th>
                     <th>Email</th>
+                    <th>Tipo doc.</th>
+                    <th>Nro doc.</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -129,6 +131,8 @@ $result = $conn->query($sql);
                 <td>" . $row["matricula_n"] . "</td>
                 <td>" . $row["telefono"] . "</td>
                 <td>" . $row["email"] . "</td>
+                <td>" . $row["tipo_doc"] . "</td>
+                <td>" . $row["nro_doc"] . "</td>
                 <td>
                     <button type='button' class='btn btn-danger' onclick=\"if(confirm('¿Estás seguro de que deseas eliminar este profesional?')){ window.location.href='{$_SERVER['PHP_SELF']}?eliminar=" . $row['id_prof'] . "'; }\"><i class='fas fa-trash-alt'></i></button>
                     <button type='button' class='btn btn-custom-editar' onclick='editarProfesional(" . json_encode($row) . ")'><i class='fas fa-pencil-alt'></i></button>
@@ -213,6 +217,25 @@ $result = $conn->query($sql);
                                     <label for="telefono" class="form-label">Teléfono:</label>
                                     <input type="text" class="form-control" id="telefono" name="telefono">
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="tipo_doc">Tipo de Doc.:*</label>
+                                    <select class="form-control" id="tipo_doc" name="tipo_doc" required>
+                                        <option value="">Seleccione un tipo de documento</option>
+                                        <option value="DNI">DNI (Documento Nacional de Identidad)</option>
+                                        <option value="LC">LC (Libreta de Enrolamiento)</option>
+                                        <option value="LE">LE (Libreta Cívica)</option>
+                                        <option value="CI">CI (Cédula de Identidad)</option>
+                                        <option value="PAS">PAS (Pasaporte)</option>
+                                        <option value="OTRO">OTRO (Otro tipo de documento)</option>
+                                    </select>
+
+                                    <div class="mb-3">
+                                        <label for="nro_doc">Número de Documento:*</label>
+                                        <input type="number" class="form-control" id="nro_doc" name="nro_doc" required>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                 </div>
@@ -246,7 +269,7 @@ $result = $conn->query($sql);
             unset($_SESSION['editado']);
         }
         ?>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             function editarProfesional(profesional) {
                 document.getElementById('formProfesional').action = './editarProf.php';
                 document.getElementById('id_prof').value = profesional.id_prof;
@@ -258,20 +281,21 @@ $result = $conn->query($sql);
                 document.getElementById('matricula_n').value = profesional.matricula_n;
                 document.getElementById('telefono').value = profesional.telefono;
                 document.getElementById('email').value = profesional.email;
-
-             // Set the correct option in the select element
+                document.getElementById('tipo_doc').value = profesional.tipo_doc;
+                document.getElementById('nro_doc').value = profesional.nro_doc;
+                // Set the correct option in the select element
                 let selectEspecialidad = document.getElementById('id_especialidad');
                 for (let i = 0; i < selectEspecialidad.options.length; i++) {
                     if (selectEspecialidad.options[i].value == profesional.id_especialidad) {
                         selectEspecialidad.options[i].selected = true;
                         break;
-                          }
+                    }
                 }
 
                 var modal = new bootstrap.Modal(document.getElementById('agregarProfesional'));
                 modal.show();
             }
-         // Función para limpiar el formulario
+            // Función para limpiar el formulario
             function limpiarFormulario() {
                 document.getElementById('formProfesional').action = './agregarProf.php';
                 document.getElementById('id_prof').value = '';

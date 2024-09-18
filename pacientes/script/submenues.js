@@ -2012,37 +2012,37 @@ $(document).ready(function () {
     // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
     $(document).on('click', '#editPrac', function () {
         var pracId = $(this).data('id');
-    
+
         $.ajax({
             url: './dato/get_practica_con_id.php',
             type: 'GET',
             data: { id: pracId },
             success: function (response) {
                 var practica = JSON.parse(response);
-    
+
                 // Asumir que la fecha está en formato YYYY-MM-DD
                 var fechaStr = practica.fecha; // Ejemplo: '2024-09-06'
-                
+
                 // Convertir la fecha en formato YYYY-MM-DD a un objeto Date
                 var fecha = new Date(fechaStr + 'T00:00:00'); // Añadir una hora para crear un objeto Date válido
-    
+
                 // Establecer la fecha en el datepicker
                 $('#pracFechas').datepicker('setDates', [fecha]);
-    
+
                 // Llenar los campos del modal de edición con los datos de la práctica
                 $('#pracId').val(practica.id);
                 $('#pracIdPaciente').val(practica.id_paciente);
                 $('#pracNombreCarga').val(practica.nombre_paciente);
                 $('#pracHora').val(practica.hora);
                 $('#pracProfesional').val(practica.profesional);
-    
+
                 // Establecer el ID de la actividad seleccionada
                 $('#pracActividad').data('selected-id', practica.actividad);
                 $('#pracCantidad').val(practica.cant);
-    
+
                 // Establecer data-action a "edit"
                 $('#btnGuardarPractica').attr('data-action', 'edit');
-    
+
                 // Mostrar el modal de agregar práctica (se reutiliza para editar)
                 $('#agregarPracModal').modal('show');
             },
@@ -2051,7 +2051,7 @@ $(document).ready(function () {
             }
         });
     });
-    
+
 
 
     // Guardar la práctica al hacer clic en "Guardar" dentro del modal
@@ -3216,3 +3216,1265 @@ $(document).ready(function () {
     });
 
 });
+
+//NUTRICION
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadNutriModal() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/nutricion/nutricion.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('nutriModalBody').innerHTML = response;
+            $('#nutriModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#nutriModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#nutriModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaNutri(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_nutrciones.php',
+        type: 'GET',
+        data: { id_paciente: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var nutri = JSON.parse(response);
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>Patologias</th>';
+            html += '<th>Dieta</th>';
+            html += '<th>Actitud frente a la comida</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            nutri.forEach(function (nutri) {
+                html += '<tr>';
+                html += '<td>' + nutri.patologias + '</td>';
+                html += '<td>' + nutri.indicacion_dieta + '</td>';
+                html += '<td>' + nutri.actitud_comida + '</td>';
+                html += '<td>';
+                html += '<button id="editNutri" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + nutri.id + '">Editar</button> ';
+                html += '<button id="deleteNutri" class="btn btn-danger btn-sm btn-delete" data-id="' + nutri.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaNutri').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#nutriModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaNutri(idPaciente); // Cargar la lista de egresos al mostrar el modal
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#nutriModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevanutri').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+
+        $('#patologias').val('');
+        $('#indicacion_dieta').val('');
+        $('#actitud_comida').val('');
+        $('#peso').val('');
+        $('#talla').val('');
+        $('#imc').val('');
+        $('#requiere').val('');
+        $('#no_requiere').val('');
+        $('#especificar').val('');
+        $('#nutriIdPaciente').val(id);
+        $('#nutriNombreCarga').val(nombre);
+
+
+
+        // Establecer data-action a "add"
+        $('#btnGuardarNutricion').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregarNutriModal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editNutri', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_nutri_con_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var nutri = JSON.parse(response);
+
+                $('#patologias').val(nutri.patologias);
+                $('#indicacion_dieta').val(nutri.indicacion_dieta);
+                $('#actitud_comida').val(nutri.actitud_comida);
+                $('#peso').val(nutri.peso);
+                $('#talla').val(nutri.talla);
+                $('#imc').val(nutri.imc);
+                $('#requiere').val(nutri.requiere);
+                $('#no_requiere').val(nutri.no_requiere);
+                $('#especificar').val(nutri.especificar);
+                $('#nutriId').val(nutri.id)
+                $('#nutriIdPaciente').val(nutri.id_paciente);
+                $('#nutriNombreCarga').val(nutri.nombre_paciente);
+
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarNutricion').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregarNutriModal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    $('#btnGuardarNutricion').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/nutricion/editar_nutricion.php' : './submenu/nutricion/agregar_nutricion.php';
+        var formData = $('#agregarNutri').serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',  // Asegurarse de que el servidor responda con JSON
+            success: function (response) {
+                const idPaciente = $('#id').val();
+
+                if (response.status === "success") {
+                    cargarListaNutri(idPaciente);
+                    $('#agregarNutriModal').modal('hide');
+                    alert(response.message); // Mostrar mensaje de éxito
+                } else {
+                    alert('Error: ' + response.message); // Mostrar mensaje de error en caso de fallo
+                }
+
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en guardar práctica:', textStatus, errorThrown);
+                console.log('Respuesta del servidor:', jqXHR.responseText);
+                alert('Error al guardar la práctica: ' + textStatus + ' ' + errorThrown);
+            }
+
+        });
+    });
+
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteNutri', function () {
+        var pracId = $(this).data('id');;
+        if (confirm('¿Estás seguro de que deseas eliminar este traslado?')) {
+            $.ajax({
+                url: './submenu/nutricion/eliminar_nutricion.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+                    console.log('nutricion eliminada:', response);
+
+                    // Recargar la lista de prácticas después de eliminar
+                    const idPaciente = $('#id').val();
+                    cargarListaNutri(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+//FIN NUTRICION
+
+//ADMISICION FISICA
+
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadFisicaModal() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/fisica/fisica.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('fisicaModalBody').innerHTML = response;
+            $('#fisicaModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#fisicaModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#fisicaModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaFisica(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_ad_fisica.php',
+        type: 'GET',
+        data: { id_paciente: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var fisica = JSON.parse(response);
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>Medico</th>';
+            html += '<th>Obs. generales</th>';
+            html += '<th>Examen postural y marcha</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            fisica.forEach(function (fisica) {
+                html += '<tr>';
+                html += '<td>' + fisica.medico + '</td>';
+                html += '<td>' + fisica.objetivos_generales + '</td>';
+                html += '<td>' + fisica.examen_postural + '</td>';
+                html += '<td>';
+                html += '<button id="editFisica" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + fisica.id + '">Editar</button> ';
+                html += '<button id="deleteFisica" class="btn btn-danger btn-sm btn-delete" data-id="' + fisica.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaFisica').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#fisicaModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaFisica(idPaciente); // Cargar la lista de egresos al mostrar el modal
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#fisicaModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevaFisica').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+        $('#medico_tratante').val('');
+        $('#objetivos_generales').val('');
+        $('#examen_postural').val('');
+        $('#examen_muscular').val('');
+        $('#examen_flexibilidad').val('');
+        $('#fuerza_miembros_inferiores').val('');
+        $('#fuerza_miembros_superiores').val('');
+        $('#equilibrio_normal').val('');
+        $('#equilibrio_ojos_cerrados').val('');
+        $('#equilibrio_base_sustentacion').val('');
+        $('#movimiento_ms').val('');
+        $('#movimiento_ml').val('');
+        $('#movimiento_tronco').val('');
+        $('#caminando_giros').val('');
+        $('#observaciones_generales').val('');
+
+        $('#fisicaIdPaciente').val(id);
+        $('#fisicaNombreCarga').val(nombre);
+
+
+
+        // Establecer data-action a "add"
+        $('#btnGuardarFisica').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregarFisicaModal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editFisica', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_ad_fisica_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var fisica = JSON.parse(response);
+
+                $('#fisicaId').val(fisica.id);
+                $('#medico_tratante').val(fisica.medico_tratante);
+                $('#objetivos_generales').val(fisica.objetivos_generales);
+                $('#examen_postural').val(fisica.examen_postural);
+                $('#examen_muscular').val(fisica.examen_muscular);
+                $('#examen_flexibilidad').val(fisica.examen_flexibilidad);
+                $('#fuerza_miembros_inferiores').val(fisica.fuerza_miembros_inferiores);
+                $('#fuerza_miembros_superiores').val(fisica.fuerza_miembros_superiores);
+                $('#equilibrio_normal').val(fisica.equilibrio_normal);
+                $('#equilibrio_ojos_cerrados').val(fisica.equilibrio_ojos_cerrados);
+                $('#equilibrio_base_sustentacion').val(fisica.equilibrio_base_sustentacion);
+                $('#movimiento_ms').val(fisica.movimiento_ms);
+                $('#movimiento_ml').val(fisica.movimiento_ml);
+                $('#movimiento_tronco').val(fisica.movimiento_tronco);
+                $('#caminando_giros').val(fisica.caminando_giros);
+                $('#observaciones_generales').val(fisica.observaciones_generales);
+                $('#fisicaNombreCarga').val(fisica.nombre_paciente);
+                $('#fisicaIdPaciente').val(fisica.id_paciente);
+
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarFisica').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregarFisicaModal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    $('#btnGuardarFisica').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/fisica/editar_fisica.php' : './submenu/fisica/agregar_fisica.php';
+        var formData = $('#formAgregarFisica').serialize();
+        console.log('Datos enviados: ', formData);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                const idPaciente = $('#id').val();
+                cargarListaFisica(idPaciente);
+                $('#agregarFisicaModal').modal('hide');
+                console.log(response)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en guardar práctica:', textStatus, errorThrown);
+                alert('Error al guardar la práctica');
+            }
+        });
+
+
+    });
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteFisica', function () {
+        var pracId = $(this).data('id');;
+        if (confirm('¿Estás seguro de que deseas eliminar este traslado?')) {
+            $.ajax({
+                url: './submenu/fisica/eliminar_fisica.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+                    console.log('fisica eliminada:', response);
+
+                    // Recargar la lista de prácticas después de eliminar
+                    const idPaciente = $('#id').val();
+                    cargarListaFisica(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+
+
+//FIN ADMISION FISICA
+
+
+//ADMISION DIAG
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadAdmisionDiagModal() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/admiDiag/admiDiag.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('admiDiagModalBody').innerHTML = response;
+            $('#admiDiagModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#admiDiagModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#admiDiagModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaAdmiDiag(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_ad_diag.php',
+        type: 'GET',
+        data: { id_paciente: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var admiDiag = JSON.parse(response);
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>La Naturaleza de los problemas...</th>';
+            html += '<th>La situación de la entrevista</th>';
+            html += '<th>Conciencia de enfermedad</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            admiDiag.forEach(function (admiDiag) {
+                html += '<tr>';
+                html += '<td>' + admiDiag.impresion_naturaleza + '</td>';
+                html += '<td>' + admiDiag.impresion_situacion + '</td>';
+                html += '<td>' + admiDiag.impresion_conciencia + '</td>';
+                html += '<td>';
+                html += '<button id="editAdmiDiag" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + admiDiag.id + '">Editar</button> ';
+                html += '<button id="deleteAdmiDiag" class="btn btn-danger btn-sm btn-delete" data-id="' + admiDiag.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaAdmiDiag').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#admiDiagModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaAdmiDiag(idPaciente); // Cargar la lista de egresos al mostrar el modal
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#admiDiagModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevaAdmiDiag').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+        $('#impresion_naturaleza').val('');
+        $('#impresion_situacion').val('');
+        $('#impresion_conciencia').val('');
+        $('#impresion_expectativas').val('');
+        $('#diagnostico_clinico').val('');
+        $('#diagnostico_gravedad').val('');
+        $('#factores_desencadenantes').val('');
+        $('#personalidad_premorbida').val('');
+        $('#incapacidad_social').val('');
+        $('#indicaciones').val('');
+        $('#pronostico').val('');
+        $('#admiDiagIdPaciente').val(id);
+        $('#admiDiagNombreCarga').val(nombre);
+
+
+
+        // Establecer data-action a "add"
+        $('#btnGuardarAdmiDiag').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregarImpresionDiagnosticaModal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editAdmiDiag', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_ad_diag_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var admiDiag = JSON.parse(response);
+
+                $('#admiDiagId').val(admiDiag.id);
+
+                $('#impresion_naturaleza').val(admiDiag.impresion_naturaleza);
+                $('#impresion_situacion').val(admiDiag.impresion_situacion);
+                $('#impresion_conciencia').val(admiDiag.impresion_conciencia);
+                $('#impresion_expectativas').val(admiDiag.impresion_expectativas);
+                $('#diagnostico_clinico').val(admiDiag.diagnostico_clinico);
+                $('#diagnostico_gravedad').val(admiDiag.diagnostico_gravedad);
+                $('#factores_desencadenantes').val(admiDiag.factores_desencadenantes);
+                $('#personalidad_premorbida').val(admiDiag.personalidad_premorbida);
+                $('#incapacidad_social').val(admiDiag.incapacidad_social);
+                $('#indicaciones').val(admiDiag.indicaciones);
+                $('#pronostico').val(admiDiag.pronostico);
+
+                $('#admiDiagNombreCarga').val(admiDiag.nombre_paciente);
+                $('#admiDiagIdPaciente').val(admiDiag.id_paciente);
+
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarAdmiDiag').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregarImpresionDiagnosticaModal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    $('#btnGuardarAdmiDiag').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/admiDiag/editar_admi_diag.php' : './submenu/admiDiag/agregar_admi_diag.php';
+        var formData = $('#formImpresionDiagnostica').serialize();
+        console.log('Datos enviados: ', formData);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                const idPaciente = $('#id').val();
+                cargarListaAdmiDiag(idPaciente);
+                $('#agregarImpresionDiagnosticaModal').modal('hide');
+                console.log(response)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en guardar práctica:', textStatus, errorThrown);
+                alert('Error al guardar la práctica');
+            }
+        });
+
+
+    });
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteAdmiDiag', function () {
+        var pracId = $(this).data('id');;
+        if (confirm('¿Estás seguro de que deseas eliminar este traslado?')) {
+            $.ajax({
+                url: './submenu/admiDiag/eliminar_admi_diag.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+                    console.log('admi diag eliminada:', response);
+                    // Recargar la lista de prácticas después de eliminar
+                    const idPaciente = $('#id').val();
+                    cargarListaAdmiDiag(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+
+//FIN ADMISION DIAG
+
+// EXAMEN PSQUIATRICO
+
+
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadExPsiquiatricoModal() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/ex_psiquiatrico/ex_psiquiatrico.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('exPsiquiatricoModalBody').innerHTML = response;
+            $('#exPsiquiatricoModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#exPsiquiatricoModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#exPsiquiatricoModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaExamen(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_ex_psiquiatrico.php',
+        type: 'GET',
+        data: { id_paciente: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var ex = JSON.parse(response);
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>Forma de presentarse</th>';
+            html += '<th>Vestimenta</th>';
+            html += '<th>Peso</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            ex.forEach(function (ex) {
+                html += '<tr>';
+                html += '<td>' + ex.forma_presentarse + '</td>';
+                html += '<td>' + ex.vestimenta + '</td>';
+                html += '<td>' + ex.peso + '</td>';
+                html += '<td>';
+                html += '<button id="editEx" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + ex.id + '">Editar</button> ';
+                html += '<button id="deleteEx" class="btn btn-danger btn-sm btn-delete" data-id="' + ex.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaExPsiquiatrico').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#exPsiquiatricoModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaExamen(idPaciente); // Cargar la lista de egresos al mostrar el modal
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#exPsiquiatricoModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevoExPsiquiatrico').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+        $('#forma_presentarse').val('');
+        $('#vestimenta').val('');
+        $('#peso').val('');
+        $('#grado_actividad').val('');
+        $('#cualidad_formal').val('');
+        $('#pertinente').val('');
+        $('#signos_ansiedad').val('');
+        $('#bradilalia').val('');
+        $('#cooperativo').val('');
+        $('#comunicativo').val('');
+        $('#escala_actitudes').val('');
+
+        $('#exPsiquiatricoIdPaciente').val(id);
+        $('#exPsiquiatricoNombreCarga').val(nombre);
+
+
+
+        // Establecer data-action a "add"
+        $('#btnGuardarExPsiquiatrico').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregarExamenPsiquiatricoModal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editEx', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_ex_psiquiatrico_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var ex = JSON.parse(response);
+
+                $('#exPsiquiatricoId').val(ex.id);
+
+                $('#forma_presentarse').val(ex.forma_presentarse);
+                $('#vestimenta').val(ex.vestimenta);
+                $('#peso').val(ex.peso);
+                $('#grado_actividad').val(ex.grado_actividad);
+                $('#cualidad_formal').val(ex.cualidad_formal);
+                $('#pertinente').val(ex.pertinente);
+                $('#signos_ansiedad').val(ex.signos_ansiedad);
+                $('#bradilalia').val(ex.bradilalia);
+                $('#cooperativo').val(ex.cooperativo);
+                $('#comunicativo').val(ex.comunicativo);
+                $('#escala_actitudes').val(ex.escala_actitudes);
+
+                $('#exPsiquiatricoNombreCarga').val(ex.nombre_paciente);
+                $('#exPsiquiatricoIdPaciente').val(ex.id_paciente);
+
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarExPsiquiatrico').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregarExamenPsiquiatricoModal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    $('#btnGuardarExPsiquiatrico').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/ex_psiquiatrico/editar_ex.php' : './submenu/ex_psiquiatrico/agregar_ex.php';
+        var formData = $('#formExPsiquiatrico').serialize();
+        console.log('Datos enviados: ', formData);
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                const idPaciente = $('#id').val();
+                cargarListaExamen(idPaciente);
+                $('#agregarExamenPsiquiatricoModal').modal('hide');
+                console.log(response)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en guardar práctica:', textStatus, errorThrown);
+                alert('Error al guardar la práctica');
+            }
+        });
+
+
+    });
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteEx', function () {
+        var pracId = $(this).data('id');;
+        if (confirm('¿Estás seguro de que deseas eliminar este traslado?')) {
+            $.ajax({
+                url: './submenu/ex_psiquiatrico/eliminar_ex.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+                    console.log('fisica eliminada:', response);
+
+                    // Recargar la lista de prácticas después de eliminar
+                    const idPaciente = $('#id').val();
+                    cargarListaExamen(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+
+// FIN EXAMEN PSIQUIATRICO
+
+//ANTECENDES FAMILIARES
+
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadAntecendentesFamiliares() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/antecedenteFamiliar/antecedenteFamiliar.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('antecedentesFamiliaresModalBody').innerHTML = response;
+            $('#antecedentesFamiliaresModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#antecedentesFamiliaresModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#antecedentesFamiliaresModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaAntecedentes(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_paci_antecendes_familiares.php',
+        type: 'GET',
+        data: { id_paciente: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var antecedente = JSON.parse(response);
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>Grupo familiar de origen</th>';
+            html += '<th>Interrelación ambiente psicológico del hogar</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            antecedente.forEach(function (antecedente) {
+                html += '<tr>';
+                html += '<td>' + antecedente.antecedentes_familiar_1 + '</td>';
+                html += '<td>' + antecedente.antecedentes_familiar_2 + '</td>';
+                html += '<td>';
+                html += '<button id="editAntecedente" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + antecedente.id + '">Editar</button> ';
+                html += '<button id="deleteAntecedente" class="btn btn-danger btn-sm btn-delete" data-id="' + antecedente.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaAntecendesFamiliares').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#antecedentesFamiliaresModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaAntecedentes(idPaciente); // Cargar la lista de egresos al mostrar el modal
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#antecedentesFamiliaresModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevoAntecendesFamiliares').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+        $('#antecedentesFamiliar1').val('');
+        $('#antecedentesFamiliar2').val('');
+        $('#antecedentesFamiliar3').val('');
+        $('#antecedentesFamiliar4').val('');
+        $('#antecedentesFamiliar5').val('');
+        $('#antecedentesFamiliar6').val('');
+        $('#antecedentesFamiliaresIdPaciente').val(id);
+        $('#antecedentesFamiliaresNombreCarga').val(nombre);
+
+
+
+        // Establecer data-action a "add"
+        $('#btnGuardarAntecedentes').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregarAntecedentesFamiliaresModal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editAntecedente', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_paci_antecendes_familiares_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var antecedente = JSON.parse(response);
+
+                $('#antecedentesFamiliaresId').val(antecedente.id);
+                $('#antecedentesFamiliar1').val(antecedente.antecedentes_familiar_1);
+                $('#antecedentesFamiliar2').val(antecedente.antecedentes_familiar_2);
+                $('#antecedentesFamiliar3').val(antecedente.antecedentes_familiar_3);
+                $('#antecedentesFamiliar4').val(antecedente.antecedentes_familiar_4);
+                $('#antecedentesFamiliar5').val(antecedente.antecedentes_familiar_5);
+                $('#antecedentesFamiliar6').val(antecedente.antecedentes_familiar_6);
+                $('#antecedentesFamiliaresNombreCarga').val(antecedente.nombre_paciente);
+                $('#antecedentesFamiliaresIdPaciente').val(antecedente.id_paciente);
+
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarAntecedentes').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregarAntecedentesFamiliaresModal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    $('#btnGuardarAntecedentes').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/antecedenteFamiliar/editar_antecedente_familiar.php' : './submenu/antecedenteFamiliar/agregar_antecedente_familiar.php';
+        var formData = $('#formAntecedenteFamiliar').serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                // Si el servidor envía un JSON, lo parseamos
+                var jsonResponse = JSON.parse(response);
+
+                // Solo mostramos el mensaje de la respuesta
+                alert(jsonResponse.message);
+                const idPaciente = $('#id').val();
+                cargarListaAntecedentes(idPaciente);
+                $('#agregarAntecedentesFamiliaresModal').modal('hide');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // Verifica el error en detalle
+                console.log('Error en guardar práctica:', textStatus, errorThrown);
+                console.log('Detalles del error:', jqXHR.responseText);
+                alert('Error al guardar la práctica');
+            }
+        });
+
+
+    });
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteAntecedente', function () {
+        var pracId = $(this).data('id');;
+        if (confirm('¿Estás seguro de que deseas eliminar este traslado?')) {
+            $.ajax({
+                url: './submenu/antecedenteFamiliar/eliminar_antecedente_familiar.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+                    // Si el servidor envía un JSON, lo parseamos
+                    var jsonResponse = JSON.parse(response);
+
+                    // Solo mostramos el mensaje de la respuesta
+                    alert(jsonResponse.message);
+                    const idPaciente = $('#id').val();
+                    cargarListaAntecedentes(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+
+//FIN ANTECENDES FAMILIARES
+
+//ANTEDENTES PERSONALES
+
+// Función para cargar el modal de egreso y ocultar el formulario principal
+function loadAntecendentesPersonales() {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    const benef = document.getElementById('benef').value;
+    const parentesco = document.getElementById('parentesco').value;
+
+    $.ajax({
+        url: './submenu/antecedentePersonales/antecedentePersonales.php',
+        type: 'GET',
+        data: {
+            id: id,
+            nombre: nombre,
+            benef: benef,
+            parentesco: parentesco
+        },
+        success: function (response) {
+            document.getElementById('antecedentesPersonalesModalBody').innerHTML = response;
+            $('#antecedentesPersonalesModal').modal('show'); // Mostrar el modal de egreso
+            $('#formPaciente').hide(); // Ocultar el formulario principal usando jQuery al cargar el modal
+        }
+
+    });
+}
+
+// Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
+$('#antecedentesPersonalesModal').on('click', '.btn-volver', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al hacer clic en "Volver"
+    $('#antecedentesPersonalesModal').modal('hide'); // Ocultar el modal de egreso
+    $('#agregarPacienteModal').modal('show'); // Mostrar el modal de agregar/editar paciente
+});
+
+// Función para cargar la lista de egresos desde la base de datos
+function cargarListaAntecendesPersonales(idPaciente) {
+
+    $.ajax({
+        url: './dato/get_antecendetes_personales.php',
+        type: 'GET',
+        data: { id_paciente: idPaciente },
+        success: function (response) {
+            // Parsear la respuesta JSON si es necesario
+            var antecedentesPersonales = JSON.parse(response);
+            var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
+            html += '<thead class="table-custom">';
+            html += '<tr>';
+            html += '<th>Complicaciones en el nacimiento</th>';
+            html += '<th>Desarrollo y enfermedades de la niñez</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+
+            antecedentesPersonales.forEach(function (antecedentesPersonales) {
+                html += '<tr>';
+                html += '<td>' + antecedentesPersonales.complicaciones_nacimiento + '</td>';
+                html += '<td>' + antecedentesPersonales.desarrollo_ninez + '</td>';
+                html += '<td>';
+                html += '<button id="editAntecentePersonal" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + antecedentesPersonales.id + '">Editar</button> ';
+                html += '<button id="deleteAntecentePersonal" class="btn btn-danger btn-sm btn-delete" data-id="' + antecedentesPersonales.id + '">Eliminar</button>';
+                html += '</td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody>';
+            html += '</table>';
+
+            $('#listaAntecendesPersonales').html(html); // Insertar el HTML generado en el contenedor
+        }
+    });
+}
+
+// Evento al mostrar el modal de egresos
+$('#antecedentesPersonalesModal').on('shown.bs.modal', function () {
+    const idPaciente = document.getElementById('id').value; // Obtener el ID del paciente desde un campo oculto en el formulario
+    cargarListaAntecendesPersonales(idPaciente); // Cargar la lista de egresos al mostrar el modal
+});
+
+// Función para mostrar nuevamente el formulario principal al cerrar el modal de egreso
+$('#antecedentesPersonalesModal').on('hidden.bs.modal', function () {
+    $('#formPaciente').show(); // Mostrar el formulario principal al cerrar el modal de egreso
+});
+
+$(document).ready(function () {
+    // Mostrar el modal de agregar práctica al hacer clic en el botón "Agregar"
+    $('#nuevoAntecendesPersonales').on('click', function () {
+        const id = $('#id').val();
+        const nombre = $('#nombre').val();
+
+        // Llenar los campos del nuevo modal con la información necesaria
+        $('#complicaciones_nacimiento').val('');
+        $('#desarrollo_ninez').val('');
+        $('#enfermedades_principales').val('');
+        $('#sistema_nervioso').val('');
+        $('#estudios').val('');
+        $('#actividad_sexual').val('');
+        $('#historial_marital').val('');
+        $('#embarazos_hijos').val('');
+        $('#interrelacion_familiar').val('');
+        $('#actividades_laborales').val('');
+        $('#habitos').val('');
+        $('#intereses').val('');
+        $('#actividad_social').val('');
+        $('#creencias_religiosas').val('');
+        $('#toxicomanias').val('');
+        $('#rasgos_personalidad').val('');
+        $('#antecedentesPersonalesIdPaciente').val(id);
+        $('#antecedentesPersonalesNombreCarga').val(nombre);
+
+
+
+        // Establecer data-action a "add"
+        $('#btnGuardarAntecedentesPersonales').attr('data-action', 'add');
+
+        // Mostrar el modal de agregar práctica
+        $('#agregar_antecedentes_modal').modal('show');
+    });
+
+    // Mostrar el modal de editar práctica al hacer clic en el botón "Editar"
+    $(document).on('click', '#editAntecentePersonal', function () {
+        var pracId = $(this).data('id');
+
+        $.ajax({
+            url: './dato/get_antecendes_personales_id.php',
+            type: 'GET',
+            data: { id: pracId },
+            success: function (response) {
+                var antecedentesPersonales = JSON.parse(response);
+
+                $('#antecedentePersonalesId').val(antecedentesPersonales.id);
+                $('#complicaciones_nacimiento').val(antecedentesPersonales.complicaciones_nacimiento);
+                $('#desarrollo_ninez').val(antecedentesPersonales.desarrollo_ninez);
+                $('#enfermedades_principales').val(antecedentesPersonales.enfermedades_principales);
+                $('#sistema_nervioso').val(antecedentesPersonales.sistema_nervioso);
+                $('#estudios').val(antecedentesPersonales.estudios);
+                $('#actividad_sexual').val(antecedentesPersonales.actividad_sexual);
+                $('#historial_marital').val(antecedentesPersonales.historial_marital);
+                $('#embarazos_hijos').val(antecedentesPersonales.embarazos_hijos);
+                $('#interrelacion_familiar').val(antecedentesPersonales.interrelacion_familiar);
+                $('#actividades_laborales').val(antecedentesPersonales.actividades_laborales);
+                $('#habitos').val(antecedentesPersonales.habitos);
+                $('#intereses').val(antecedentesPersonales.intereses);
+                $('#actividad_social').val(antecedentesPersonales.actividad_social);
+                $('#creencias_religiosas').val(antecedentesPersonales.creencias_religiosas);
+                $('#toxicomanias').val(antecedentesPersonales.toxicomanias);
+                $('#rasgos_personalidad').val(antecedentesPersonales.rasgos_personalidad);
+                $('#antecedentesPersonalesNombreCarga').val(antecedentesPersonales.nombre_paciente);
+                $('#antecedentesPersonalesIdPaciente').val(antecedentesPersonales.id_paciente);
+
+
+                // Establecer data-action a "edit"
+                $('#btnGuardarAntecedentesPersonales').attr('data-action', 'edit');
+
+                // Mostrar el modal de agregar práctica (se reutiliza para editar)
+                $('#agregar_antecedentes_modal').modal('show');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la práctica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+    // Guardar la práctica al hacer clic en "Guardar" dentro del modal
+    $('#btnGuardarAntecedentesPersonales').on('click', function () {
+        var action = $(this).attr('data-action');
+        var url = action === 'edit' ? './submenu/antecedentePersonales/editar_antecedentes_personales.php' : './submenu/antecedentePersonales/agregar_antecedentes_personales.php';
+        var formData = $('#formAntecedentesPersonales').serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                var jsonResponse = JSON.parse(response);
+
+                // Solo mostramos el mensaje de la respuesta
+                alert(jsonResponse.message);
+                const idPaciente = $('#id').val();
+                cargarListaAntecendesPersonales(idPaciente);
+                $('#agregar_antecedentes_modal').modal('hide');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error en guardar práctica:', textStatus, errorThrown);
+                alert('Error al guardar la práctica');
+            }
+        });
+
+
+    });
+
+    // Eliminar práctica al hacer clic en "Eliminar"
+    $(document).on('click', '#deleteAntecentePersonal', function () {
+        var pracId = $(this).data('id');;
+        if (confirm('¿Estás seguro de que deseas eliminar este traslado?')) {
+            $.ajax({
+                url: './submenu/antecedentePersonales/eliminar_antecedentes_personales.php',
+                type: 'POST',
+                data: { id: pracId },
+                success: function (response) {
+                    console.log('Op eliminada:', response);
+
+                    // Recargar la lista de prácticas después de eliminar
+                    const idPaciente = $('#id').val();
+                    cargarListaAntecendesPersonales(idPaciente);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error al eliminar la práctica:', textStatus, errorThrown);
+                }
+            });
+        }
+    });
+
+});
+
+//FIN ANTEDENTES PERSONALES

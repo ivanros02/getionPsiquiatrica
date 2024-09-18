@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('/buscar', async (req, res) => {
+app.get('/buscar', async (req, res) => { //CAMBIAR NOMBRE DE /BUSCAR 
     const valor_n_op = req.query.n_op;
     const usuario = req.query.usuario;
     const clave = req.query.clave;

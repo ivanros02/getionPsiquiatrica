@@ -14,6 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $matricula_n = $_POST['matricula_n'];
     $telefono = $_POST['telefono'];
     $email = $_POST['email'];
+    $tipo_doc = $_POST['tipo_doc'];
+    $nro_doc = $_POST['nro_doc'];
 
     // Preparar la consulta SQL para actualizar los datos del profesional
     $sql = "UPDATE profesional SET 
@@ -25,14 +27,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             matricula_p = ?,
             matricula_n = ?,
             telefono = ?,
-            email = ?
+            email = ?,
+            tipo_doc = ?,
+            nro_doc = ?
             WHERE id_prof = ?";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros
-    $stmt->bind_param("sssssssssi", $nombreYapellido, $id_especialidad, $domicilio, $localidad, $codigo_pos, $matricula_p, $matricula_n, $telefono, $email, $id_prof);
+    $stmt->bind_param("ssssssssssii", $nombreYapellido, $id_especialidad, $domicilio, $localidad, $codigo_pos, $matricula_p, $matricula_n, $telefono, $email, $tipo_doc, $nro_doc, $id_prof);
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

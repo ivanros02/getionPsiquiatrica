@@ -341,6 +341,41 @@ $conn->close();
                             <span class="icon-text">Admision Amb.</span>
                         </a>
 
+                        <a href="#" class="btn btn-link" title="admision nutricion" data-bs-toggle="modal"
+                            data-bs-target="#nutriModal" onclick="loadNutriModal()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Admision Nutricion.</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="admision fisica" data-bs-toggle="modal"
+                            data-bs-target="#fisicaModal" onclick="loadFisicaModal()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Admision Fisica</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="Impresion diagnostica" data-bs-toggle="modal"
+                            data-bs-target="#admiDiagModal" onclick="loadAdmisionDiagModal()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Impresion diagnostica</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="Impresion diagnostica" data-bs-toggle="modal"
+                            data-bs-target="#exPsiquiatricoModal" onclick="loadExPsiquiatricoModal()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Examen Psiquiatrico</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="Impresion diagnostica" data-bs-toggle="modal"
+                            data-bs-target="#antecedentesFamiliaresModal" onclick="loadAntecendentesFamiliares()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Antecentes Familiares</span>
+                        </a>
+
+                        <a href="#" class="btn btn-link" title="Impresion diagnostica" data-bs-toggle="modal"
+                            data-bs-target="#antecedentesPersonalesModal" onclick="loadAntecendentesPersonales()">
+                            <i class="fa-solid fa-hospital-user custom-icon"></i>
+                            <span class="icon-text">Antecentes Personales</span>
+                        </a>
 
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -350,141 +385,146 @@ $conn->close();
                     <form id="formPaciente" action="./agregarPaciente.php" method="POST">
                         <input type="hidden" id="id" name="id">
 
-                        <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label for="obra_social">Obra Social:*</label>
-                                <select class="form-control" id="obra_social" name="obra_social" required>
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="benef">Beneficiario (12):*</label>
-                                <input type="number" class="form-control" id="benef" name="benef" required>
+                        <div class="container">
+                            <h5>Datos del Beneficiario</h5>
+                            <div class="row">
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="obra_social">Obra Social:*</label>
+                                    <select class="form-control" id="obra_social" name="obra_social" required>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="boca_atencion">Boca de atención:*</label>
+                                    <select class="form-control" id="boca_atencion" name="boca_atencion" required>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div class="col-md-4 form-group">
-                                <label for="parentesco">Parentesco(2):*</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="parentesco" name="parentesco" required
-                                        maxlength="2">
-                                    <div class="input-group-append" id="btnBuscar">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-search"></i>
-                                        </span>
+                            <div class="row">
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="benef">Beneficiario (12):*</label>
+                                    <input type="number" class="form-control" id="benef" name="benef" required>
+                                </div>
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="parentesco">Parentesco (2):*</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="parentesco" name="parentesco"
+                                            required maxlength="2">
+                                        <div class="input-group-append" id="btnBuscar">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label for="nombre">Nombre Y Apellido:*</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" readonly required>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="fecha_nac">Fecha de Nacimiento:*</label>
-                                <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" required>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="sexo">Sexo:*</label>
-                                <select class="form-control" id="sexo" name="sexo" required>
-                                    <option value="">Seleccionar...</option>
-                                    <option value="Femenino">Femenino</option>
-                                    <option value="Masculino">Masculino</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label for="tipo_afiliado">Tipo de Afiliado:*</label>
-                                <select class="form-control" id="tipo_afiliado" name="tipo_afiliado" required>
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="tipo_doc">Tipo de Doc.:*</label>
-                                <select class="form-control" id="tipo_doc" name="tipo_doc" required>
-                                    <option value="">Seleccione un tipo de documento</option>
-                                    <option value="DNI">DNI (Documento Nacional de Identidad)</option>
-                                    <option value="LC">LC (Libreta de Enrolamiento)</option>
-                                    <option value="LE">LE (Libreta Cívica)</option>
-                                    <option value="CI">CI (Cédula de Identidad)</option>
-                                    <option value="PAS">PAS (Pasaporte)</option>
-                                    <option value="OTRO">OTRO (Otro tipo de documento)</option>
-                                </select>
+                            <h5>Información Personal</h5>
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="nombre">Nombre y Apellido:*</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" readonly required>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="fecha_nac">Fecha de Nacimiento:*</label>
+                                    <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" required>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="sexo">Sexo:*</label>
+                                    <select class="form-control" id="sexo" name="sexo" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Femenino">Femenino</option>
+                                        <option value="Masculino">Masculino</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div class="col-md-4 form-group">
-                                <label for="nro_doc">Número de Documento:*</label>
-                                <input type="number" class="form-control" id="nro_doc" name="nro_doc" required>
-                            </div>
-                        </div>
-
-
-
-                        <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label for="admision">Fecha de Admisión:*</label>
-                                <input type="date" class="form-control" id="admision" name="admision" required>
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="id_prof">Profesional:*</label>
-                                <select class="form-control" id="id_prof" name="id_prof" required>
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4 form-group">
-                                <label for="modalidad_act">Modalidad Activa:*</label>
-                                <select class="form-control" id="modalidad_act" name="modalidad_act" required>
-                                    <option value="">Seleccionar...</option>
-                                </select>
-                            </div>
-
-                        </div>
-                        <hr>
-                        <div class="row">
-
-                            <div class="col-md-4 form-group">
-                                <label for="ocupacion">Ocupación:</label>
-                                <input type="text" class="form-control" id="ocupacion" name="ocupacion">
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label for="telefono">Teléfono:</label>
-                                <input type="text" class="form-control" id="telefono" name="telefono">
+                            <h5>Detalles del Afiliado</h5>
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="tipo_afiliado">Tipo de prestacion:*</label>
+                                    <select class="form-control" id="tipo_afiliado" name="tipo_afiliado" required>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="tipo_doc">Tipo de Documento:*</label>
+                                    <select class="form-control" id="tipo_doc" name="tipo_doc" required>
+                                        <option value="">Seleccione un tipo de documento</option>
+                                        <option value="DNI">DNI</option>
+                                        <option value="LC">LC</option>
+                                        <option value="LE">LE</option>
+                                        <option value="CI">CI</option>
+                                        <option value="PAS">Pasaporte</option>
+                                        <option value="OTRO">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="nro_doc">Número de Documento:*</label>
+                                    <input type="number" class="form-control" id="nro_doc" name="nro_doc" required>
+                                </div>
                             </div>
 
-                            <div class="col-md-4 form-group">
-                                <label for="hijos">Hijos:</label>
-                                <input type="number" class="form-control" id="hijos" name="hijos">
-                            </div>
-                        </div>
-
-
-
-                        <div class="row">
-                            <div class="col-md-3 form-group">
-                                <label for="partido">Partido:</label>
-                                <input type="text" class="form-control" id="partido" name="partido">
-                            </div>
-
-                            <div class="col-md-3 form-group">
-                                <label for="localidad">Localidad:</label>
-                                <input type="text" class="form-control" id="localidad" name="localidad">
-                            </div>
-
-                            <div class="col-md-3 form-group">
-                                <label for="domicilio">Domicilio:</label>
-                                <input type="text" class="form-control" id="domicilio" name="domicilio">
+                            <h5>Información de Admisión</h5>
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="admision">Fecha de Admisión:*</label>
+                                    <input type="date" class="form-control" id="admision" name="admision" required>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="id_prof">Profesional:*</label>
+                                    <select class="form-control" id="id_prof" name="id_prof" required>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="modalidad_act">Modalidad Activa:*</label>
+                                    <select class="form-control" id="modalidad_act" name="modalidad_act" required>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div class="col-md-3 form-group">
-                                <label for="c_postal">Código Postal:</label>
-                                <input type="number" class="form-control" id="c_postal" name="c_postal">
+                            <hr>
+
+                            <h5>Información de Contacto</h5>
+                            <div class="row">
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="ocupacion">Ocupación:</label>
+                                    <input type="text" class="form-control" id="ocupacion" name="ocupacion">
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="telefono">Teléfono:</label>
+                                    <input type="text" class="form-control" id="telefono" name="telefono">
+                                </div>
+                                <div class="col-md-4 form-group mb-3">
+                                    <label for="hijos">Hijos:</label>
+                                    <input type="number" class="form-control" id="hijos" name="hijos">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3 form-group mb-3">
+                                    <label for="partido">Partido:</label>
+                                    <input type="text" class="form-control" id="partido" name="partido">
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label for="localidad">Localidad:</label>
+                                    <input type="text" class="form-control" id="localidad" name="localidad">
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label for="domicilio">Domicilio:</label>
+                                    <input type="text" class="form-control" id="domicilio" name="domicilio">
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label for="c_postal">Código Postal:</label>
+                                    <input type="number" class="form-control" id="c_postal" name="c_postal">
+                                </div>
                             </div>
                         </div>
+
 
 
 
@@ -2313,6 +2353,805 @@ $conn->close();
     </div>
 
     <!-- FIN TRASLADOS -->
+
+    <!--NUTRICION ADMISION -->
+    <!-- Modal de NUTRICION -->
+    <div class="modal fade" id="nutriModal" tabindex="-1" aria-labelledby="nutriModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nutriModalLabel">Admision Nutricion</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="nutriModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaNutri" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save" id="nuevanutri">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregarNutriModal" tabindex="-1" aria-labelledby="agregarNutriModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarNutriModalLabel">NUTRICION ADMISION</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="agregarNutri" class="row g-3">
+                        <input type="hidden" id="nutriIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="nutriId">
+
+                        <div class="col-md-4">
+                            <label for="nutriNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="nutriNombreCarga" name="nombre" readonly>
+                        </div>
+
+                        <!-- Patologías -->
+                        <div class="col-md-4 form-group">
+                            <label for="patologias" class="form-label">Patologías (Diabetes, HTA, Obesidad,
+                                etc.)</label>
+                            <input type="text" class="form-control" id="patologias" name="patologias" required>
+                        </div>
+
+                        <!-- Indicación de Dieta -->
+                        <div class="col-md-4 form-group">
+                            <label for="indicacion_dieta" class="form-label">Indicación de Dieta</label>
+                            <input type="text" class="form-control" id="indicacion_dieta" name="indicacion_dieta"
+                                required>
+                        </div>
+
+                        <!-- Actitud frente a la comida -->
+                        <div class="col-md-4 form-group">
+                            <label for="actitud_comida" class="form-label">Actitud frente a la comida</label>
+                            <input type="text" class="form-control" id="actitud_comida" name="actitud_comida" required>
+                        </div>
+
+                        <!-- Antropometría: Peso, Talla, IMC -->
+                        <div class="col-md-4 form-group">
+                            <label for="peso" class="form-label">Peso:</label>
+                            <input type="text" step="0.1" class="form-control" id="peso" name="peso" required>
+
+                            <label for="talla" class="form-label">Talla:</label>
+                            <input type="text" step="0.01" class="form-control" id="talla" name="talla" required>
+
+                            <label for="imc" class="form-label">IMC:</label>
+                            <input type="text" step="0.01" class="form-control" id="imc" name="imc" required>
+                        </div>
+
+                        <!-- Plan de Hidratación, Complemento Alimentario, Requiere, No Requiere, Especificar -->
+                        <div class="col-md-4 form-group">
+                            <label for="plan_hidratacion" class="form-label">Plan de hidratación</label>
+
+                            <label for="requiere" class="form-label">Complemento Alimentario - Requiere:</label>
+                            <input type="text" class="form-control" id="requiere" name="requiere">
+
+                            <label for="no_requiere" class="form-label">No Requiere:</label>
+                            <input type="text" class="form-control" id="no_requiere" name="no_requiere">
+
+                            <label for="especificar" class="form-label">En caso de SI, especificar cuál:</label>
+                            <input type="text" class="form-control" id="especificar" name="especificar">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarNutricion">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--FIN NUTRICION ADMISION -->
+
+    <!--Edu fisica ADMISION -->
+    <div class="modal fade" id="fisicaModal" tabindex="-1" aria-labelledby="fisicaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fisicaModalLabel">agregar admision Fisica</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="fisicaModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaFisica" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save" id="nuevaFisica">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Admision Educacion Fisica -->
+    <div class="modal fade" id="agregarFisicaModal" tabindex="-1" aria-labelledby="agregarfisicaModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fisicaModalLabel">ADMISIÓN EDUCACIÓN FÍSICA</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregarFisica" class="row g-3">
+                        <input type="hidden" id="fisicaIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="fisicaId">
+
+                        <div class="col-md-4">
+                            <label for="fisicaNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="fisicaNombreCarga" name="nombre" readonly>
+                        </div>
+
+                        <div class="col-md-4 form-group">
+                            <label for="medico_tratante">Médico Tratante:*</label>
+                            <select class="form-control" id="medico_tratante" name="medico_tratante" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="objetivos_generales" class="form-label"><strong>Objetivos
+                                    Generales</strong></label>
+                            <input type="text" class="form-control" id="objetivos_generales" name="objetivos_generales">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="examen_postural" class="form-label"><strong>Examen Postural y
+                                    Marcha</strong></label>
+                            <input type="text" class="form-control" id="examen_postural" name="examen_postural">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="examen_muscular" class="form-label"><strong>Examen Muscular</strong></label>
+                            <input type="text" class="form-control" id="examen_muscular" name="examen_muscular">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="examen_flexibilidad" class="form-label"><strong>Examen de la
+                                    Flexibilidad</strong></label>
+                            <input type="text" class="form-control" id="examen_flexibilidad" name="examen_flexibilidad">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="fuerza_miembros_inferiores" class="form-label"><strong>Examen de la Fuerza:
+                                    Miembros Inferiores</strong></label>
+                            <input type="text" class="form-control" id="fuerza_miembros_inferiores"
+                                name="fuerza_miembros_inferiores">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="fuerza_miembros_superiores" class="form-label"><strong>Examen de la Fuerza:
+                                    Miembros Superiores</strong></label>
+                            <input type="text" class="form-control" id="fuerza_miembros_superiores"
+                                name="fuerza_miembros_superiores">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>Examen del Equilibrio</strong></label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="equilibrio_normal" class="form-label">Normal</label>
+                                    <input type="text" class="form-control" id="equilibrio_normal"
+                                        name="equilibrio_normal">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="equilibrio_ojos_cerrados" class="form-label">Ojos Cerrados</label>
+                                    <input type="text" class="form-control" id="equilibrio_ojos_cerrados"
+                                        name="equilibrio_ojos_cerrados">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="equilibrio_base_sustentacion" class="form-label">Variando Base de
+                                        Sustentación</label>
+                                    <input type="text" class="form-control" id="equilibrio_base_sustentacion"
+                                        name="equilibrio_base_sustentacion">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="movimiento_ms" class="form-label">Moviendo MS</label>
+                                    <input type="text" class="form-control" id="movimiento_ms" name="movimiento_ms">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="movimiento_ml" class="form-label">Moviendo ML</label>
+                                    <input type="text" class="form-control" id="movimiento_ml" name="movimiento_ml">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="movimiento_tronco" class="form-label">Moviendo Tronco</label>
+                                    <input type="text" class="form-control" id="movimiento_tronco"
+                                        name="movimiento_tronco">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="caminando_giros" class="form-label">Caminando con Giros</label>
+                                    <input type="text" class="form-control" id="caminando_giros" name="caminando_giros">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="observaciones_generales" class="form-label">Observaciones
+                                        Generales</label>
+                                    <input type="text" class="form-control" id="observaciones_generales"
+                                        name="observaciones_generales">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom-save" id="btnGuardarFisica">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--FIN Edu fisica ADMISION -->
+
+    <!-- IMPRESION DIAGNOSTICO -->
+
+    <div class="modal fade" id="admiDiagModal" tabindex="-1" aria-labelledby="admiDiagModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="admiDiagModalLabel">AGREGAR IMPRESION DIAGNOSTICA</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="admiDiagModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaAdmiDiag" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save"
+                            id="nuevaAdmiDiag">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregarImpresionDiagnosticaModal" tabindex="-1"
+        aria-labelledby="agregarImpresionDiagnosticaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="impresionDiagnosticaModalLabel">IMPRESIÓN DIAGNÓSTICA</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formImpresionDiagnostica" class="row g-3">
+
+                        <input type="hidden" id="admiDiagIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="admiDiagId">
+
+                        <div class="col-md-4">
+                            <label for="admiDiagNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="admiDiagNombreCarga" name="nombre" readonly>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="impresion_naturaleza" class="form-label"><strong>1 - La Naturaleza de los
+                                    problemas del paciente, Defensas prevalentes</strong></label>
+                            <input type="text" class="form-control" id="impresion_naturaleza"
+                                name="impresion_naturaleza">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="impresion_situacion" class="form-label"><strong>2 - La situación de la
+                                    entrevista</strong></label>
+                            <input type="text" class="form-control" id="impresion_situacion" name="impresion_situacion">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="impresion_conciencia" class="form-label"><strong>3 - Conciencia de
+                                    enfermedad</strong></label>
+                            <input type="text" class="form-control" id="impresion_conciencia"
+                                name="impresion_conciencia">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="impresion_expectativas" class="form-label"><strong>4 - Expectativas y deseos del
+                                    paciente respecto al tratamiento (literal)</strong></label>
+                            <input type="text" class="form-control" id="impresion_expectativas"
+                                name="impresion_expectativas">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="diagnostico_clinico" class="form-label"><strong>1 - Diagnóstico clínico
+                                    (clasificación OMS)</strong></label>
+                            <input type="text" class="form-control" id="diagnostico_clinico" name="diagnostico_clinico">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="diagnostico_gravedad" class="form-label"><strong>2 - Gravedad
+                                    (leve-moderada-grave)</strong></label>
+                            <input type="text" class="form-control" id="diagnostico_gravedad"
+                                name="diagnostico_gravedad">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="factores_desencadenantes" class="form-label"><strong>3 - Factores
+                                    desencadenantes</strong></label>
+                            <input type="text" class="form-control" id="factores_desencadenantes"
+                                name="factores_desencadenantes">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="personalidad_premorbida" class="form-label"><strong>4 - Personalidad premórbida
+                                    y predisposición</strong></label>
+                            <input type="text" class="form-control" id="personalidad_premorbida"
+                                name="personalidad_premorbida">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="incapacidad_social" class="form-label"><strong>5 - Grado de incapacidad social
+                                    (sin incapacidad-leve-moderada-grave-temporal-definitiva)</strong></label>
+                            <input type="text" class="form-control" id="incapacidad_social" name="incapacidad_social">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="indicaciones" class="form-label"><strong>Indicaciones</strong></label>
+                            <input type="text" class="form-control" id="indicaciones" name="indicaciones">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="pronostico" class="form-label"><strong>Pronóstico</strong></label>
+                            <input type="text" class="form-control" id="pronostico" name="pronostico">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom-save"
+                        id="btnGuardarAdmiDiag">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- FIN IMPRESION DIAGNOSTICO -->
+
+    <!-- EXAMEN PSIQUIATRICO -->
+
+    <div class="modal fade" id="exPsiquiatricoModal" tabindex="-1" aria-labelledby="exPsiquiatricoModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exPsiquiatricoModalLabel">AGREGAR EXAMEN PSIQUIATRICO</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="exPsiquiatricoModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaExPsiquiatrico" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save"
+                            id="nuevoExPsiquiatrico">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregarExamenPsiquiatricoModal" tabindex="-1"
+        aria-labelledby="agregarExamenPsiquiatricoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarExamenPsiquiatricoModalLabel">EXAMEN PSIQUIÁTRICO</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formExPsiquiatrico" class="row g-3">
+
+                        <input type="hidden" id="exPsiquiatricoIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="exPsiquiatricoId">
+
+                        <div class="col-md-4">
+                            <label for="exPsiquiatricoNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="exPsiquiatricoNombreCarga" name="nombre"
+                                readonly>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="apariencia_personal" class="form-label"><strong>1 - APARIENCIA
+                                    PERSONAL</strong></label>
+                            <br>
+                            <label for="forma_presentarse" class="form-label"><strong>a) - Forma de presentarse:
+                                    características salientes</strong></label>
+                            <input type="text" class="form-control" id="forma_presentarse" name="forma_presentarse">
+
+                            <label for="vestimenta" class="form-label"><strong>b) - Vestimenta: término medio, atildado,
+                                    descuidado, bizarro, otro (describir)</strong></label>
+                            <input type="text" class="form-control" id="vestimenta" name="vestimenta">
+
+                            <label for="peso" class="form-label"><strong>c) - Peso: normal, obeso,
+                                    delgado</strong></label>
+                            <input type="text" class="form-control" id="peso" name="peso">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="actividad_psicomotora" class="form-label"><strong>2 - ACTIVIDAD
+                                    PSICOMOTORA</strong></label>
+                            <br>
+                            <label for="grado_actividad" class="form-label"><strong>a) - Grado: Abúlico, normal,
+                                    hiperactivo, excitado</strong></label>
+                            <input type="text" class="form-control" id="grado_actividad" name="grado_actividad">
+
+                            <label for="cualidad_formal" class="form-label"><strong>2 - Cualidad formal: actos
+                                    repetitivos, manerismos, tics, posturas, etc.</strong></label>
+                            <input type="text" class="form-control" id="cualidad_formal" name="cualidad_formal">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="conducta_expresiva" class="form-label"><strong>3 - Conducta
+                                    expresiva</strong></label>
+                            <br>
+                            <label for="pertinente" class="form-label"><strong>a) - Pertinente</strong></label>
+                            <input type="text" class="form-control" id="pertinente" name="pertinente">
+
+                            <label for="signos_ansiedad" class="form-label"><strong>4 - Signos de
+                                    ansiedad</strong></label>
+                            <input type="text" class="form-control" id="signos_ansiedad" name="signos_ansiedad">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="actividad_verbal" class="form-label"><strong>5 - Actividad verbal
+                                    (ritmo)</strong></label>
+                            <label for="bradilalia" class="form-label"><strong>a) - Bradilalia</strong></label>
+                            <input type="text" class="form-control" id="bradilalia" name="bradilalia">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="actitudes_paciente" class="form-label"><strong>3 - ACTITUDES DEL PACIENTE
+                                    DURANTE LA ENTREVISTA</strong></label>
+                            <label for="cooperativo" class="form-label"><strong>a) - Cooperativo: 1-2-3</strong></label>
+                            <input type="text" class="form-control" id="cooperativo" name="cooperativo">
+                            <label for="comunicativo" class="form-label"><strong>b) - Comunicativo:
+                                    1-2-3</strong></label>
+                            <input type="text" class="form-control" id="comunicativo" name="comunicativo">
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="escala_actitudes" class="form-label"><strong>Escala 1-Nada o muy poco,
+                                    2-Medianamente, 3-Extremadamente</strong></label>
+                            <input type="text" class="form-control" id="escala_actitudes" name="escala_actitudes">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarExPsiquiatrico">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- FIN EXAMEN PSIQUIATRICO -->
+
+    <!-- ANCEDENTES FAMILIARES-->
+
+    <div class="modal fade" id="antecedentesFamiliaresModal" tabindex="-1"
+        aria-labelledby="antecedentesFamiliaresModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="antecedentesFamiliaresModalLabel">AGREGAR ANTECEDENTE FAMILIAR</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="antecedentesFamiliaresModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaAntecendesFamiliares" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save"
+                            id="nuevoAntecendesFamiliares">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregarAntecedentesFamiliaresModal" tabindex="-1"
+        aria-labelledby="agregarAntecedentesFamiliaresModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarAntecedentesFamiliaresModalLabel">Antecedentes Familiares
+                    </h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAntecedenteFamiliar" class="row g-3">
+                        <input type="hidden" id="antecedentesFamiliaresIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="antecedentesFamiliaresId">
+
+                        <div class="col-md-4">
+                            <label for="antecedentesFamiliaresNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="antecedentesFamiliaresNombreCarga" name="nombre"
+                                readonly>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="antecedentesFamiliar1" class="form-label"><strong>1 - Grupo familiar de origen
+                                    (padres, hermanos, composición)</strong></label>
+                            <input type="text" class="form-control" id="antecedentesFamiliar1"
+                                name="antecedentesFamiliar1">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="antecedentesFamiliar2" class="form-label"><strong>2 - Interrelación ambiente
+                                    psicológico del hogar</strong></label>
+                            <input type="text" class="form-control" id="antecedentesFamiliar2"
+                                name="antecedentesFamiliar2">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="antecedentesFamiliar3" class="form-label"><strong>3 - Estado cultural, social y
+                                    económico de la familia</strong></label>
+                            <input type="text" class="form-control" id="antecedentesFamiliar3"
+                                name="antecedentesFamiliar3">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="antecedentesFamiliar4" class="form-label"><strong>4 - Cambios y eventos
+                                    importantes</strong></label>
+                            <input type="text" class="form-control" id="antecedentesFamiliar4"
+                                name="antecedentesFamiliar4">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="antecedentesFamiliar5" class="form-label"><strong>5 - Antecedentes
+                                    psiquiátricos, psicosomáticos y neurológicos</strong></label>
+                            <input type="text" class="form-control" id="antecedentesFamiliar5"
+                                name="antecedentesFamiliar5">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="antecedentesFamiliar6" class="form-label"><strong>6 - Conclusiones del
+                                    entrevistador sobre el tipo de familia</strong></label>
+                            <input type="text" class="form-control" id="antecedentesFamiliar6"
+                                name="antecedentesFamiliar6">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-custom-save"
+                        id="btnGuardarAntecedentes">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- FIN ANCEDENTES FAMILIARES -->
+
+    <!--ANTECENDESTER PERSONALES -->
+    <div class="modal fade" id="antecedentesPersonalesModal" tabindex="-1"
+        aria-labelledby="antecedentesPersonalesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="antecedentesPersonalesModalLabel">AGREGAR ANTECEDENTE PERSONAL</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="antecedentesPersonalesModalBody">
+                    <!-- Aquí se cargará el contenido del formulario -->
+                </div>
+                <div class="row">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div id="listaAntecendesPersonales" class="scrollable-content">
+                                <!-- Aquí se cargará dinámicamente la lista de prácticas -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-volver">Volver</button>
+                        <button type="button" class="btn btn-primary btn-custom-save"
+                            id="nuevoAntecendesPersonales">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregar_antecedentes_modal" tabindex="-1"
+        aria-labelledby="agregar_antecedentes_modal_label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregar_antecedentes_modal_label">Antecedentes Personales</h5>
+                    <div class="modal-header-center">
+                        <img src="../img/logo.png" alt="Logo" class="modal-logo">
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAntecedentesPersonales" class="row g-3">
+
+                        <input type="hidden" id="antecedentesPersonalesIdPaciente" name="id_paciente">
+                        <input type="hidden" name="id" id="antecedentePersonalesId">
+
+                        <div class="col-md-4">
+                            <label for="antecedentesFamiliaresNombreCarga" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="antecedentesPersonalesNombreCarga" name="nombre"
+                                readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="complicaciones_nacimiento" class="form-label"><strong>1 - Complicaciones en el
+                                    nacimiento</strong></label>
+                            <input type="text" class="form-control" id="complicaciones_nacimiento"
+                                name="complicaciones_nacimiento">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="desarrollo_ninez" class="form-label"><strong>2 - Desarrollo y enfermedades de la
+                                    niñez</strong></label>
+                            <input type="text" class="form-control" id="desarrollo_ninez" name="desarrollo_ninez">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="enfermedades_principales" class="form-label"><strong>3 - Enfermedades,
+                                    operaciones y traumatismos</strong></label>
+                            <input type="text" class="form-control" id="enfermedades_principales"
+                                name="enfermedades_principales">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="sistema_nervioso" class="form-label"><strong>4 - Sistema nervioso e
+                                    infecciones</strong></label>
+                            <input type="text" class="form-control" id="sistema_nervioso" name="sistema_nervioso">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="estudios" class="form-label"><strong>5 - Estudios</strong></label>
+                            <input type="text" class="form-control" id="estudios" name="estudios">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="actividad_sexual" class="form-label"><strong>6 - Actividad
+                                    sexual</strong></label>
+                            <input type="text" class="form-control" id="actividad_sexual" name="actividad_sexual">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="historial_marital" class="form-label"><strong>7 - Historial
+                                    marital</strong></label>
+                            <input type="text" class="form-control" id="historial_marital" name="historial_marital">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="embarazos_hijos" class="form-label"><strong>8 - Embarazos e
+                                    hijos</strong></label>
+                            <input type="text" class="form-control" id="embarazos_hijos" name="embarazos_hijos">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="interrelacion_familiar" class="form-label"><strong>9 - Interrelación
+                                    familiar</strong></label>
+                            <input type="text" class="form-control" id="interrelacion_familiar"
+                                name="interrelacion_familiar">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="actividades_laborales" class="form-label"><strong>10 - Actividades
+                                    laborales</strong></label>
+                            <input type="text" class="form-control" id="actividades_laborales"
+                                name="actividades_laborales">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="habitos" class="form-label"><strong>11 - Hábitos</strong></label>
+                            <input type="text" class="form-control" id="habitos" name="habitos">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="intereses" class="form-label"><strong>12 - Intereses</strong></label>
+                            <input type="text" class="form-control" id="intereses" name="intereses">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="actividad_social" class="form-label"><strong>13 - Actividad
+                                    social</strong></label>
+                            <input type="text" class="form-control" id="actividad_social" name="actividad_social">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="creencias_religiosas" class="form-label"><strong>14 - Creencias
+                                    religiosas</strong></label>
+                            <input type="text" class="form-control" id="creencias_religiosas"
+                                name="creencias_religiosas">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="toxicomanias" class="form-label"><strong>15 - Toxicomanías</strong></label>
+                            <input type="text" class="form-control" id="toxicomanias" name="toxicomanias">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="rasgos_personalidad" class="form-label"><strong>16 - Rasgos de
+                                    personalidad</strong></label>
+                            <input type="text" class="form-control" id="rasgos_personalidad" name="rasgos_personalidad">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarAntecedentesPersonales">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--ANTECENDESTER PERSONALES -->
+
+
+
 
     <footer class="bg-dark text-white text-center py-4 mt-auto">
         <div class="container">

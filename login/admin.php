@@ -22,6 +22,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
+<!--wss1593 -->
                     <div class="card-header">Iniciar sesión como admin</div>
                     <div class="card-body">
                         <form action="loginAdmin.php" method="POST">

@@ -218,6 +218,21 @@ $(document).ready(function () {
     });
 
     $.ajax({
+        url: './dato/get_bocas_atencion.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            data.forEach(function (item) {
+                var optionText = item.boca;
+                $('#boca_atencion').append(new Option(optionText, item.id));
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching data: ", error);
+        }
+    });
+
+    $.ajax({
         url: './dato/get_parentescos.php',
         type: 'GET',
         dataType: 'json',
@@ -349,6 +364,7 @@ $(document).ready(function () {
                 $('#id_prof').append(new Option(item.nombreYapellido, item.id_prof));
                 $('#pracProfesional').append(new Option(item.nombreYapellido, item.id_prof));
                 $('#hc_prof').append(new Option(item.nombreYapellido, item.id_prof));
+                $('#medico_tratante').append(new Option(item.nombreYapellido, item.id_prof));
             });
         },
         error: function (error) {

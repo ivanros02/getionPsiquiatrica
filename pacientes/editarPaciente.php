@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hijos = $_POST['hijos'];
     $ocupacion = $_POST['ocupacion'];
     $tipo_afiliado = $_POST['tipo_afiliado'];
+    $boca_atencion = $_POST['boca_atencion'];
     $modalidad_act = $_POST['modalidad_act'];
 
     // Verificar si existe otro paciente con el mismo benef y parentesco
@@ -57,12 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     parentesco = ?, 
                     hijos = ?, 
                     ocupacion = ?, 
-                    tipo_afiliado = ? 
+                    tipo_afiliado = ?,
+                    boca_atencion = ?
                 WHERE id = ?";
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssssssssssiisisii",
+            "ssssssssssssiisisiii",
             $nombre,
             $obra_social,
             $fecha_nac,

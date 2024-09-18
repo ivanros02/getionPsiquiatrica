@@ -14,15 +14,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $matricula_n = $_POST["matricula_n"];
     $telefono = $_POST["telefono"];
     $email = $_POST["email"];
+    $tipo_doc = $_POST['tipo_doc'];
+    $nro_doc = $_POST['nro_doc'];
 
     // Preparar la consulta SQL para insertar un profesional
-    $sql = "INSERT INTO profesional (nombreYapellido, id_especialidad, domicilio, localidad, codigo_pos, matricula_p, matricula_n, telefono, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO profesional (nombreYapellido, id_especialidad, domicilio, localidad, codigo_pos, matricula_p, matricula_n, telefono, email, tipo_doc, nro_doc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros
-    $stmt->bind_param("sssssssss", $nombreYapellido, $id_especialidad, $domicilio, $localidad, $codigo_pos, $matricula_p, $matricula_n, $telefono, $email);
+    $stmt->bind_param("sssssssss", $nombreYapellido, $id_especialidad, $domicilio, $localidad, $codigo_pos, $matricula_p, $matricula_n, $telefono, $email, $tipo_doc, $nro_doc );
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

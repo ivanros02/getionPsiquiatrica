@@ -122,6 +122,13 @@ $result = $conn->query($sql);
 
             <h2>Parametros</h2>
             <!-- Botón para agregar profesional -->
+
+            <button type="button" class="btn btn-custom btn-lg" data-bs-toggle="modal"
+                data-bs-target="#agregarBocaModal">
+                Agregar Boca de Atención <img src="../../img/medicacion.png" alt="Icono agregar parametro"
+                    style="width: 50px; height: 50px; margin-left: 8px;">
+            </button>
+
             <button type="button" class="btn btn-custom btn-lg" data-bs-toggle="modal"
                 data-bs-target="#agregarParametroModal">
                 Agregar Parametro <img src="../../img/medicacion.png" alt="Icono agregar parametro"
@@ -170,7 +177,7 @@ $result = $conn->query($sql);
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Agregar Medicacion</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Agregar Parametros</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -188,17 +195,17 @@ $result = $conn->query($sql);
 
                         <div class="form-group">
                             <label for="c_interno">Código Interno</label>
-                            <input type="number" class="form-control" id="c_interno" name="c_interno" required>
+                            <input type="text" class="form-control" id="c_interno" name="c_interno" required>
                         </div>
 
                         <div class="form-group">
                             <label for="c_pami">Código PAMI</label>
-                            <input type="number" class="form-control" id="c_pami" name="c_pami" required>
+                            <input type="text" class="form-control" id="c_pami" name="c_pami" required>
                         </div>
 
                         <div class="form-group">
                             <label for="cuit">CUIT</label>
-                            <input type="number" class="form-control" id="cuit" name="cuit" required>
+                            <input type="text" class="form-control" id="cuit" name="cuit" required>
                         </div>
 
                         <div class="form-group">
@@ -217,8 +224,8 @@ $result = $conn->query($sql);
                         </div>
 
                         <div class="form-group">
-                            <label for="boca_ate">Boca de Atención</label>
-                            <input type="number" class="form-control" id="boca_ate" name="boca_ate" required>
+                            <label for="puerta">Puerta</label>
+                            <input type="number" class="form-control" id="puerta" name="puerta" required>
                         </div>
 
                         <div class="form-group">
@@ -245,6 +252,52 @@ $result = $conn->query($sql);
                             <button type="submit" class="btn btn-primary btn-custom-save">Guardar</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal BOCAS-->
+    <div class="modal fade" id="agregarBocaModal" tabindex="-1" aria-labelledby="agregarBocaModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarBocaModalLabel">Administrar Bocas de Atención</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario de ABM -->
+                    <form id="bocaForm">
+                        <div class="mb-3">
+                            <label for="bocaInput" class="form-label">Nombre de Boca de Atención</label>
+                            <input type="text" class="form-control" id="bocaInput"
+                                placeholder="Ingrese el nombre de la boca de atención">
+                        </div>
+                        <div class="mb-3">
+                            <label for="puertaInput" class="form-label">Puerta</label>
+                            <input type="text" class="form-control" id="puertaInput"
+                                placeholder="Ingrese el nombre de la puerta de atención">
+                        </div>
+                        <button type="button" class="btn btn-primary" id="addBocaBtn">Agregar Boca</button>
+                    </form>
+
+                    <hr>
+
+                    <!-- Tabla para mostrar las bocas de atención -->
+                    <table class="table table-striped mt-3" id="bocasTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Boca</th>
+                                <th>Puerta</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Aquí se cargará dinámicamente la lista de bocas -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -287,18 +340,18 @@ $result = $conn->query($sql);
                 // Rellenar los campos del formulario con los datos de la especialidad
                 document.getElementById('id').value = parametro.id;
                 document.getElementById('inst').value = parametro.inst;
-                document.getElementById('razon_social').value =  parametro.razon_social;
+                document.getElementById('razon_social').value = parametro.razon_social;
                 document.getElementById('c_interno').value = parametro.c_interno;
                 document.getElementById('c_pami').value = parametro.c_pami;
                 document.getElementById('cuit').value = parametro.cuit;
                 document.getElementById('u_efect').value = parametro.u_efect;
                 document.getElementById('clave_efect').value = parametro.clave_efect;
                 document.getElementById('mail').value = parametro.mail;
-                document.getElementById('boca_ate').value = parametro.boca_ate;
+                document.getElementById('puerta').value = parametro.puerta;
                 document.getElementById('dir').value = parametro.dir;
                 document.getElementById('localidad').value = parametro.localidad;
                 document.getElementById('cod_sucursal').value = parametro.cod_sucursal;
-                document.getElementById('tel').value =parametro.tel;
+                document.getElementById('tel').value = parametro.tel;
 
                 // Mostrar el modal de edición
                 var modal = new bootstrap.Modal(document.getElementById('agregarParametroModal'));
@@ -318,7 +371,7 @@ $result = $conn->query($sql);
                 document.getElementById('u_efect').value = '';
                 document.getElementById('clave_efect').value = '';
                 document.getElementById('mail').value = '';
-                document.getElementById('boca_ate').value = '';
+                document.getElementById('puerta').value = '';
                 document.getElementById('dir').value = '';
                 document.getElementById('localidad').value = '';
                 document.getElementById('cod_sucursal').value = '';
@@ -330,10 +383,165 @@ $result = $conn->query($sql);
 
             // Limpiar el formulario al abrir el modal para agregar profesional
             var btnAgregarParametroModal = document.querySelector('button[data-bs-target="#agregarParametroModal"]');
-            btnAgregarMedicacionModal.addEventListener('click', limpiarFormulario);
+            btnAgregarParametroModal.addEventListener('click', limpiarFormulario);
 
 
         });
+
+        //bocas
+        $(document).ready(function () {
+            let bocas = [];
+
+            function renderBocas() {
+                const bocasTableBody = $('#bocasTable tbody');
+                bocasTableBody.empty(); // Limpiar la tabla
+
+                if (Array.isArray(bocas)) {
+                    bocas.forEach((boca, index) => {
+                        bocasTableBody.append(`
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${boca.boca}</td>
+                        <td>${boca.puerta}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm editBocaBtn" data-id="${boca.id}"><i class="fas fa-edit"></i></button>
+
+                            <button class="btn btn-danger btn-sm deleteBocaBtn" data-index="${index}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `);
+                    });
+                } else {
+                    console.error('Los datos de bocas no son un array:', bocas);
+                }
+            }
+
+            $('#agregarBocaModal').on('shown.bs.modal', function () {
+                $.ajax({
+                    url: './gets/get_bocas.php',
+                    method: 'GET',
+                    dataType: 'json', // Asegúrate de que jQuery interprete la respuesta como JSON
+                    success: function (data) {
+                        console.log('Datos recibidos:', data); // Verifica la respuesta recibida
+                        bocas = data; // Usa directamente la respuesta como JSON
+                        renderBocas();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error al obtener las bocas:', error);
+                    }
+                });
+            });
+
+            $('#addBocaBtn').on('click', function () {
+                const boca = $('#bocaInput').val();
+                const puerta = $('#puertaInput').val();
+                if (boca) {
+                    $.ajax({
+                        url: './abm_bocas/add_boca.php',
+                        method: 'POST',
+                        data: { boca: boca, puerta: puerta },
+                        dataType: 'json', // Asegúrate de que jQuery interprete la respuesta como JSON
+                        success: function (response) {
+                            console.log('Respuesta al agregar:', response);
+                            if (response.success) {
+                                $('#bocaInput').val('');
+                                $('#agregarBocaModal').modal('hide');
+                                $.ajax({
+                                    url: './gets/get_bocas.php',
+                                    method: 'GET',
+                                    dataType: 'json', // Asegúrate de que jQuery interprete la respuesta como JSON
+                                    success: function (data) {
+                                        bocas = data; // Usa directamente la respuesta como JSON
+                                        renderBocas();
+                                    }
+                                });
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error al agregar la boca:', error);
+                        }
+                    });
+                }
+            });
+
+            $(document).on('click', '.editBocaBtn', function () {
+                const id = parseInt($(this).data('id'), 10); // Convierte el id a un número
+                const bocaData = bocas.find(b => parseInt(b.id, 10) === id); // Convierte el id en bocas a número
+
+                if (bocaData) {
+                    const nuevaBoca = prompt('Editar Boca de Atención:', bocaData.boca);
+                    const nuevaPuerta = prompt('Editar Puerta:', bocaData.puerta);
+                    if (nuevaBoca && nuevaPuerta) {
+                        $.ajax({
+                            url: './abm_bocas/edit_boca.php',
+                            method: 'POST',
+                            data: { id: id, boca: nuevaBoca, puerta: nuevaPuerta },
+                            dataType: 'json',
+                            success: function (response) {
+                                console.log('Respuesta al editar:', response);
+                                if (response.success) {
+                                    $.ajax({
+                                        url: './gets/get_bocas.php',
+                                        method: 'GET',
+                                        dataType: 'json',
+                                        success: function (data) {
+                                            bocas = data;
+                                            renderBocas();
+                                        }
+                                    });
+                                } else {
+                                    alert(response.message);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                
+                            }
+                        });
+                    }
+                } else {
+                    
+                }
+            });
+
+
+
+
+            $(document).on('click', '.deleteBocaBtn', function () {
+                const index = $(this).data('index');
+                if (confirm('¿Estás seguro de que quieres eliminar esta boca?')) {
+                    $.ajax({
+                        url: './abm_bocas/delete_boca.php',
+                        method: 'POST',
+                        data: { id: bocas[index].id },
+                        dataType: 'json', // Asegúrate de que jQuery interprete la respuesta como JSON
+                        success: function (response) {
+                            console.log('Respuesta al eliminar:', response);
+                            if (response.success) {
+                                $.ajax({
+                                    url: './gets/get_bocas.php',
+                                    method: 'GET',
+                                    dataType: 'json', // Asegúrate de que jQuery interprete la respuesta como JSON
+                                    success: function (data) {
+                                        bocas = data; // Usa directamente la respuesta como JSON
+                                        renderBocas();
+                                    }
+                                });
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error al eliminar la boca:', error);
+                        }
+                    });
+                }
+            });
+        });
+
+
+
     </script>
 
 

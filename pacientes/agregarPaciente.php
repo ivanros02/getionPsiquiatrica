@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $hijos = $_POST['hijos'];
     $ocupacion = $_POST['ocupacion'];
     $tipo_afiliado = $_POST['tipo_afiliado'];
+    $boca_atencion = $_POST['boca_atencion'];
     $modalidad_act = $_POST['modalidad_act']; 
 
     // Verificar si el paciente ya existe en la base de datos
@@ -35,12 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $response['message'] = 'El paciente ya está registrado.';
     } else {
         // Si no existe, proceder con la inserción
-        $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado, boca_atencion) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssssssssssiisisi",
+            "ssssssssssssiisisii",
             $nombre,
             $obra_social,
             $fecha_nac,
@@ -58,7 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $parentesco,
             $hijos,
             $ocupacion,
-            $tipo_afiliado
+            $tipo_afiliado,
+            $boca_atencion
         );
 
         if ($stmt->execute()) {
