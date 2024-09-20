@@ -1,7 +1,10 @@
 <?php
 require_once "../conexion.php";
 
+$response = []; // Inicializar la variable de respuesta
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Obtener los datos del POST
     $nombre = $_POST['nombre'];
     $obra_social = $_POST['obra_social'];
     $fecha_nac = $_POST['fecha_nac'];
@@ -21,7 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ocupacion = $_POST['ocupacion'];
     $tipo_afiliado = $_POST['tipo_afiliado'];
     $boca_atencion = $_POST['boca_atencion'];
-    $modalidad_act = $_POST['modalidad_act']; 
+    $modalidad_act = $_POST['modalidad_act'];
+    $nro_hist_amb = $_POST['nro_hist_amb'];
+    $nro_hist_int = $_POST['nro_hist_int'];
+    $hora_admision = $_POST['hora_admision'];
 
     // Verificar si el paciente ya existe en la base de datos
     $sql_check = "SELECT id FROM paciente WHERE benef = ? AND parentesco = ?";
@@ -36,12 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $response['message'] = 'El paciente ya está registrado.';
     } else {
         // Si no existe, proceder con la inserción
-        $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado, boca_atencion) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado, boca_atencion, nro_hist_amb, nro_hist_int, hora_admision) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssssssssssiisisii",
+            "ssssssssssssiisisiiiis",
             $nombre,
             $obra_social,
             $fecha_nac,
@@ -60,12 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hijos,
             $ocupacion,
             $tipo_afiliado,
-            $boca_atencion
+            $boca_atencion,
+            $nro_hist_amb,
+            $nro_hist_int,
+            $hora_admision
         );
 
         if ($stmt->execute()) {
-            $id_paciente = $conn->insert_id;
+            $id_paciente = $conn->insert_id; // Obtener el ID del nuevo paciente
 
+            // Insertar modalidad
             $sql_modalidad = "INSERT INTO paci_modalidad (id_paciente, modalidad, fecha) VALUES (?, ?, ?)";
             $stmt_modalidad = $conn->prepare($sql_modalidad);
             $stmt_modalidad->bind_param("iis", $id_paciente, $modalidad_act, $admision);
@@ -73,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($stmt_modalidad->execute()) {
                 $response['success'] = true;
                 $response['message'] = 'Paciente agregado correctamente.';
+                $response['id'] = $id_paciente; // Devolver el ID del nuevo paciente
             } else {
                 $response['success'] = false;
                 $response['message'] = 'Error al agregar la modalidad del paciente: ' . $stmt_modalidad->error;

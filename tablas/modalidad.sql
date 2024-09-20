@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-08-2024 a las 17:36:58
+-- Tiempo de generación: 18-09-2024 a las 23:08:18
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -38,10 +38,22 @@ CREATE TABLE `modalidad` (
 --
 
 INSERT INTO `modalidad` (`id`, `codigo`, `descripcion`) VALUES
-(1, 'AT', 'Atenciones Alejanas'),
-(2, 'IA', 'Internacion Aguda'),
-(3, 'IC', 'Internacion Cronica'),
-(4, 'T', 'Test');
+(1, '1', 'Atencion programada a domicilio'),
+(2, '2', 'Atencion domiciliaria de urgencia'),
+(3, '3', 'Atencion telefonica'),
+(4, '4', 'Consultorio externo'),
+(5, '5', 'Hospital de dia jornada simple'),
+(6, '6', 'Hospital de dia jornada completa'),
+(7, '7', 'Atencion en jurisd.alejadas de c.urbanos'),
+(8, '8', 'Viviendia Asistida'),
+(9, '9', 'Residencia Transitoria'),
+(10, '10', 'MODULO DE CENTRO DE DIA (DIARIO)'),
+(11, '11', 'Internacion Cronica'),
+(12, '12', 'Internacion Aguda'),
+(13, '13', 'OME'),
+(14, '14', 'ATENCION A LA CRISIS'),
+(15, '15', 'EMERGENCIAS'),
+(16, '16', 'CLINICA INTEGRAL');
 
 --
 -- Índices para tablas volcadas
@@ -61,7 +73,7 @@ ALTER TABLE `modalidad`
 -- AUTO_INCREMENT de la tabla `modalidad`
 --
 ALTER TABLE `modalidad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -10,9 +10,10 @@ if ($conn->connect_error) {
 }
 
 // Preparar la consulta para obtener los egresos del paciente específico
-$sql = "SELECT o.*
+$sql = "SELECT o.*, m.descripcion AS modalidad_full
         FROM paci_op o
-        JOIN paciente p ON o.id_paciente = p.id
+        LEFT JOIN paciente p ON o.id_paciente = p.id
+        LEFT JOIN modalidad m ON m.id = o.modalidad_op
         WHERE o.id_paciente = $idPaciente";
 $result = $conn->query($sql);
 

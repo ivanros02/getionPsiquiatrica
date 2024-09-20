@@ -41,6 +41,11 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('hijos').value = paciente.hijos;
         document.getElementById('ocupacion').value = paciente.ocupacion;
         document.getElementById('tipo_afiliado').value = paciente.tipo_afiliado;
+        document.getElementById('boca_atencion').value = paciente.boca_atencion;
+        document.getElementById('nro_hist_amb').value = paciente.nro_hist_amb;
+        document.getElementById('nro_hist_int').value = paciente.nro_hist_int;
+        document.getElementById('hora_admision').value = paciente.hora_admision;
+
 
         // Primero, carga las modalidades
         $.ajax({
@@ -66,31 +71,37 @@ document.addEventListener("DOMContentLoaded", function () {
                         $('#modalidad_act').val(data[0]?.id || '').trigger('change');
                     },
                     error: function (xhr, status, error) {
+                        console.error("Error fetching modalidad: ", error);
                     }
                 });
             },
-            error: function (error) {
-                console.error("Error fetching data: ", error);
+            error: function (xhr, status, error) {
+                console.error("Error fetching modalidades: ", error);
             }
         });
+
+
 
         $.ajax({
             url: './dato/verificar_egreso.php',
             type: 'GET',
             data: { id_paciente: paciente.id },
             success: function (response) {
-                const data = JSON.parse(response);
-                if (data.egresado) {
-                    $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
-                } else {
-                    $('#bajaMensaje').html('');
+                try {
+                    const data = JSON.parse(response);
+                    if (data.egresado) {
+                        $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                    } else {
+                        $('#bajaMensaje').html('');
+                    }
+                } catch (e) {
+                    console.error("Error parsing response from verificar_egreso.php: ", e);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('Error en verificar egreso:', textStatus, errorThrown);
+                console.error('Error en verificar egreso:', textStatus, errorThrown);
             }
         });
-
 
         var modal = new bootstrap.Modal(document.getElementById('agregarPacienteModal'));
         modal.show();
@@ -101,12 +112,19 @@ document.addEventListener("DOMContentLoaded", function () {
         form.reset();
         form.action = './agregarPaciente.php'; // Restablece la acción del formulario
         form.dataset.mode = 'add'; // Restablece el modo
+        // Limpiar o vaciar el div de bajaMensaje
+        var bajaMensaje = document.getElementById('bajaMensaje');
+        bajaMensaje.innerHTML = ''; // Vacía el contenido del div
     }
 
     window.editarPaciente = editarPaciente;
 
     var btnAgregarPacienteModal = document.querySelector('button[data-bs-target="#agregarPacienteModal"]');
-    btnAgregarPacienteModal.addEventListener('click', limpiarFormulario);
+    if (btnAgregarPacienteModal) {
+        btnAgregarPacienteModal.addEventListener('click', limpiarFormulario);
+    } else {
+        console.warn('Botón de agregar paciente modal no encontrado.');
+    }
 
     function actualizarTablaPacientes() {
         $.ajax({
@@ -147,14 +165,18 @@ document.addEventListener("DOMContentLoaded", function () {
         var formData = $(this).serialize(); // Serializa los datos del formulario
         var formAction = $(this).attr('action'); // Obtiene la acción del formulario
 
-
         $.ajax({
             url: formAction,
             type: 'POST',
             data: formData,
+            dataType: 'json', // Asegúrate de que jQuery espera JSON
             success: function (response) {
+                console.log("Respuesta del servidor:", response);
                 if (response.success) {
                     alert(response.message);
+                    if (response.id) {
+                        $('#id').val(response.id); // Actualiza el campo oculto con el ID del nuevo paciente
+                    }
                     actualizarTablaPacientes(); // Actualiza la tabla con los nuevos datos
                 } else {
                     alert(response.message);
@@ -169,6 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Carga inicial de la tabla
     actualizarTablaPacientes();
 });
+
 
 document.getElementById('btnBuscar').addEventListener('click', function () {
     // Obtener los valores de los campos de "Beneficio" y "Parentesco"
@@ -346,7 +369,6 @@ $(document).ready(function () {
                 var optionText = item.codigo + ' - ' + item.descripcion;
                 $('#modalidad').append(new Option(optionText, item.id));
                 $('#modalidad_paci').append(new Option(optionText, item.id));
-                $('#egreso_modalidad').append(new Option(optionText, item.id));
                 $('#modalidad_act').append(new Option(optionText, item.id));
             });
         },
@@ -674,14 +696,14 @@ $(document).ready(function () {
 
 
 
-document.getElementById('btnCompletarManualmente').addEventListener('click', function() {
+document.getElementById('btnCompletarManualmente').addEventListener('click', function () {
     var nombreInput = document.getElementById('nombre');
     nombreInput.removeAttribute('readonly');  // Elimina el atributo readonly
     nombreInput.focus();  // Opcional: pone el foco en el campo para que el usuario pueda escribir
 });
 
- // Limitar a 12 dígitos en el campo "benef"
- document.getElementById('benef').addEventListener('input', function () {
+// Limitar a 12 dígitos en el campo "benef"
+document.getElementById('benef').addEventListener('input', function () {
     var benefInput = this;
     if (benefInput.value.length > 12) {
         benefInput.value = benefInput.value.slice(0, 12); // Recorta a 12 dígitos

@@ -32,6 +32,32 @@ function loadEgresoModal() {
         }
 
     });
+
+    $.ajax({
+        url: './dato/get_modalidad_sin_egreso_paci.php',
+        type: 'GET',
+        dataType: 'json',
+        data: { id_paciente: id }, // Aquí pasas el id_paciente en la solicitud
+        success: function (data) {
+            $('#egreso_modalidad').empty(); // Limpia las opciones previas si es necesario
+
+            // Agregar opción de placeholder "Seleccionar"
+            $('#egreso_modalidad').append(new Option('Seleccionar', ''));
+
+            data.forEach(function (item) {
+                var optionText = item.modalidad_full;
+                var optionValue = item.modalidad; // Esto toma el valor de 'modalidad'
+                $('#egreso_modalidad').append(new Option(optionText, optionValue)); // Agrega la opción
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching data: ", error);
+        }
+    });
+
+
+
+
 }
 
 // Función para mostrar el modal de agregar/editar paciente al hacer clic en "Volver" dentro del modal de egreso
@@ -43,6 +69,8 @@ $('#egresoModal').on('click', '.btn-volver', function () {
 
 // Función para cargar la lista de egresos desde la base de datos
 function cargarListaEgresos(idPaciente) {
+
+
 
     $.ajax({
         url: './dato/get_egreso.php',
@@ -185,6 +213,28 @@ $(document).ready(function () {
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             console.log('Error en verificar egreso:', textStatus, errorThrown);
+                        }
+                    });
+
+                    $.ajax({
+                        url: './dato/get_modalidad_sin_egreso_paci.php',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { id_paciente: idPaciente }, // Aquí pasas el id_paciente en la solicitud
+                        success: function (data) {
+                            $('#egreso_modalidad').empty(); // Limpia las opciones previas si es necesario
+
+                            // Agregar opción de placeholder "Seleccionar"
+                            $('#egreso_modalidad').append(new Option('Seleccionar', ''));
+
+                            data.forEach(function (item) {
+                                var optionText = item.modalidad_full;
+                                var optionValue = item.modalidad; // Esto toma el valor de 'modalidad'
+                                $('#egreso_modalidad').append(new Option(optionText, optionValue)); // Agrega la opción
+                            });
+                        },
+                        error: function (error) {
+                            console.error("Error fetching data: ", error);
                         }
                     });
                 } else {
@@ -1609,6 +1659,7 @@ $(document).ready(function () {
 // Función para cargar el modal de egreso y ocultar el formulario principal
 function loadModalidadesModal() {
     const id = document.getElementById('id').value;
+    console.log(id)
     const nombre = document.getElementById('nombre').value;
     const benef = document.getElementById('benef').value;
     const parentesco = document.getElementById('parentesco').value;
@@ -1648,6 +1699,11 @@ function cargarListaModalidad(idPaciente) {
         success: function (response) {
             // Parsear la respuesta JSON si es necesario
             var modalidades = JSON.parse(response);
+
+            // Encontrar la fecha más baja
+            var fechas = modalidades.map(modalidad => new Date(modalidad.fecha));
+            var fechaMasBaja = new Date(Math.min.apply(null, fechas));
+
             var html = '<table class="table table-striped table-bordered" style="margin-left: 1rem;">';
             html += '<thead class="table-custom">';
             html += '<tr>';
@@ -1659,12 +1715,22 @@ function cargarListaModalidad(idPaciente) {
             html += '<tbody>';
 
             modalidades.forEach(function (modalidad) {
+                var fechaActual = new Date(modalidad.fecha);
+                var esFechaMasBaja = fechaActual.getTime() === fechaMasBaja.getTime();
+
                 html += '<tr>';
                 html += '<td>' + formatDate(modalidad.fecha) + '</td>';
                 html += '<td>' + modalidad.modalidad_full + '</td>';
                 html += '<td>';
-                html += '<button id="editModali" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + modalidad.id + '">Editar</button> ';
-                html += '<button id="deleteModali"  class="btn btn-danger btn-sm btn-delete" data-id="' + modalidad.id + '">Eliminar</button>';
+
+                if (esFechaMasBaja) {
+                    // Si es la fecha más baja, no mostrar el botón de editar
+                } else {
+                    // Mostrar ambos botones
+                    html += '<button id="editModali" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + modalidad.id + '">Editar</button> ';
+                    html += '<button id="deleteModali" class="btn btn-danger btn-sm btn-delete" data-id="' + modalidad.id + '">Eliminar</button>';
+                }
+
                 html += '</td>';
                 html += '</tr>';
             });
@@ -1675,6 +1741,7 @@ function cargarListaModalidad(idPaciente) {
             $('#listaModa').html(html); // Insertar el HTML generado en el contenedor
         }
     });
+
 }
 
 // Evento al mostrar el modal de egresos
@@ -1750,6 +1817,11 @@ $(document).ready(function () {
             type: 'POST',
             data: formData,
             success: function (response) {
+                var jsonResponse = JSON.parse(response);
+
+                // Solo mostramos el mensaje de la respuesta
+                alert(jsonResponse.message);
+
                 const idPaciente = $('#id').val();
                 cargarListaModalidad(idPaciente);
                 $('#agregarModaliModal').modal('hide');
@@ -2850,6 +2922,28 @@ $('#ordenModal').on('click', '.btn-volver', function () {
 function cargarListaOrdenes(idPaciente) {
 
     $.ajax({
+        url: './dato/get_modalidad_sin_egreso_paci.php',
+        type: 'GET',
+        dataType: 'json',
+        data: { id_paciente: idPaciente }, // Aquí pasas el id_paciente en la solicitud
+        success: function (data) {
+            $('#modalidad_op').empty(); // Limpia las opciones previas si es necesario
+
+            // Agregar opción de placeholder "Seleccionar"
+            $('#modalidad_op').append(new Option('Seleccionar', ''));
+
+            data.forEach(function (item) {
+                var optionText = item.modalidad_full;
+                var optionValue = item.modalidad; // Esto toma el valor de 'modalidad'
+                $('#modalidad_op').append(new Option(optionText, optionValue)); // Agrega la opción
+            });
+        },
+        error: function (error) {
+            console.error("Error fetching data: ", error);
+        }
+    });
+
+    $.ajax({
         url: './dato/get_paci_orden.php',
         type: 'GET',
         data: { id_paciente: idPaciente },
@@ -2861,7 +2955,9 @@ function cargarListaOrdenes(idPaciente) {
             html += '<tr>';
             html += '<th>Fecha</th>';
             html += '<th>Nro. Orden</th>';
-            html += '<th>Cant</th>';
+            html += '<th>Cant Meses</th>';
+            html += '<th>Modalidad</th>';
+            html += '<th>Vencimiento</th>';
             html += '<th>Acciones</th>';
             html += '</tr>';
             html += '</thead>';
@@ -2872,6 +2968,8 @@ function cargarListaOrdenes(idPaciente) {
                 html += '<td>' + formatDate(orden.fecha) + '</td>';
                 html += '<td>' + orden.op + '</td>';
                 html += '<td>' + orden.cant + '</td>';
+                html += '<td>' + orden.modalidad_full + '</td>';
+                html += '<td>' + formatDate(orden.fecha_vencimiento) + '</td>';
                 html += '<td>';
                 html += '<button id="editOrden" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + orden.id + '">Editar</button> ';
                 html += '<button id="deleteOrden" class="btn btn-danger btn-sm btn-delete" data-id="' + orden.id + '">Eliminar</button>';
@@ -2908,6 +3006,8 @@ $(document).ready(function () {
         $('#orden_fecha').val('');
         $('#op').val('');
         $('#op_cant').val('');
+        $('#modalidad_op').val('');
+        $('#fecha_vencimiento').val('');
         $('#ordenIdPaciente').val(id);
         $('#ordenNombreCarga').val(nombre);
 
@@ -2935,8 +3035,12 @@ $(document).ready(function () {
                 $('#orden_fecha').val(orden.fecha);
                 $('#op').val(orden.op);
                 $('#op_cant').val(orden.cant);
+                $('#modalidad_op').val(orden.modalidad_op);
+                $('#fecha_vencimiento').val(formatDate(orden.fecha_vencimiento));
                 $('#ordenNombreCarga').val(orden.nombre_paciente);
                 $('#ordenIdPaciente').val(orden.id_paciente);
+
+                
 
 
                 // Establecer data-action a "edit"
@@ -2965,6 +3069,8 @@ $(document).ready(function () {
                 const idPaciente = $('#id').val();
                 cargarListaOrdenes(idPaciente);
                 $('#agregarOrdenModal').modal('hide');
+
+                console.log('Respuesta del servidor:', response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error en guardar práctica:', textStatus, errorThrown);

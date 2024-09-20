@@ -21,7 +21,7 @@ async function scrapePamiTodasOps(user, password) {
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
-                }, 3000); // 
+                }, 5000); // 
             });
         }
         await esperar();

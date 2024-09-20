@@ -18,6 +18,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>if (window.define) delete window.define.amd;</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
 
     <style>
         .result-section {
@@ -109,6 +111,8 @@
         <hr>
         <button id="generate-pdf" class="btn btn-secondary mt-3">Generar PDF</button>
         <!--<button id="generate-pdf" class="btn btn-secondary mt-3" style="display:none;">Generar PDF</button>-->
+        <button id="exportExcelBtn" onclick="generateExcel()" class="btn btn-primary">Exportar a Excel</button>
+
         <hr>
         <h2>Resultados</h2>
         <div id="results" class="mt-3"></div>
@@ -366,6 +370,58 @@
 
         // Llamar a la función cuando sea necesario, por ejemplo, con un botón
         document.getElementById('generate-pdf').addEventListener('click', generatePDF);
+
+        function generateExcel() {
+            let workbook = XLSX.utils.book_new(); // Crear un nuevo libro de Excel
+            let sections = document.querySelectorAll('.result-section');
+
+            sections.forEach((section, index) => {
+                let title = section.querySelector('h4').textContent;
+                let tables = section.querySelectorAll('table');
+
+                tables.forEach((table, tableIndex) => {
+                    let data = [];
+                    let headers = [];
+
+                    // Obtener encabezados
+                    table.querySelectorAll('thead tr th').forEach(header => {
+                        headers.push(header.innerText);
+                    });
+
+                    // Añadir encabezados a los datos
+                    data.push(headers);
+
+                    // Obtener filas de la tabla
+                    table.querySelectorAll('tbody tr').forEach(row => {
+                        let rowData = [];
+                        row.querySelectorAll('td').forEach(cell => {
+                            rowData.push(cell.innerText);
+                        });
+                        data.push(rowData);
+                    });
+
+                    // Identificar el índice de la columna de "Renovar el Día"
+                    let renovarIndex = headers.indexOf('Renovar el Día');
+
+                    // Ordenar las filas por la fecha en la columna "Renovar el Día"
+                    data.slice(1).sort((a, b) => {
+                        let fechaA = new Date(a[renovarIndex]);
+                        let fechaB = new Date(b[renovarIndex]);
+                        return fechaA - fechaB; // Ordenar de menor a mayor
+                    });
+
+                    // Convertir los datos a una hoja de Excel
+                    let worksheet = XLSX.utils.aoa_to_sheet(data);
+
+                    // Asegurarse de que cada hoja tenga un nombre único agregando el índice
+                    let sheetName = `${title}_Table${tableIndex + 1}_${index}`;
+                    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+                });
+            });
+
+            // Generar y descargar el archivo Excel
+            XLSX.writeFile(workbook, 'Reporte_Tabla.xlsx');
+        }
 
 
 

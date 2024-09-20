@@ -421,6 +421,19 @@ $conn->close();
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="nro_hist_int">Nro. Historia Interna*:</label>
+                                    <input type="text" class="form-control" id="nro_hist_int" name="nro_hist_int"
+                                        required>
+                                </div>
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="nro_hist_amb">Nro. Historia Ambulatoria*:</label>
+                                    <input type="text" class="form-control" id="nro_hist_amb" name="nro_hist_amb"
+                                        required>
+                                </div>
+                            </div>
+
                             <h5>Información Personal</h5>
                             <div class="row">
                                 <div class="col-md-4 form-group mb-3">
@@ -469,17 +482,21 @@ $conn->close();
 
                             <h5>Información de Admisión</h5>
                             <div class="row">
-                                <div class="col-md-4 form-group mb-3">
+                                <div class="col-md-3 form-group mb-3">
                                     <label for="admision">Fecha de Admisión:*</label>
                                     <input type="date" class="form-control" id="admision" name="admision" required>
                                 </div>
-                                <div class="col-md-4 form-group mb-3">
+                                <div class="col-md-2 form-group mb-3">
+                                    <label for="hora_admision">Hora*:</label>
+                                    <input type="time" class="form-control" id="hora_admision" name="hora_admision">
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
                                     <label for="id_prof">Profesional:*</label>
                                     <select class="form-control" id="id_prof" name="id_prof" required>
                                         <option value="">Seleccionar...</option>
                                     </select>
                                 </div>
-                                <div class="col-md-4 form-group mb-3">
+                                <div class="col-md-3 form-group mb-3">
                                     <label for="modalidad_act">Modalidad Activa:*</label>
                                     <select class="form-control" id="modalidad_act" name="modalidad_act" required>
                                         <option value="">Seleccionar...</option>
@@ -774,22 +791,27 @@ $conn->close();
                             <input type="date" class="form-control" id="egresoFecha" name="fecha">
                         </div>
 
-                        <div class="col-md-4 form-group">
-                            <label for="egreso_diag">Diagnostico:*</label>
+                        <div class="col-md-2">
+                            <label for="egresoHora" class="form-label">Hora Egreso</label>
+                            <input type="time" class="form-control" id="egresoHora" name="hora_egreso">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="egreso_diag" class="form-label">Diagnóstico:*</label>
                             <select class="form-control" id="egreso_diag" name="egreso_diag" required>
                                 <option value="">Seleccionar...</option>
                             </select>
                         </div>
 
-                        <div class="col-md-4 form-group">
-                            <label for="egreso_modalidad">Modalidad:*</label>
+                        <div class="col-md-6">
+                            <label for="egreso_modalidad" class="form-label">Modalidad:*</label>
                             <select class="form-control" id="egreso_modalidad" name="egreso_modalidad" required>
                                 <option value="">Seleccionar...</option>
                             </select>
                         </div>
 
-                        <div class="col-md-4 form-group">
-                            <label for="egreso_motivo">Motivo:</label>
+                        <div class="col-md-6">
+                            <label for="egreso_motivo" class="form-label">Motivo:</label>
                             <select class="form-control" id="egreso_motivo" name="egreso_motivo">
                                 <option value="">Seleccionar...</option>
                             </select>
@@ -2303,19 +2325,27 @@ $conn->close();
                             <input type="date" class="form-control" id="orden_fecha" name="orden_fecha" required>
                         </div>
 
-
-                        <div class="col-md-4 form-group">
-                            <label for="op">Nro Orden:</label>
+                        <div class="col-md-4">
+                            <label for="op" class="form-label">Nro Orden:</label>
                             <input type="number" class="form-control" id="op" name="op" required>
                         </div>
 
-                        <div class="col-md-4 form-group">
-                            <label for="op_cant">Cant:</label>
+                        <div class="col-md-4">
+                            <label for="op_cant" class="form-label">Cantidad de Meses:</label>
                             <input type="number" class="form-control" id="op_cant" name="op_cant" required>
                         </div>
 
+                        <div class="col-md-6">
+                            <label for="modalidad_op" class="form-label">Modalidad:*</label>
+                            <select class="form-control" id="modalidad_op" name="modalidad_op" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+
+
                     </form>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-primary btn-custom-save" id="btnGuardarOrden">Guardar</button>

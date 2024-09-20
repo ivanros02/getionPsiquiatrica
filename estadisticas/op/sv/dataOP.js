@@ -42,7 +42,7 @@ async function scrapePamiPage(valor_n_op, user, password) {
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
-                }, 3000);
+                }, 5000);
             });
         }
 

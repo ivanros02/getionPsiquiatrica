@@ -8,6 +8,7 @@ $fecha = $_POST['fecha'];
 $diag = $_POST['egreso_diag'];
 $modalidad = $_POST['egreso_modalidad'];
 $motivo = !empty($_POST['egreso_motivo']) ? $_POST['egreso_motivo'] : NULL;
+$hora_egreso = $_POST['hora_egreso'];
 
 // Verificar si la conexión se estableció correctamente
 if ($conn->connect_error) {
@@ -29,10 +30,10 @@ if ($fecha <= $maxFecha) {
     echo json_encode(['status' => 'error', 'message' => 'La fecha de egreso debe ser mayor que la fecha máxima de las prácticas del paciente.']);
 } else {
     // Preparar la consulta para insertar el egreso
-    $sqlInsert = "INSERT INTO egresos (id_paciente, fecha_egreso, diag, modalidad, motivo)
-                  VALUES (?, ?, ?, ?, ?)";
+    $sqlInsert = "INSERT INTO egresos (id_paciente, fecha_egreso, diag, modalidad, motivo, hora_egreso)
+                  VALUES (?, ?, ?, ?, ?, ?)";
     $stmtInsert = $conn->prepare($sqlInsert);
-    $stmtInsert->bind_param('isiii', $idPaciente, $fecha, $diag, $modalidad, $motivo);
+    $stmtInsert->bind_param('isiiis', $idPaciente, $fecha, $diag, $modalidad, $motivo, $hora_egreso);
 
     if ($stmtInsert->execute()) {
         echo json_encode(['status' => 'success', 'message' => 'Egreso agregado correctamente.']);

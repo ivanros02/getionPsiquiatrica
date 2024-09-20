@@ -26,11 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tipo_afiliado = $_POST['tipo_afiliado'];
     $boca_atencion = $_POST['boca_atencion'];
     $modalidad_act = $_POST['modalidad_act'];
+    $nro_hist_amb = $_POST['nro_hist_amb'];
+    $nro_hist_int = $_POST['nro_hist_int'];
+    $hora_admision = $_POST['hora_admision'];
 
     // Verificar si existe otro paciente con el mismo benef y parentesco
     $sql_check = "SELECT id FROM paciente WHERE benef = ? AND parentesco = ? AND id != ?";
     $stmt_check = $conn->prepare($sql_check);
-    $stmt_check->bind_param("iii", $benef, $parentesco, $id);
+    $stmt_check->bind_param("isi", $benef, $parentesco, $id);  // Cambié 'iii' a 'isi' porque 'parentesco' es varchar
     $stmt_check->execute();
     $stmt_check->store_result();
 
@@ -59,31 +62,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     hijos = ?, 
                     ocupacion = ?, 
                     tipo_afiliado = ?,
-                    boca_atencion = ?
+                    boca_atencion = ?,
+                    nro_hist_amb = ?,
+                    nro_hist_int = ?,
+                    hora_admision = ?
                 WHERE id = ?";
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssssssssssiisisiii",
+            "sisssssissisiisisiiiisi",
             $nombre,
-            $obra_social,
-            $fecha_nac,
+            $obra_social,  // int
+            $fecha_nac,    // date
             $sexo,
             $domicilio,
             $localidad,
             $partido,
-            $c_postal,
+            $c_postal,     // int
             $telefono,
             $tipo_doc,
-            $nro_doc,
-            $admision,
-            $id_prof,
-            $benef,
-            $parentesco,
-            $hijos,
+            $nro_doc,      // int
+            $admision,     // date
+            $id_prof,      // int
+            $benef,        // bigint
+            $parentesco,   // varchar
+            $hijos,        // int
             $ocupacion,
-            $tipo_afiliado,
-            $id
+            $tipo_afiliado, // int
+            $boca_atencion, // int
+            $nro_hist_amb,
+            $nro_hist_int,
+            $hora_admision,
+            $id            // int
         );
 
         if ($stmt->execute()) {
@@ -113,4 +123,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // Envía la respuesta en formato JSON
 header('Content-Type: application/json');
 echo json_encode($response);
+
 ?>

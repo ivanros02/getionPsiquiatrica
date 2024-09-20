@@ -16,17 +16,29 @@ if ($result->num_rows > 0) {
     // Obtén los datos de la fila
     $row = $result->fetch_assoc();
 
+    // Establece el huso horario
+    date_default_timezone_set('America/Argentina/Buenos_Aires');
     // Genera la fecha actual
     $fechaActual = date('d/m/Y');
 
     // Calcula el mes anterior en formato 08-24, por ejemplo
     $mesActual = date('m');
-    $anoActual = date('Y');
+    $anoActual = date('y'); // Año en formato de 2 dígitos
     $mesAnterior = $mesActual - 1;
-    if ($mesAnterior < 10) {
-        $mesAnterior = '0' . $mesAnterior; // Agregar 0 si es menor de 10
+
+    // Si el mes anterior es 0 (es decir, estamos en enero), debemos ajustar a diciembre del año anterior
+    if ($mesAnterior == 0) {
+        $mesAnterior = 12;
+        $anoActual = date('y', strtotime("-1 year")); // Restar un año si es diciembre
     }
-    $periodo = $mesAnterior . '-' . $anoActual;
+
+    // Agregar 0 si el mes anterior es menor de 10
+    if ($mesAnterior < 10) {
+        $mesAnterior = '0' . $mesAnterior;
+    }
+
+    $periodo = $mesAnterior . '-' . $anoActual; // El resultado será, por ejemplo, 08-24
+
 
     // Definir el rango de fechas del mes anterior
     $fechaInicio = date('Y-m-d', strtotime("first day of -1 month"));
@@ -44,7 +56,7 @@ if ($result->num_rows > 0) {
 
     // Primera línea dinámica
     $linea1 = "CABECERA\n";
-    $linea2 = "$cuit;;;$fechaActual;$periodo;$inst;2;$u_efect;$c_pami\n";
+    $linea2 = "$cuit;;$fechaActual;$periodo;$inst;2;$u_efect;$c_pami\n";
     // Tercera línea con el texto 'PROFESIONAL'
     $linea3 = "PROFESIONAL\n";
     // Contenido inicial del archivo
@@ -156,14 +168,17 @@ if ($result->num_rows > 0) {
             $parentesco = $row['parentesco'];
             $admision = $row['admision'];
 
-            // Combina benef y parentesco sin espacio ni paréntesis
-            $benefYParentesco = "$benef$parentesco"; // Combina directamente los valores
+            // Si el valor de $benef es menor a 12, agrega un 0 al inicio
+            if (strlen($benef) <= 11) {
+                $benef = '0' . $benef;
+            }
+
 
             // Formatea la fecha en 'dd/mm/yyyy'
             $fechaFormateada = date('d/m/Y', strtotime($admision));
 
             // Genera la línea para cada registro con el formato deseado
-            $lineaBenef = ";;;$benefYParentesco;;;1;$fechaFormateada\n";
+            $lineaBenef = ";;;$benef;;;1;$fechaFormateada\n";
 
             $contenido .= $lineaBenef;
 
@@ -194,6 +209,12 @@ if ($result->num_rows > 0) {
             $benef = $row['benef'];
             $parentesco = $row['parentesco'];
 
+            // Si el valor de $benef es menor a 12, agrega un 0 al inicio
+            if (strlen($benef) <= 11) {
+                $benef = '0' . $benef;
+            }
+
+
             // Formatea la fecha en 'dd/mm/yyyy'
             $fechaFormateada = date('d/m/Y', strtotime($fecha_nac));
 
@@ -208,7 +229,7 @@ if ($result->num_rows > 0) {
             }
 
             // Genera la línea para cada registro con el formato deseado
-            $lineaPaci = "$nombre;$tipo_doc;$nro_doc;;;;0;0;;;;;$fechaFormateada;$sexoFormateado;;;$benef;$parentesco;;;;;;;;\n";
+            $lineaPaci = "$nombre;$tipo_doc;$nro_doc;;;; ; ;;;;;$fechaFormateada;$sexoFormateado;;;$benef;$parentesco;;;;;;;;\n";
 
             $contenido .= $lineaPaci;
 
@@ -219,60 +240,346 @@ if ($result->num_rows > 0) {
 
     $contenido .= "PRESTACIONES\n";
 
-    // Consulta SQL para obtener los profesionales con los nuevos campos id_prof
-    $sqlAmbulatorioPsi = "SELECT DISTINCT p.*, prof.matricula_n AS matricula_prof, mP.fecha AS fecha_modalidad, tA.codigo AS tipo_afiliado, m.codigo AS modalidad, e.fecha_egreso AS fecha_egreso ,tE.codigo AS tipo_egreso
-                 FROM paciente p
-                 LEFT JOIN practicas practs ON p.id = practs.id_paciente
-                 LEFT JOIN profesional prof ON prof.id_prof = p.id_prof
-                 LEFT JOIN paci_modalidad mP ON mP.id_paciente = p.id
-                 LEFT JOIN modalidad m ON m.id = mP.modalidad
-                 LEFT JOIN egresos e ON e.id_paciente = p.id
-                 LEFT JOIN tipo_afiliado tA ON tA.id = p.tipo_afiliado
-                 LEFT JOIN tipo_egreso tE ON tE.id = e.motivo
-                 WHERE  practs.fecha BETWEEN '$fechaInicio' AND '$fechaFin' 
-                 ";
+    //AMBULATORIO
+    // Consulta SQL para obtener los datos necesarios
+    $sqlAmbulatorioPsi = "SELECT DISTINCT p.parentesco ,
+                                      p.benef,
+                                      p.id, 
+                                      prof.matricula_n AS matricula_prof, 
+                                      mP.fecha AS fecha_modalidad, 
+                                      tA.codigo AS tipo_afiliado, 
+                                      m.codigo AS modalidad, 
+                                      e.fecha_egreso AS fecha_egreso, 
+                                      tE.codigo AS tipo_egreso, 
+                                      practs.fecha, 
+                                      practs.hora, 
+                                      practs.cant, 
+                                      act.codigo,
+                                      (SELECT d.codigo 
+                                       FROM paci_diag pd 
+                                       LEFT JOIN diag d ON d.id = pd.codigo
+                                       WHERE pd.id_paciente = p.id 
+                                       ORDER BY pd.fecha DESC 
+                                       LIMIT 1) AS diagnostico_reciente
+               FROM paciente p
+               LEFT JOIN practicas practs ON p.id = practs.id_paciente
+               LEFT JOIN actividades act ON act.id = practs.actividad
+               LEFT JOIN profesional prof ON prof.id_prof = p.id_prof
+               LEFT JOIN paci_modalidad mP ON mP.id_paciente = p.id AND practs.fecha BETWEEN mP.fecha AND COALESCE(
+                                                (SELECT MIN(pm2.fecha)
+                                                FROM paci_modalidad pm2
+                                                WHERE pm2.id_paciente = p.id
+                                                AND pm2.fecha > mP.fecha),
+                                                '9999-12-31')
+                LEFT JOIN modalidad m ON m.id = mP.modalidad
+                LEFT JOIN egresos e ON e.id_paciente = p.id AND e.modalidad = m.id
+                LEFT JOIN tipo_afiliado tA ON tA.id = p.tipo_afiliado
+                LEFT JOIN tipo_egreso tE ON tE.id = e.motivo
+                LEFT JOIN paci_op o ON o.id_paciente = p.id AND (o.modalidad_op = m.id OR o.modalidad_op = COALESCE((SELECT pm2.modalidad
+                                                FROM paci_modalidad pm2
+                                                WHERE pm2.id_paciente = p.id
+                                                AND pm2.fecha > mP.fecha),
+                                                '9999-12-31')) 
+                WHERE practs.fecha BETWEEN '$fechaInicio' AND '$fechaFin' 
+                AND mP.fecha BETWEEN '$fechaInicio' AND '$fechaFin'
+                AND m.codigo NOT IN (11, 12)";
+
     $resultPaciAmbulatorioPsi = $conn->query($sqlAmbulatorioPsi);
 
-    // Verifica si hay resultados en la tabla `bocas_atencion`
+    // Verifica si hay resultados
     if ($resultPaciAmbulatorioPsi->num_rows > 0) {
-        // Itera sobre cada boca y genera una nueva línea
+        $current_paciente_id = null;
+        $contenido_practicas = '';
+        $current_modalidad = null;
+
+        // Itera sobre cada paciente
         while ($row = $resultPaciAmbulatorioPsi->fetch_assoc()) {
+            $id_paciente = $row['id'];
             $matricula_prof = $row['matricula_prof'];
             $fecha_modalidad = $row['fecha_modalidad'];
             $tipo_afiliado = $row['tipo_afiliado'];
             $modalidad = $row['modalidad'];
             $fecha_egreso = $row['fecha_egreso'];
             $tipo_egreso = $row['tipo_egreso'];
+            $diagnostico_reciente = $row['diagnostico_reciente'];
+            $codigo = $row['codigo'];
+            $fecha = $row['fecha'];
+            $hora = $row['hora'];
+            $cant = $row['cant'];
+            $benef = $row['benef'];
+            $parentesco = $row['parentesco'];
+
+
+
+
+            // Si el valor de $benef es menor a 12, agrega un 0 al inicio
+            if (strlen($benef) <= 11) {
+                $benef = '0' . $benef;
+            }
 
             // Si fecha_egreso está vacía, asigna fechaFin y tipo_egreso como 8
             if (empty($fecha_egreso)) {
-                $fecha_egreso = $fechaFin;  // Asigna fechaFin a fecha_egreso
-                $tipo_egreso = 8;  // Establece tipo_egreso como 8
+                $fecha_egreso = $fechaFin;
+                $tipo_egreso = 8;
+            }
+
+            // Verifica si 'op' está vacío
+            if (empty($row['op'])) {
+                // Si no hay 'op', simplemente añade un ';'
+                $op = '';
+            } else {
+                // Si hay 'op', usa su valor
+                $op = $row['op'];
             }
 
             // Formatea la fecha en 'dd/mm/yyyy'
             $fechaFormateada_modalidad = date('d/m/Y', strtotime($fecha_modalidad));
             $fechaFormateada_egreso_amb = date('d/m/Y', strtotime($fecha_egreso));
+            $fecha_practica = date('d/m/Y', strtotime($fecha));
+            $hora_practica = date('H:i', strtotime($hora));
 
-            $contenido .= "AMBULATORIOPSI \n";
+            // Si es un nuevo paciente, imprime los datos anteriores y comienza un nuevo bloque
+            if ($current_paciente_id !== $id_paciente || $current_modalidad !== $row['modalidad']) {
+                // Si ya tenemos datos de un paciente anterior, imprimimos el bloque "FIN AMBULATORIOPSI"
+                if ($current_paciente_id !== null) {
+                    // Añade el bloque de prácticas acumulado
+                    $contenido .= "REL_PRACTICASREALIZADASXAMBULATORIOPSI\n";
+                    $contenido .= $contenido_practicas;
+                    $contenido .= "FIN AMBULATORIOPSI\n";
+                }
 
-            // Genera la línea para cada registro con el formato deseado
-            $lineaAmbulatorioPsi = "$cuit;;$matricula_prof;0;0;0;1;0;$fechaFormateada_modalidad;;;$tipo_afiliado;;$modalidad;$benef;$parentesco;$fechaFormateada_egreso_amb;$tipo_egreso\n";
+                // Empieza un nuevo bloque de paciente
+                $contenido .= "AMBULATORIOPSI \n";
 
-            $contenido .= $lineaAmbulatorioPsi;
+                
+                $modalidad_formateada = '';
+                // Construye la línea con la conversión de modalidad
+                switch ($modalidad) {
+                    case 8:
+                    case 9:
+                    case 10:
+                        $modalidad_formateada = 4;
+                        break;
+                    case 11:
+                        $modalidad_formateada = 5;
+                        break;
+                    case 12:
+                        $modalidad_formateada = 6;
+                        break;
+                    default:
+                        // Mantiene el valor original si no hay coincidencia
+                        break;
+                }
 
-            $contenido .= "REL_DIAGNOSTICOSXAMBULATORIOPSI\n";
-            
+                $lineaAmbulatorioPsi = "$cuit;;$matricula_prof;0;0;0;1;0;$fechaFormateada_modalidad;;;$tipo_afiliado;$op;$modalidad_formateada;$benef;$parentesco;$fechaFormateada_egreso_amb;$tipo_egreso;\n";
+                $contenido .= $lineaAmbulatorioPsi;
+
+                $contenido .= "REL_DIAGNOSTICOSXAMBULATORIOPSI\n";
+                $lineaAmbulatorioPsiDiag = ";;;0;1;$diagnostico_reciente;1\n";
+                $contenido .= $lineaAmbulatorioPsiDiag;
+
+                // Reinicia la variable para acumular las prácticas
+                $contenido_practicas = '';
+                $current_paciente_id = $id_paciente;
+                $current_modalidad = $modalidad;
+            }
+
+            // Acumula las prácticas de este paciente
+            $lineaAmbulatorioPsiPractica = ";;;0;1;$codigo;$fecha_practica $hora_practica;$cant;0;0\n";
+            $contenido_practicas .= $lineaAmbulatorioPsiPractica;
+        }
+
+        // Añade el último bloque de prácticas para el último paciente
+        if (!empty($contenido_practicas)) {
             $contenido .= "REL_PRACTICASREALIZADASXAMBULATORIOPSI\n";
-            
-            
-
+            $contenido .= $contenido_practicas;
             $contenido .= "FIN AMBULATORIOPSI\n";
-
         }
     } else {
-        $contenido .= "No se encontraron pacientes .\n";
+        $contenido .= "No se encontraron pacientes.\n";
     }
+
+    //INTERNACION
+    // Consulta SQL para obtener los datos necesarios
+    $sqlInternacionPsi = "SELECT DISTINCT p.parentesco,
+                                            p.benef,
+                                            p.id,
+                                            p.admision,
+                                            p.nro_hist_int,
+                                            p.hora_admision,
+                                            p.boca_atencion, 
+                                            prof.matricula_n AS matricula_prof,
+                                            prof_pract.matricula_n AS matricula_practica, 
+                                            mP.fecha AS fecha_modalidad, 
+                                            tA.codigo AS tipo_afiliado, 
+                                            m.codigo AS modalidad, 
+                                            e.fecha_egreso AS fecha_egreso,
+                                            e.hora_egreso, 
+                                            tE.codigo AS tipo_egreso, 
+                                            practs.fecha, 
+                                            practs.hora, 
+                                            practs.cant, 
+                                            act.codigo,
+                                            o.op,
+                                            (SELECT d.codigo 
+                                            FROM paci_diag pd 
+                                            LEFT JOIN diag d ON d.id = pd.codigo
+                                            WHERE pd.id_paciente = p.id 
+                                            ORDER BY pd.fecha DESC 
+                                            LIMIT 1) AS diagnostico_reciente
+                                            FROM paciente p
+                                            LEFT JOIN practicas practs ON p.id = practs.id_paciente
+                                            LEFT JOIN profesional prof_pract ON prof_pract.id_prof = practs.profesional
+                                            LEFT JOIN actividades act ON act.id = practs.actividad
+                                            LEFT JOIN profesional prof ON prof.id_prof = p.id_prof
+                                            LEFT JOIN paci_modalidad mP ON mP.id_paciente = p.id AND practs.fecha BETWEEN mP.fecha AND COALESCE(
+                                                (SELECT MIN(pm2.fecha)
+                                                FROM paci_modalidad pm2
+                                                WHERE pm2.id_paciente = p.id
+                                                AND pm2.fecha > mP.fecha),
+                                                '9999-12-31')
+                                            LEFT JOIN modalidad m ON m.id = mP.modalidad
+                                            LEFT JOIN egresos e ON e.id_paciente = p.id AND e.modalidad = m.id
+                                            LEFT JOIN tipo_afiliado tA ON tA.id = p.tipo_afiliado
+                                            LEFT JOIN tipo_egreso tE ON tE.id = e.motivo
+                                            LEFT JOIN paci_op o ON o.id_paciente = p.id AND (o.modalidad_op = m.id OR o.modalidad_op = COALESCE((SELECT pm2.modalidad
+                                                FROM paci_modalidad pm2
+                                                WHERE pm2.id_paciente = p.id
+                                                AND pm2.fecha > mP.fecha),
+                                                '9999-12-31')) 
+                                            WHERE practs.fecha BETWEEN '$fechaInicio' AND '$fechaFin' 
+                                            AND mP.fecha BETWEEN '$fechaInicio' AND '$fechaFin'
+                                            AND m.codigo IN (11, 12)
+                                            ";
+
+    $resultPaciInternacionPsi = $conn->query($sqlInternacionPsi);
+
+    // Verifica si hay resultados
+    if ($resultPaciInternacionPsi->num_rows > 0) {
+        // Inicializamos la variable antes del bucle
+        $current_paciente_id = null;
+        $current_modalidad = null;  // Inicializar la modalidad como null
+        $contenido_practicas = '';
+
+        // Itera sobre cada paciente
+        while ($row = $resultPaciInternacionPsi->fetch_assoc()) {
+            $id_paciente = $row['id'];
+            $matricula_prof = $row['matricula_prof'];
+            $matricula_practica = $row['matricula_practica'];
+            $fecha_modalidad = $row['fecha_modalidad'];
+            $tipo_afiliado = $row['tipo_afiliado'];
+            $modalidad = $row['modalidad'];
+            $fecha_egreso = $row['fecha_egreso'];
+            $tipo_egreso = $row['tipo_egreso'];
+            $diagnostico_reciente = $row['diagnostico_reciente'];
+            $codigo = $row['codigo'];
+            $fecha = $row['fecha'];
+            $hora = $row['hora'];
+            $cant = $row['cant'];
+            $benef = $row['benef'];
+            $parentesco = $row['parentesco'];
+            $boca_atencion = $row['boca_atencion'];
+            $op = $row['op'];
+            $admision = $row['admision'];
+            $hora_admision = $row['hora_admision'];
+            $nro_hist_int = $row['nro_hist_int'];
+            $hora_egreso = $row['hora_egreso'];
+
+            $finalInternacionPsi = '';
+
+            // Si fecha_egreso está vacía, asigna fechaFin y tipo_egreso como 8
+            if (empty($fecha_egreso)) {
+                $finalInternacionPsi = ";;";
+                $cod_diag_egreso = "1";
+            } else {
+                $hora_egreso_formateada = date('H:i', strtotime($hora_egreso));
+                $fechaFormateada_egreso_int = date('d/m/Y', strtotime($fecha_egreso));
+                $finalInternacionPsi = "$fechaFormateada_egreso_int;$hora_egreso_formateada;$tipo_egreso";
+                $cod_diag_egreso = "2";
+            }
+
+            // Verifica si 'op' está vacío
+            if (empty($row['op'])) {
+                // Si no hay 'op', simplemente añade un ';'
+                $op = '';
+            } else {
+                // Si hay 'op', usa su valor
+                $op = $row['op'];
+            }
+
+
+
+            // Formatea la fecha en 'dd/mm/yyyy'
+            $fechaFormateada_modalidad = date('d/m/Y', strtotime($fecha_modalidad));
+
+            $fecha_practica = date('d/m/Y', strtotime($fecha));
+            $fecha_admision = date('d/m/Y', strtotime($admision));
+            $hora_practica = date('H:i', strtotime($hora));
+            $hora_admision = date('H:i', strtotime($hora_admision));
+            // Si es un nuevo paciente, imprime los datos anteriores y comienza un nuevo bloque
+            if ($current_paciente_id !== $id_paciente || $current_modalidad !== $row['modalidad']) {
+                // Si ya tenemos datos de un paciente anterior, imprimimos el bloque "FIN INTERNACIONPSI"
+                if ($current_paciente_id !== null) {
+                    // Añade el bloque de prácticas acumulado
+                    $contenido .= "REL_PRACTICASREALIZADASXINTERNACIONPSI\n";
+                    $contenido .= $contenido_practicas;
+                    $contenido .= "FIN INTERNACIONPSI\n";
+                }
+
+                // Empieza un nuevo bloque de paciente
+                $contenido .= "INTERNACIONPSI \n";
+
+                $modalidad_formateada = '';
+                // Construye la línea con la conversión de modalidad
+                switch ($modalidad) {
+                    case 8:
+                    case 9:
+                    case 10:
+                        $modalidad_formateada = 4;
+                        break;
+                    case 11:
+                        $modalidad_formateada = 5;
+                        break;
+                    case 12:
+                        $modalidad_formateada = 6;
+                        break;
+                    default:
+                        // Mantiene el valor original si no hay coincidencia
+                        break;
+                }
+
+                // Si es una nueva modalidad, usa la fecha de la modalidad
+                $fecha_encabezado = $fechaFormateada_modalidad;
+
+                $lineaInternacionPsi = "$cuit;;;0;0;0;$boca_atencion;;;$tipo_afiliado;$op;;$benef;$parentesco;$nro_hist_int;$modalidad_formateada;;;$fecha_encabezado;$hora_admision;$finalInternacionPsi\n";
+                $contenido .= $lineaInternacionPsi;
+
+                $contenido .= "REL_DIAGNOSTICOSXINTERNACIONPSI\n";
+                $lineaInternacionPsiDiag = ";;;0;1;$diagnostico_reciente;$cod_diag_egreso;1\n";
+                $contenido .= $lineaInternacionPsiDiag;
+
+                // Reiniciar prácticas y modalidad
+                $contenido_practicas = '';
+                $current_paciente_id = $id_paciente;
+                $current_modalidad = $modalidad;
+            }
+
+            // Acumula las prácticas de este paciente
+            $lineaInternacionPsiPractica = ";$cuit;$matricula_practica;0;0;0;1;$codigo;$fecha_practica $hora_practica;$cant;1;$diagnostico_reciente\n";
+            $contenido_practicas .= $lineaInternacionPsiPractica;
+        }
+
+        // Añade el último bloque de prácticas para el último paciente
+        if (!empty($contenido_practicas)) {
+            $contenido .= "REL_PRACTICASREALIZADASXINTERNACIONPSI\n";
+            $contenido .= $contenido_practicas;
+            $contenido .= "FIN INTERNACIONPSI\n";
+        }
+    } else {
+        $contenido .= "No se encontraron pacientes.\n";
+    }
+
+
 
 
     // Generar la respuesta JSON con el nombre del archivo y el contenido
