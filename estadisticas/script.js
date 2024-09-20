@@ -1521,156 +1521,181 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function getMaxRowsPerPage(doc, headers, data) {
             const pageHeight = doc.internal.pageSize.height;
-            const margins = { top: 30, bottom: 20 }; // Adjust margins if needed
-            const rowHeight = 10; // Height of each row
-            const headerHeight = 10; // Height of header row
+            const margins = { top: 30, bottom: 20 };
+            const rowHeight = 10;
+            const headerHeight = 10;
 
             const availableHeight = pageHeight - margins.top - margins.bottom - headerHeight;
-            const maxRows = Math.floor(availableHeight / rowHeight);
-
-            return Math.min(maxRows, data.length);
+            return Math.min(Math.floor(availableHeight / rowHeight), data.length);
         }
 
-        Promise.all([fetchData(fechaDesde, fechaHasta, obraSocialId)])
-            .then(([resumen]) => {
-                
-                const groupedByModality = resumen.reduce((acc, item) => {
-                    if (!acc[item.modalidad_full]) {
-                        acc[item.modalidad_full] = { data: [], totalQuantity: 0 };
-                    }
-                    if (item.pract_full) {
-                        acc[item.modalidad_full].data.push([
-                            item.nombre,
-                            (`${item.benef}${item.parentesco}`),
-                            item.pract_full,
-                            formatDate(item.fecha_pract),
-                            item.cantidad || 1  // Usa 0 si item.cantidad es undefined o null                           
+        Promise.all([fetchData(fechaDesde, fechaHasta, obraSocialId)]).then(([resumen]) => {
+            const groupedByModality = resumen.reduce((acc, item) => {
+                if (!acc[item.modalidad_full]) {
+                    acc[item.modalidad_full] = { data: [], totalQuantity: 0, isInternacion: false };
+                }
 
-                        ]);
-                        acc[item.modalidad_full].totalQuantity += item.cantidad || 1;
-                    }
+                // Extraer el código de modalidad desde modalidad_full
+                const codigoModalidad = item.modalidad_full.split(' - ')[0];
+                const isInternacion = ['11', '12'].includes(codigoModalidad); // Identifica internación por el código
 
-                    if (item.turno_pract) {
-                        acc[item.modalidad_full].data.push([
-                            item.nombre,
-                            (`${item.benef}${item.parentesco}`),
-                            item.turno_pract,
-                            formatDate(item.fecha_turno),
-                            item.cantidad || 1
-                        ]);
-                        acc[item.modalidad_full].totalQuantity += item.cantidad || 1;
-                    }
-                    console.log(item)
-                    return acc;
-                    
-                }, {});
+                acc[item.modalidad_full].isInternacion = isInternacion;
 
-                const formattedFechaDesde = formatDate(fechaDesde);
-                const formattedFechaHasta = formatDate(fechaHasta);
-                
-                const title = 'LISTADO DE PRESTACIONES REALIZADAS POR PACIENTE Y MODALIDAD';
-                const pageWidth = doc.internal.pageSize.getWidth();
+                if (item.pract_full) {
+                    acc[item.modalidad_full].data.push([
+                        item.nombre,
+                        (`${item.benef}${item.parentesco}`),
+                        item.pract_full,
+                        formatDate(item.fecha_pract),
+                        item.cantidad || 1
+                    ]);
+                    acc[item.modalidad_full].totalQuantity += item.cantidad || 1;
+                }
 
-                doc.setFontSize(16);
-                // Establecer la fuente en negrita
-                doc.setFont('Helvetica', 'bold');
-                doc.text(title, pageWidth / 2, 10, { align: 'center' });
-                // Restablecer la fuente a la predeterminada (opcional)
-                doc.setFont('Helvetica', 'normal');
+                if (item.turno_pract) {
+                    acc[item.modalidad_full].data.push([
+                        item.nombre,
+                        (`${item.benef}${item.parentesco}`),
+                        item.turno_pract,
+                        formatDate(item.fecha_turno),
+                        item.cantidad || 1
+                    ]);
+                    acc[item.modalidad_full].totalQuantity += item.cantidad || 1;
+                }
 
-                const dateRange = `DESDE: ${formattedFechaDesde} HASTA: ${formattedFechaHasta}`;
-                doc.setFontSize(14);
-                doc.text(dateRange, pageWidth / 2, 20, { align: 'center' });
+                return acc;
+            }, {});
 
-                doc.setFontSize(12);
-                let startY = 30;
-                const margin = { left: 15 };
+            const formattedFechaDesde = formatDate(fechaDesde);
+            const formattedFechaHasta = formatDate(fechaHasta);
+            const title = 'LISTADO DE PRESTACIONES REALIZADAS POR PACIENTE Y MODALIDAD';
+            const pageWidth = doc.internal.pageSize.getWidth();
 
-                let grandTotal = 0; // Variable to accumulate total for all modalities
+            doc.setFontSize(16);
+            doc.setFont('Helvetica', 'bold');
+            doc.text(title, pageWidth / 2, 10, { align: 'center' });
 
-                Object.keys(groupedByModality).forEach(modality => {
-                    const { data, totalQuantity } = groupedByModality[modality];
-                    const modalityUpperCase = modality.toUpperCase(); // Convierte la variable a mayúsculas
-                    const subtitle = `MODALIDAD: ${modalityUpperCase}`;
-                    
-                    doc.text(subtitle, pageWidth / 2, startY, { align: 'center' });
+            const dateRange = `DESDE: ${formattedFechaDesde} HASTA: ${formattedFechaHasta}`;
+            doc.setFontSize(14);
+            doc.text(dateRange, pageWidth / 2, 20, { align: 'center' });
 
-                    startY += 10; // Move down for tables
+            doc.setFontSize(12);
+            let startY = 30;
+            const margin = { left: 15 };
 
-                    const tableWidth = pageWidth - margin.left * 2;
-                    const headers = ['AFILIADO', 'BENEFICIO', 'PRACTICA/TURNO', 'FECHA', 'CANTIDAD'];
+            let grandTotal = 0;
+            let totalAmbulatorio = 0;
+            let totalInternacion = 0;
 
-                    if (data.length) {
-                        let tableStartY = startY;
-                        const maxRowsPerPage = getMaxRowsPerPage(doc, headers, data);
+            // Función para imprimir un grupo (Ambulatorio o Internación)
+            function printGroup(title, modalities, startY) {
+                if (modalities.length > 0) {
+                    doc.setFontSize(14);
+                    doc.text(title, margin.left, startY); // Título del grupo
+                    startY += 10;
 
-                        // Split data into chunks dynamically
-                        for (let i = 0; i < data.length; i += maxRowsPerPage) {
-                            const chunk = data.slice(i, i + maxRowsPerPage);
+                    modalities.forEach(modality => {
+                        const { data, totalQuantity, isInternacion } = groupedByModality[modality];
+                        const modalityUpperCase = modality.toUpperCase();
+                        const subtitle = `MODALIDAD: ${modalityUpperCase}`;
 
-                            doc.autoTable({
-                                head: [headers],
-                                body: chunk,
-                                startY: tableStartY,
-                                margin: margin,
-                                theme: 'striped',
-                                styles: {
-                                    fontSize: 10,
-                                    cellPadding: 2,
-                                    overflow: 'linebreak'
-                                },
-                                columnStyles: {
-                                    0: { cellWidth: 'wrap' }, // Adjust or use 'auto' to wrap text
-                                    1: { cellWidth: 'wrap' },
-                                    2: { cellWidth: 'wrap' },
-                                    3: { cellWidth: 'wrap' },
-                                    4: { cellWidth: 'wrap' }
-                                },
-                                didDrawPage: function (data) {
-                                    tableStartY = data.cursor.y;
-                                },
-                                pageBreak: 'auto'
-                            });
-                            
-
-                            if (i + maxRowsPerPage < data.length) {
-                                doc.addPage(); // Add a new page if there is more data
-                                tableStartY = 30; // Reset start position for the new page
-                            }
-                        }
-
-                        // Add total quantity for this modality
                         doc.setFontSize(12);
-                        doc.text(`Total Cantidad: ${totalQuantity}`, pageWidth / 2, tableStartY + 10, { align: 'center' });
+                        doc.text(subtitle, pageWidth / 2, startY, { align: 'center' });
+                        startY += 10;
 
-                        grandTotal += totalQuantity; // Accumulate to grandTotal
+                        const headers = ['AFILIADO', 'BENEFICIO', 'PRACTICA/TURNO', 'FECHA', 'CANTIDAD'];
 
-                        startY = tableStartY + 20; // Update startY after the last chunk
-                    }
-                });
+                        if (data.length) {
+                            let tableStartY = startY;
+                            const maxRowsPerPage = getMaxRowsPerPage(doc, headers, data);
 
-                // Add grand total at the end of the document
-                doc.setFontSize(14);
-                doc.text(`Total General: ${grandTotal}`, pageWidth / 2, startY + 2, { align: 'center' });
+                            for (let i = 0; i < data.length; i += maxRowsPerPage) {
+                                const chunk = data.slice(i, i + maxRowsPerPage);
 
-                const imgUrl = '../img/logo.png';
-                var img = new Image();
-                img.onload = function () {
-                    const imgWidth = 25;
-                    const imgHeight = 20;
-                    const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY + 5;
+                                doc.autoTable({
+                                    head: [headers],
+                                    body: chunk,
+                                    startY: tableStartY,
+                                    margin: margin,
+                                    theme: 'striped',
+                                    styles: {
+                                        fontSize: 10,
+                                        cellPadding: 2,
+                                        overflow: 'linebreak'
+                                    },
+                                    columnStyles: {
+                                        0: { cellWidth: 50 }, // Ajusta el ancho de las columnas
+                                        1: { cellWidth: 50 },
+                                        2: { cellWidth: 125 },
+                                        3: { cellWidth: 25 },
+                                        4: { cellWidth: 25 }
+                                    },
+                                    didDrawPage: function (data) {
+                                        tableStartY = data.cursor.y;
+                                    },
+                                    pageBreak: 'auto'
+                                });
 
-                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+                                if (i + maxRowsPerPage < data.length) {
+                                    doc.addPage();
+                                    tableStartY = 30;
+                                }
+                            }
 
-                    window.open(doc.output('bloburl'))
-                };
-                img.src = imgUrl;
+                            doc.setFontSize(12);
+                            doc.text(`Total Cantidad: ${totalQuantity}`, pageWidth / 2, tableStartY + 10, { align: 'center' });
 
-            }).catch(error => {
-                console.error('Error:', error);
-            });
+                            grandTotal += totalQuantity;
+
+                            if (isInternacion) {
+                                totalInternacion += totalQuantity;
+                            } else {
+                                totalAmbulatorio += totalQuantity;
+                            }
+
+                            startY = tableStartY + 20;
+                        }
+                    });
+                }
+                return startY;
+            }
+
+            // Agrupar modalidades en ambulatorio e internación
+            const ambulatorioModalities = Object.keys(groupedByModality).filter(modality => !groupedByModality[modality].isInternacion);
+            const internacionModalities = Object.keys(groupedByModality).filter(modality => groupedByModality[modality].isInternacion);
+
+            // Imprimir grupo de Ambulatorio
+            startY = printGroup('AMBULATORIO', ambulatorioModalities, startY);
+
+            // Imprimir grupo de Internación
+            startY = printGroup('INTERNACION', internacionModalities, startY);
+
+            // Mostrar los totales generales
+            doc.setFontSize(14);
+            doc.text(`Total General: ${grandTotal}`, pageWidth / 2, startY + 2, { align: 'center' });
+            doc.text(`Total Ambulatorio: ${totalAmbulatorio}`, pageWidth / 2, startY + 12, { align: 'center' });
+            doc.text(`Total Internación: ${totalInternacion}`, pageWidth / 2, startY + 22, { align: 'center' });
+
+            // Imagen de logo
+            const imgUrl = '../img/logo.png';
+            var img = new Image();
+            img.onload = function () {
+                const imgWidth = 25;
+                const imgHeight = 20;
+                const xImg = (pageWidth - imgWidth) / 2;
+                const yImg = startY + 25;
+
+                doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+                window.open(doc.output('bloburl'));
+            };
+            img.src = imgUrl;
+
+        }).catch(error => {
+            console.error('Error:', error);
+        });
     }
+
+
     //FIN RESUMEN ESTADISTICAS POR MODALIDAD
 
     //PACIENTES
@@ -1729,54 +1754,54 @@ document.addEventListener('DOMContentLoaded', function () {
     function generatePatientPdf(fechaDesde, fechaHasta, obraSocialId) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('l', 'mm', 'a4');
-    
+
         function getMaxRowsPerPage(doc, headers, data) {
             const pageHeight = doc.internal.pageSize.height;
             const margins = { top: 30, bottom: 20 };
             const rowHeight = 10;
             const headerHeight = 10;
-    
+
             const availableHeight = pageHeight - margins.top - margins.bottom - headerHeight;
             const maxRows = Math.floor(availableHeight / rowHeight);
-    
+
             return Math.min(maxRows, data.length);
         }
-    
+
         Promise.all([fetchPatientData(fechaDesde, fechaHasta, obraSocialId)])
             .then(([resumen]) => {
                 // Step 1: Aggregate data by modality and sex, ensuring only one row per patient
                 const aggregatedData = {};
-    
+
                 resumen.forEach(item => {
                     const key = `${item.nombre}-${item.modalidad_full}`;
                     if (!aggregatedData[key] || new Date(item.ult_atencion) > new Date(aggregatedData[key].ult_atencion)) {
                         aggregatedData[key] = item;
                     }
                 });
-    
+
                 const data = Object.values(aggregatedData);
-    
+
                 const formattedFechaDesde = formatDate(fechaDesde);
                 const formattedFechaHasta = formatDate(fechaHasta);
-    
+
                 const title = 'LISTADO DE PACIENTES ATENDIDOS POR MODALIDAD';
                 const pageWidth = doc.internal.pageSize.getWidth();
-    
+
                 doc.setFontSize(16);
                 doc.setFont('Helvetica', 'bold');
                 doc.text(title, pageWidth / 2, 10, { align: 'center' });
                 doc.setFont('Helvetica', 'normal');
-    
+
                 const dateRange = `DESDE: ${formattedFechaDesde} HASTA: ${formattedFechaHasta}`;
                 doc.setFontSize(14);
                 doc.text(dateRange, pageWidth / 2, 20, { align: 'center' });
-    
+
                 doc.setFontSize(12);
                 let startY = 30;
                 const margin = { left: 15 };
-    
+
                 const modalities = [...new Set(data.map(item => item.modalidad_full))];
-    
+
                 modalities.forEach(modality => {
                     const modalityData = data.filter(item => item.modalidad_full === modality);
                     const sexTotals = modalityData.reduce((acc, item) => {
@@ -1786,22 +1811,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                         acc[sex]++;
                         return acc;
-                        
+
                     }, {});
-    
+
                     const modalityUpperCase = modality.toUpperCase();
                     const subtitle = `MODALIDAD: ${modalityUpperCase}`;
                     doc.setFontSize(12);
                     doc.text(subtitle, pageWidth / 2, startY, { align: 'center' });
-    
+
                     startY += 5;
-    
+
                     const headers = ['AFILIADO', 'BENEFICIO', 'INGRESO', 'DIAG', 'EGRESO', 'Ult. ATENCION'];
-    
+
                     if (modalityData.length) {
                         let tableStartY = startY;
                         const maxRowsPerPage = getMaxRowsPerPage(doc, headers, modalityData);
-    
+
                         for (let i = 0; i < modalityData.length; i += maxRowsPerPage) {
                             const chunk = modalityData.slice(i, i + maxRowsPerPage);
                             console.log(chunk)
@@ -1836,20 +1861,20 @@ document.addEventListener('DOMContentLoaded', function () {
                                 },
                                 pageBreak: 'auto'
                             });
-    
+
                             if (i + maxRowsPerPage < modalityData.length) {
                                 doc.addPage();
                                 tableStartY = 30;
                             }
                         }
-    
+
                         // Add totals by sex for the current modality
                         doc.setFontSize(12);
                         startY = tableStartY + 10;
-    
+
                         const sexHeaders = ['SEXO', 'TOTAL'];
                         const sexData = Object.entries(sexTotals).map(([sex, total]) => [sex, total]);
-    
+
                         doc.autoTable({
                             head: [sexHeaders],
                             body: sexData,
@@ -1866,14 +1891,14 @@ document.addEventListener('DOMContentLoaded', function () {
                                 1: { cellWidth: 30 }
                             }
                         });
-    
+
                         startY = doc.autoTable.previous.finalY + 10;
                     }
                 });
-    
+
                 doc.setFontSize(14);
                 doc.text(`Total General: ${data.length}`, pageWidth / 2, startY, { align: 'center' });
-    
+
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
@@ -1881,21 +1906,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
                     const yImg = startY + 15;
-    
+
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
-    
+
                     window.open(doc.output('bloburl'));
                 };
                 img.src = imgUrl;
-    
+
             }).catch(error => {
                 console.error('Error:', error);
             });
     }
-    
-    
-    
-    
+
+
+
+
     //FIN PACIENTES
 
     //OME
