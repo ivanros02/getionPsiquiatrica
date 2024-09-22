@@ -48,7 +48,7 @@ $sql = "WITH ValidRecords AS (
         p.sexo,
         COALESCE(
         (
-            SELECT m.descripcion
+            SELECT CONCAT(m.codigo , ' - ', m.descripcion)
             FROM paci_modalidad pm
             JOIN modalidad m ON m.id = pm.modalidad
             WHERE pm.id_paciente = p.id
@@ -62,7 +62,7 @@ $sql = "WITH ValidRecords AS (
             LIMIT 1
         ),
         (
-            SELECT m.descripcion
+            SELECT CONCAT(m.codigo , ' - ', m.descripcion)
             FROM paci_modalidad pm
             JOIN modalidad m ON m.id = pm.modalidad
             WHERE pm.id_paciente = p.id

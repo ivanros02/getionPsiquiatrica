@@ -279,6 +279,18 @@ $result = $conn->query($sql);
                             <input type="text" class="form-control" id="puertaInput"
                                 placeholder="Ingrese el nombre de la puerta de atención">
                         </div>
+
+                        <div class="mb-3">
+                            <label for="num_boca" class="form-label">Numero de boca</label>
+                            <input type="text" class="form-control" id="num_boca"
+                                placeholder="Ingrese el nombre de la puerta de atención">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ugl_boca" class="form-label">UGL de boca</label>
+                            <input type="text" class="form-control" id="ugl_boca"
+                                placeholder="Ingrese el nombre de la puerta de atención">
+                        </div>
                         <button type="button" class="btn btn-primary" id="addBocaBtn">Agregar Boca</button>
                     </form>
 
@@ -291,6 +303,8 @@ $result = $conn->query($sql);
                                 <th>ID</th>
                                 <th>Boca</th>
                                 <th>Puerta</th>
+                                <th>Num. Boca</th>
+                                <th>UGL Boca</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -403,6 +417,8 @@ $result = $conn->query($sql);
                         <td>${index + 1}</td>
                         <td>${boca.boca}</td>
                         <td>${boca.puerta}</td>
+                        <td>${boca.num_boca}</td>
+                        <td>${boca.ugl_boca}</td>
                         <td>
                             <button class="btn btn-warning btn-sm editBocaBtn" data-id="${boca.id}"><i class="fas fa-edit"></i></button>
 

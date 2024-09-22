@@ -1672,9 +1672,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Mostrar los totales generales
             doc.setFontSize(14);
-            doc.text(`Total General: ${grandTotal}`, pageWidth / 2, startY + 2, { align: 'center' });
-            doc.text(`Total Ambulatorio: ${totalAmbulatorio}`, pageWidth / 2, startY + 12, { align: 'center' });
-            doc.text(`Total Internación: ${totalInternacion}`, pageWidth / 2, startY + 22, { align: 'center' });
+
+            // Total Ambulatorio alineado a la izquierda
+            doc.text(`Total Ambulatorio: ${totalAmbulatorio}`, margin.left, startY + 5);
+
+            // Total Internación alineado a la izquierda
+            doc.text(`Total Internación: ${totalInternacion}`, margin.left, startY + 10);
+
+            // Total General centrado, debajo de los otros dos
+            doc.text(`Total General: ${grandTotal}`, pageWidth / 2, startY + 15, { align: 'center' });
 
             // Imagen de logo
             const imgUrl = '../img/logo.png';
@@ -1769,9 +1775,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         Promise.all([fetchPatientData(fechaDesde, fechaHasta, obraSocialId)])
             .then(([resumen]) => {
-                // Step 1: Aggregate data by modality and sex, ensuring only one row per patient
                 const aggregatedData = {};
 
+                // Agrupar por nombre y modalidad, solo la última atención se guarda
                 resumen.forEach(item => {
                     const key = `${item.nombre}-${item.modalidad_full}`;
                     if (!aggregatedData[key] || new Date(item.ult_atencion) > new Date(aggregatedData[key].ult_atencion)) {
@@ -1780,13 +1786,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 const data = Object.values(aggregatedData);
-
                 const formattedFechaDesde = formatDate(fechaDesde);
                 const formattedFechaHasta = formatDate(fechaHasta);
-
                 const title = 'LISTADO DE PACIENTES ATENDIDOS POR MODALIDAD';
                 const pageWidth = doc.internal.pageSize.getWidth();
 
+                // Título del reporte
                 doc.setFontSize(16);
                 doc.setFont('Helvetica', 'bold');
                 doc.text(title, pageWidth / 2, 10, { align: 'center' });
@@ -1800,24 +1805,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 let startY = 30;
                 const margin = { left: 15 };
 
-                const modalities = [...new Set(data.map(item => item.modalidad_full))];
+                // Filtrar las modalidades por internación (11, 12) y ambulatorio (las demás)
+                const internacionData = data.filter(item => ['11', '12'].includes(item.modalidad_full.split(' - ')[0]));
+                const ambulatorioData = data.filter(item => !['11', '12'].includes(item.modalidad_full.split(' - ')[0]));
 
-                modalities.forEach(modality => {
-                    const modalityData = data.filter(item => item.modalidad_full === modality);
-                    const sexTotals = modalityData.reduce((acc, item) => {
-                        const sex = item.sexo || 'Desconocido';
-                        if (!acc[sex]) {
-                            acc[sex] = 0;
-                        }
-                        acc[sex]++;
-                        return acc;
+                // Variables para los totales
+                let totalAmbulatorio = 0;
+                let totalInternacion = 0;
 
-                    }, {});
-
-                    const modalityUpperCase = modality.toUpperCase();
-                    const subtitle = `MODALIDAD: ${modalityUpperCase}`;
+                // Función para dibujar los datos de cada modalidad
+                function drawModalityTable(modalityData, modality, startY) {
                     doc.setFontSize(12);
-                    doc.text(subtitle, pageWidth / 2, startY, { align: 'center' });
+                    doc.text(`MODALIDAD: ${modality.toUpperCase()}`, pageWidth / 2, startY, { align: 'center' });
 
                     startY += 5;
 
@@ -1829,7 +1828,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         for (let i = 0; i < modalityData.length; i += maxRowsPerPage) {
                             const chunk = modalityData.slice(i, i + maxRowsPerPage);
-                            console.log(chunk)
                             doc.autoTable({
                                 head: [headers],
                                 body: chunk.map(item => [
@@ -1868,50 +1866,98 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                         }
 
-                        // Add totals by sex for the current modality
-                        doc.setFontSize(12);
-                        startY = tableStartY + 10;
-
-                        const sexHeaders = ['SEXO', 'TOTAL'];
-                        const sexData = Object.entries(sexTotals).map(([sex, total]) => [sex, total]);
-
-                        doc.autoTable({
-                            head: [sexHeaders],
-                            body: sexData,
-                            startY: startY,
-                            margin: margin,
-                            theme: 'striped',
-                            styles: {
-                                fontSize: 10,
-                                cellPadding: 2,
-                                overflow: 'linebreak'
-                            },
-                            columnStyles: {
-                                0: { cellWidth: 60 },
-                                1: { cellWidth: 30 }
-                            }
-                        });
-
                         startY = doc.autoTable.previous.finalY + 10;
                     }
-                });
 
+                    return startY;
+                }
+
+                // Agregar sección de INTERNACIÓN (Modalidades 11 y 12)
+                if (internacionData.length) {
+                    doc.setFontSize(14);
+
+                    // Texto "INTERNACIÓN"
+                    doc.text('INTERNACIÓN', pageWidth / 2, startY, { align: 'center' });
+                    // Establecer el grosor de la línea
+                    doc.setLineWidth(0.5); // Cambia el valor para ajustar el grosor
+                    // Dibujar una línea debajo del texto
+                    const textWidth = doc.getTextWidth('INTERNACIÓN');
+                    const lineY = startY + 2; // Ajusta la posición Y de la línea
+                    const startX = (pageWidth - textWidth) / 2; // Centra la línea
+
+                    doc.line(startX, lineY, startX + textWidth, lineY); // Dibuja la línea
+
+                    startY += 10; // Aumenta el valor de startY para el siguiente texto
+
+                    // Dibujar tabla para cada modalidad de internación
+                    const modalitiesInternacion = [...new Set(internacionData.map(item => item.modalidad_full))];
+                    modalitiesInternacion.forEach(modality => {
+                        const modalityData = internacionData.filter(item => item.modalidad_full === modality);
+                        startY = drawModalityTable(modalityData, modality, startY);
+                    });
+
+                    totalInternacion = internacionData.length;
+                }
+
+                // Agregar sección de AMBULATORIO (Otras modalidades)
+                if (ambulatorioData.length) {
+                    doc.setFontSize(14);
+                    // Texto "AMBULATORIO"
+                    doc.text('AMBULATORIO', pageWidth / 2, startY, { align: 'center' });
+                    // Establecer el grosor de la línea
+                    doc.setLineWidth(0.5); // Cambia el valor para ajustar el grosor
+                    // Dibujar una línea debajo del texto
+                    const textWidth = doc.getTextWidth('AMBULATORIO');
+                    const lineY = startY + 2; // Ajusta la posición Y de la línea
+                    const startX = (pageWidth - textWidth) / 2; // Centra la línea
+
+                    doc.line(startX, lineY, startX + textWidth, lineY); // Dibuja la línea
+
+                    startY += 10; // Aumenta el valor de startY para el siguiente texto
+
+
+                    // Dibujar tabla para cada modalidad de ambulatorio
+                    const modalitiesAmbulatorio = [...new Set(ambulatorioData.map(item => item.modalidad_full))];
+                    modalitiesAmbulatorio.forEach(modality => {
+                        const modalityData = ambulatorioData.filter(item => item.modalidad_full === modality);
+                        startY = drawModalityTable(modalityData, modality, startY);
+                    });
+
+                    totalAmbulatorio = ambulatorioData.length;
+                }
+
+                // Agregar nueva página antes de los totales finales si es necesario
+                if (startY + 50 > doc.internal.pageSize.height) {
+                    doc.addPage();
+                    startY = 30; // Reiniciar la posición Y al comienzo de la nueva página
+                }
+
+                // Totales finales
                 doc.setFontSize(14);
-                doc.text(`Total General: ${data.length}`, pageWidth / 2, startY, { align: 'center' });
+                doc.text(`Total Ambulatorio: ${totalAmbulatorio}`, margin.left, startY + 2);
+                doc.text(`Total Internación: ${totalInternacion}`, margin.left, startY + 12);
+                doc.text(`Total General: ${data.length}`, pageWidth / 2, startY + 22, { align: 'center' });
 
+                // Asegurarse de que el logo se muestre en una nueva página si es necesario
                 const imgUrl = '../img/logo.png';
                 var img = new Image();
                 img.onload = function () {
                     const imgWidth = 29;
                     const imgHeight = 25;
                     const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = startY + 15;
+                    const yImg = startY + 32; // Ajusta la posición del logo
+
+                    // Agregar una nueva página si el logo se cortaría
+                    if (startY + 50 + imgHeight > doc.internal.pageSize.height) {
+                        doc.addPage();
+                        startY = 30; // Reiniciar la posición Y
+                    }
 
                     doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
-
                     window.open(doc.output('bloburl'));
                 };
                 img.src = imgUrl;
+
 
             }).catch(error => {
                 console.error('Error:', error);

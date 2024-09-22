@@ -113,27 +113,26 @@ if ($result->num_rows > 0) {
     $contenido .= "BOCA_ATENCION\n";
 
     // Consulta SQL para obtener los profesionales con los nuevos campos
-    $sqlBocas = "SELECT boca,puerta FROM bocas_atencion";
+    $sqlBocas = "SELECT * FROM bocas_atencion";
     $resultBocas = $conn->query($sqlBocas);
 
-    // Variable contador para incrementar el valor
-    $contador = 1;
-
+    
     // Verifica si hay resultados en la tabla `bocas_atencion`
     if ($resultBocas->num_rows > 0) {
         // Itera sobre cada boca y genera una nueva línea
         while ($row = $resultBocas->fetch_assoc()) {
             $boca = $row['boca'];
             $puerta = $row['puerta'];
+            $num_boca = $row['num_boca'];
+            $ugl_boca = $row['ugl_boca'];
 
             // Genera la línea para cada boca de atención
-            $lineaBoca = ";$cuit;;0;$contador;20;$boca;$puerta;;;;\n";
+            $lineaBoca = ";$cuit;;0;$num_boca;$ugl_boca;$boca;$puerta;;;;\n";
 
             // Agrega la línea al contenido
             $contenido .= $lineaBoca;
 
-            // Incrementa el contador
-            $contador++;
+           
         }
     } else {
         $contenido .= "No se encontraron bocas de atención.\n";
