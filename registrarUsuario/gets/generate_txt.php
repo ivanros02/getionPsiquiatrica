@@ -243,7 +243,8 @@ if ($result->num_rows > 0) {
     // Consulta SQL para obtener los datos necesarios
     $sqlAmbulatorioPsi = "SELECT DISTINCT p.parentesco ,
                                       p.benef,
-                                      p.id, 
+                                      p.id,
+                                      boca.num_boca AS boca_atencion, 
                                       prof.matricula_n AS matricula_prof, 
                                       mP.fecha AS fecha_modalidad, 
                                       tA.codigo AS tipo_afiliado, 
@@ -262,6 +263,7 @@ if ($result->num_rows > 0) {
                                        LIMIT 1) AS diagnostico_reciente
                FROM paciente p
                LEFT JOIN practicas practs ON p.id = practs.id_paciente
+               LEFT JOIN bocas_atencion boca ON boca.id = p.boca_atencion
                LEFT JOIN actividades act ON act.id = practs.actividad
                LEFT JOIN profesional prof ON prof.id_prof = p.id_prof
                LEFT JOIN paci_modalidad mP ON mP.id_paciente = p.id AND practs.fecha BETWEEN mP.fecha AND COALESCE(
@@ -307,6 +309,7 @@ if ($result->num_rows > 0) {
             $cant = $row['cant'];
             $benef = $row['benef'];
             $parentesco = $row['parentesco'];
+            $boca_atencion = $row['boca_atencion'];
 
 
 
@@ -370,7 +373,7 @@ if ($result->num_rows > 0) {
                         break;
                 }
 
-                $lineaAmbulatorioPsi = "$cuit;;$matricula_prof;0;0;0;1;0;$fechaFormateada_modalidad;;;$tipo_afiliado;$op;$modalidad_formateada;$benef;$parentesco;$fechaFormateada_egreso_amb;$tipo_egreso;\n";
+                $lineaAmbulatorioPsi = "$cuit;;$matricula_prof;0;0;0;$boca_atencion;0;$fechaFormateada_modalidad;;;$tipo_afiliado;$op;$modalidad_formateada;$benef;$parentesco;$fechaFormateada_egreso_amb;$tipo_egreso;\n";
                 $contenido .= $lineaAmbulatorioPsi;
 
                 $contenido .= "REL_DIAGNOSTICOSXAMBULATORIOPSI\n";
@@ -406,7 +409,7 @@ if ($result->num_rows > 0) {
                                             p.admision,
                                             p.nro_hist_int,
                                             p.hora_admision,
-                                            p.boca_atencion, 
+                                            boca.num_boca AS boca_atencion, 
                                             prof.matricula_n AS matricula_prof,
                                             prof_pract.matricula_n AS matricula_practica, 
                                             mP.fecha AS fecha_modalidad, 
@@ -430,6 +433,7 @@ if ($result->num_rows > 0) {
                                             LEFT JOIN practicas practs ON p.id = practs.id_paciente
                                             LEFT JOIN profesional prof_pract ON prof_pract.id_prof = practs.profesional
                                             LEFT JOIN actividades act ON act.id = practs.actividad
+                                            LEFT JOIN bocas_atencion boca ON boca.id = p.boca_atencion
                                             LEFT JOIN profesional prof ON prof.id_prof = p.id_prof
                                             LEFT JOIN paci_modalidad mP ON mP.id_paciente = p.id AND practs.fecha BETWEEN mP.fecha AND COALESCE(
                                                 (SELECT MIN(pm2.fecha)
@@ -583,7 +587,7 @@ if ($result->num_rows > 0) {
 
     // Generar la respuesta JSON con el nombre del archivo y el contenido
     $response = array(
-        'filename' => $c_interno . ".txt",  // Nombre dinámico del archivo
+        'filename' => $c_interno . "WSS.txt",  // Nombre dinámico del archivo
         'content' => $contenido
     );
 

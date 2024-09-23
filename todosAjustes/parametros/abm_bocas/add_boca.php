@@ -3,9 +3,12 @@ require_once "../../../conexion.php";
 
 $boca = $_POST['boca'];
 $puerta = $_POST['puerta'];
+$num_boca = $_POST['num_boca'];
+$ugl_boca = $_POST['ugl_boca'];
+
 if ($boca) {
-    $stmt = $conn->prepare("INSERT INTO bocas_atencion (boca, puerta) VALUES (?, ?)");
-    $stmt->bind_param("si", $boca, $puerta); // Verifica los tipos de datos
+    $stmt = $conn->prepare("INSERT INTO bocas_atencion (boca, puerta, num_boca, ugl_boca) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("siis", $boca, $puerta, $num_boca, $ugl_boca); // Verifica los tipos de datos
 
     if ($stmt->execute()) {
         echo json_encode(["success" => true, "message" => "Boca agregada exitosamente."]);

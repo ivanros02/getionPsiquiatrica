@@ -448,26 +448,33 @@ $result = $conn->query($sql);
                 });
             });
 
+            // Agregar una boca
             $('#addBocaBtn').on('click', function () {
                 const boca = $('#bocaInput').val();
                 const puerta = $('#puertaInput').val();
-                if (boca) {
+                const num_boca = $('#num_boca').val();
+                const ugl_boca = $('#ugl_boca').val();
+
+                if (boca && puerta && num_boca && ugl_boca) {
                     $.ajax({
                         url: './abm_bocas/add_boca.php',
                         method: 'POST',
-                        data: { boca: boca, puerta: puerta },
-                        dataType: 'json', // Asegúrate de que jQuery interprete la respuesta como JSON
+                        data: { boca: boca, puerta: puerta, num_boca: num_boca, ugl_boca: ugl_boca },
+                        dataType: 'json',
                         success: function (response) {
                             console.log('Respuesta al agregar:', response);
                             if (response.success) {
                                 $('#bocaInput').val('');
+                                $('#puertaInput').val('');
+                                $('#num_boca').val('');
+                                $('#ugl_boca').val('');
                                 $('#agregarBocaModal').modal('hide');
                                 $.ajax({
                                     url: './gets/get_bocas.php',
                                     method: 'GET',
-                                    dataType: 'json', // Asegúrate de que jQuery interprete la respuesta como JSON
+                                    dataType: 'json',
                                     success: function (data) {
-                                        bocas = data; // Usa directamente la respuesta como JSON
+                                        bocas = data;
                                         renderBocas();
                                     }
                                 });
@@ -479,21 +486,27 @@ $result = $conn->query($sql);
                             console.error('Error al agregar la boca:', error);
                         }
                     });
+                } else {
+                    alert('Por favor, complete todos los campos.');
                 }
             });
 
+            // Editar una boca
             $(document).on('click', '.editBocaBtn', function () {
-                const id = parseInt($(this).data('id'), 10); // Convierte el id a un número
-                const bocaData = bocas.find(b => parseInt(b.id, 10) === id); // Convierte el id en bocas a número
+                const id = parseInt($(this).data('id'), 10);
+                const bocaData = bocas.find(b => parseInt(b.id, 10) === id);
 
                 if (bocaData) {
                     const nuevaBoca = prompt('Editar Boca de Atención:', bocaData.boca);
                     const nuevaPuerta = prompt('Editar Puerta:', bocaData.puerta);
-                    if (nuevaBoca && nuevaPuerta) {
+                    const nuevoNumBoca = prompt('Editar Número de Boca:', bocaData.num_boca);
+                    const nuevoUglBoca = prompt('Editar UGL de Boca:', bocaData.ugl_boca);
+
+                    if (nuevaBoca && nuevaPuerta && nuevoNumBoca && nuevoUglBoca) {
                         $.ajax({
                             url: './abm_bocas/edit_boca.php',
                             method: 'POST',
-                            data: { id: id, boca: nuevaBoca, puerta: nuevaPuerta },
+                            data: { id: id, boca: nuevaBoca, puerta: nuevaPuerta, num_boca: nuevoNumBoca, ugl_boca: nuevoUglBoca },
                             dataType: 'json',
                             success: function (response) {
                                 console.log('Respuesta al editar:', response);
@@ -512,12 +525,10 @@ $result = $conn->query($sql);
                                 }
                             },
                             error: function (xhr, status, error) {
-                                
+                                console.error('Error al editar la boca:', error);
                             }
                         });
                     }
-                } else {
-                    
                 }
             });
 

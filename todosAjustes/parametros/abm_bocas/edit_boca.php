@@ -4,10 +4,12 @@ require_once "../../../conexion.php";
 $id = $_POST['id'];
 $boca = $_POST['boca'];
 $puerta = $_POST['puerta'];
+$num_boca = $_POST['num_boca'];
+$ugl_boca = $_POST['ugl_boca'];
 
 if ($id && $boca) {
-    $stmt = $conn->prepare("UPDATE bocas_atencion SET boca = ?, puerta = ? WHERE id = ?");
-    $stmt->bind_param("ssi", $boca, $puerta, $id); // Cambiado a "ssi"
+    $stmt = $conn->prepare("UPDATE bocas_atencion SET boca = ?, puerta = ?, num_boca = ?, ugl_boca = ? WHERE id = ?");
+    $stmt->bind_param("ssisi", $boca, $puerta, $num_boca, $ugl_boca, $id); // Cambiado a "ssi"
 
     if ($stmt->execute()) {
         echo json_encode(["success" => true, "message" => "Boca actualizada exitosamente."]);
