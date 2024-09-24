@@ -126,7 +126,7 @@ if ($result->num_rows > 0) {
             $num_boca = $row['num_boca'];
             $ugl_boca = $row['ugl_boca'];
 
-            // Genera la línea para cada boca de atención
+            // Genera la línea para cada boca de atención ugl_boca es INT
             $lineaBoca = ";$cuit;;0;$num_boca;$ugl_boca;$boca;$puerta;;;;\n";
 
             // Agrega la línea al contenido
