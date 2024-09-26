@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-09-2024 a las 23:08:35
+-- Tiempo de generación: 26-09-2024 a las 03:02:16
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -267,18 +267,20 @@ CREATE TABLE `antecedentes_personales` (
 CREATE TABLE `bocas_atencion` (
   `id` int(255) NOT NULL,
   `boca` varchar(255) NOT NULL,
-  `puerta` int(255) NOT NULL
+  `puerta` int(255) NOT NULL,
+  `num_boca` bigint(255) NOT NULL,
+  `ugl_boca` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `bocas_atencion`
 --
 
-INSERT INTO `bocas_atencion` (`id`, `boca`, `puerta`) VALUES
-(1, 'Raul B Diaz', 0),
-(2, 'Don Bosco ', 0),
-(3, 'Gonzalez', 0),
-(5, 'Rivadavia', 457);
+INSERT INTO `bocas_atencion` (`id`, `boca`, `puerta`, `num_boca`, `ugl_boca`) VALUES
+(1, 'Raul B Diaz', 2, 3, 10),
+(2, 'Don Bosco', 3, 2, 16),
+(3, 'Gonzalez', 100, 123, 25),
+(5, 'Rivadavia', 457, 211, 253);
 
 -- --------------------------------------------------------
 
@@ -419,11 +421,21 @@ INSERT INTO `disponibilidad` (`id`, `id_prof`, `dia_semana`, `hora_inicio`, `hor
 CREATE TABLE `egresos` (
   `id_paciente` int(255) NOT NULL,
   `fecha_egreso` date NOT NULL,
+  `hora_egreso` time NOT NULL,
   `diag` int(255) NOT NULL,
   `modalidad` int(255) NOT NULL,
   `motivo` int(255) DEFAULT NULL,
   `id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `egresos`
+--
+
+INSERT INTO `egresos` (`id_paciente`, `fecha_egreso`, `hora_egreso`, `diag`, `modalidad`, `motivo`, `id`) VALUES
+(132, '2024-08-15', '12:00:00', 1, 4, 7, 36),
+(131, '2024-08-26', '18:00:00', 1, 8, 9, 39),
+(133, '2024-08-21', '12:00:00', 1, 12, 9, 42);
 
 -- --------------------------------------------------------
 
@@ -432,7 +444,7 @@ CREATE TABLE `egresos` (
 --
 
 CREATE TABLE `especialidad` (
-  `id_especialidad` int(11) NOT NULL,
+  `id_especialidad` int(255) NOT NULL,
   `desc_especialidad` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -441,8 +453,73 @@ CREATE TABLE `especialidad` (
 --
 
 INSERT INTO `especialidad` (`id_especialidad`, `desc_especialidad`) VALUES
-(22, 'Musicoterapia'),
-(25, 'Gimnasia');
+(1, 'CLINICA MEDICA'),
+(2, 'INFECTOLOGIA'),
+(3, 'NEUROLOGIA'),
+(4, 'NUTRICION'),
+(5, 'PSIQUIATRIA Y PSICOLOGIA MEDICA'),
+(6, 'HEMATOLOGIA'),
+(7, 'DERMATOLOGIA'),
+(8, 'ALERGIA E INMUNOLOGIA'),
+(9, 'ANESTESIOLOGIA'),
+(10, 'CARDIOLOGIA'),
+(11, 'GASTROENTEROLOGIA'),
+(12, 'ONCOLOGIA'),
+(13, 'REUMATOLOGIA'),
+(14, 'NEUMONOLOGIA'),
+(15, 'ENDOCRINOLOGIA Y NUTRICION'),
+(16, 'REHABILITACION'),
+(18, 'GERIATRIA'),
+(19, 'NEFROLOGIA'),
+(20, 'CLINICA PEDIATRICA'),
+(21, 'FISIOTERAPIA'),
+(22, 'PERINATOLOGIA'),
+(23, 'GENETICA'),
+(24, 'CLINICA QUIRURGICA'),
+(25, 'OFTALMOLOGIA'),
+(26, 'OTORRINOLARINGOLOGIA'),
+(27, 'CIRUGIA REPARADORA'),
+(28, 'NEUROCIRUGIA'),
+(29, 'CIRUGIA PEDIATRICA'),
+(30, 'CIRUGIA DEL TORAX'),
+(31, 'ORTOPEDIA Y TRAUMATOLOGIA'),
+(32, 'PSICOPEDAGOGIA'),
+(33, 'CIRUGIA CARDIOVASCULAR'),
+(34, 'CIRUGIA VASCULAR PERIFERICA'),
+(35, 'UROLOGIA'),
+(36, 'TOCOGINECOLOGIA'),
+(37, 'OBSTETRICIA'),
+(38, 'CENTRO MEDICO'),
+(39, 'PSIQUIATRIA Y PSICOLOG.PEDIATRICA'),
+(40, 'NEUROLOGIA PEDIATRICA'),
+(41, 'ANATOMIA PATOLOGICA'),
+(42, 'MEDICINA NUCLEAR'),
+(43, 'HEMOTERAPIA'),
+(44, 'DIAG.POR IMAGENES Y RADIODIAGNOST'),
+(45, 'RADIOTERAPIA'),
+(46, 'GINECOLOGIA Y OBSTETRICIA'),
+(47, 'CLINICA - SANATORIO: CATEGORIA OBSTETRICIA - NEO - PEDIATRIA'),
+(48, 'CLINICA - SANATORIO: CATEGORIA II'),
+(49, 'CLINICA - SANATORIO: CATEGORIA III'),
+(50, 'CENTRO DE DIAGNOSTICOS MEDICOS I'),
+(52, 'CLINICA - SANATORIO: CATEGORIA I'),
+(54, 'CARDIOLOGIA PEDIATRICA'),
+(55, 'GASTROENTEROLOGIA PEDIATRICA'),
+(56, 'NEUMONOLOGIA PEDIATRICA'),
+(57, 'ENDOCRINOLOGIA PEDIATRICA'),
+(58, 'NEFROLOGIA PEDIATRICA'),
+(60, 'CIRUGIA CARDIOVASC.PEDIATRICA'),
+(61, 'CIRUGIA GASTROENTER.PEDIATRICA'),
+(65, 'CIRUGIA GENERAL'),
+(188, 'ESPECIALIDAD 188'),
+(400, 'FONOAUDIOLOGIA'),
+(451, 'ESPECIALIDAD SOLE1'),
+(500, 'BIOQUIMICO GENERAL'),
+(600, 'KINESIOLOGIA'),
+(700, 'ODONTOLOGO GENERAL'),
+(800, 'LUGARES DE INTERNACION GENERAL'),
+(1000, 'PSICOLOGIA'),
+(1111, 'QWERTASDFG');
 
 -- --------------------------------------------------------
 
@@ -789,21 +866,27 @@ CREATE TABLE `paciente` (
   `tipo_doc` varchar(255) NOT NULL,
   `nro_doc` int(255) NOT NULL,
   `admision` date NOT NULL,
+  `hora_admision` time NOT NULL,
   `id_prof` int(255) NOT NULL,
   `benef` bigint(255) NOT NULL,
   `parentesco` varchar(2) NOT NULL,
   `hijos` int(255) NOT NULL,
   `ocupacion` varchar(255) NOT NULL,
   `tipo_afiliado` int(255) NOT NULL,
-  `boca_atencion` int(255) NOT NULL
+  `boca_atencion` int(255) NOT NULL,
+  `nro_hist_int` bigint(255) NOT NULL,
+  `nro_hist_amb` bigint(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `paciente`
 --
 
-INSERT INTO `paciente` (`id`, `nombre`, `obra_social`, `fecha_nac`, `sexo`, `domicilio`, `localidad`, `partido`, `c_postal`, `telefono`, `tipo_doc`, `nro_doc`, `admision`, `id_prof`, `benef`, `parentesco`, `hijos`, `ocupacion`, `tipo_afiliado`, `boca_atencion`) VALUES
-(127, 'AVOLIO ANDRES', 4, '1985-09-18', 'Masculino', '', '', '', 0, '', 'DNI', 44379777, '2024-09-18', 12, 10030397406, '00', 0, '', 1, 1);
+INSERT INTO `paciente` (`id`, `nombre`, `obra_social`, `fecha_nac`, `sexo`, `domicilio`, `localidad`, `partido`, `c_postal`, `telefono`, `tipo_doc`, `nro_doc`, `admision`, `hora_admision`, `id_prof`, `benef`, `parentesco`, `hijos`, `ocupacion`, `tipo_afiliado`, `boca_atencion`, `nro_hist_int`, `nro_hist_amb`) VALUES
+(131, 'AVOLIO ANDRES', 4, '1995-09-19', 'Masculino', '', '', '', 0, '1139114579', 'DNI', 123456789, '2024-08-01', '08:00:00', 12, 10030397406, '00', 0, '', 1, 1, 123, 456),
+(132, 'LIVINGSTON ESTELA BEATRIZ', 4, '1945-09-19', 'Femenino', '', '', '', 0, '', 'LC', 123456, '2024-08-02', '08:00:00', 12, 10015604104, '00', 0, '', 1, 1, 456, 789),
+(133, 'DIAZ NORA ISABEL', 4, '1970-09-19', 'Femenino', '', '', '', 0, '1161536595', 'DNI', 44379888, '2024-08-05', '08:00:00', 12, 140901599006, '00', 0, '', 1, 1, 111, 111),
+(134, 'FORTIER ESTHER CONSTANCIA', 4, '1945-09-19', 'Femenino', '', '', '', 0, '1156901681', 'DNI', 556699, '2024-08-19', '08:00:00', 12, 140153888306, '00', 2, '', 1, 1, 456, 459);
 
 -- --------------------------------------------------------
 
@@ -817,6 +900,16 @@ CREATE TABLE `paci_diag` (
   `codigo` int(255) NOT NULL,
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `paci_diag`
+--
+
+INSERT INTO `paci_diag` (`id_paciente`, `fecha`, `codigo`, `id`) VALUES
+(133, '2024-08-05', 1, 21),
+(131, '2024-08-01', 1, 22),
+(132, '2024-08-02', 2, 23),
+(134, '2024-08-19', 1, 24);
 
 -- --------------------------------------------------------
 
@@ -854,6 +947,19 @@ CREATE TABLE `paci_modalidad` (
   `id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `paci_modalidad`
+--
+
+INSERT INTO `paci_modalidad` (`id_paciente`, `modalidad`, `fecha`, `id`) VALUES
+(131, 4, '2024-08-01', 94),
+(132, 4, '2024-08-02', 95),
+(133, 11, '2024-08-05', 96),
+(134, 3, '2024-08-19', 97),
+(133, 11, '2024-08-05', 98),
+(131, 4, '2024-08-01', 99),
+(134, 4, '2024-09-25', 100);
+
 -- --------------------------------------------------------
 
 --
@@ -864,17 +970,21 @@ CREATE TABLE `paci_op` (
   `id` int(11) NOT NULL,
   `id_paciente` int(11) NOT NULL,
   `fecha` date NOT NULL,
-  `op` int(255) NOT NULL,
-  `cant` int(11) NOT NULL
+  `op` bigint(255) NOT NULL,
+  `cant` int(11) NOT NULL,
+  `modalidad_op` int(255) NOT NULL,
+  `fecha_vencimiento` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `paci_op`
 --
 
-INSERT INTO `paci_op` (`id`, `id_paciente`, `fecha`, `op`, `cant`) VALUES
-(1, 16, '2024-08-15', 2147483647, 1),
-(3, 33, '2024-08-16', 123456791, 3);
+INSERT INTO `paci_op` (`id`, `id_paciente`, `fecha`, `op`, `cant`, `modalidad_op`, `fecha_vencimiento`) VALUES
+(4, 131, '2024-08-27', 9925850389, 6, 4, '2025-02-23'),
+(5, 134, '2024-08-19', 9925850389, 6, 11, '2025-02-15'),
+(6, 133, '2024-08-05', 9925850389, 6, 12, '2025-02-01'),
+(8, 133, '2024-08-22', 9925857388, 6, 11, '2025-02-18');
 
 -- --------------------------------------------------------
 
@@ -941,6 +1051,25 @@ CREATE TABLE `practicas` (
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `practicas`
+--
+
+INSERT INTO `practicas` (`id_paciente`, `fecha`, `hora`, `profesional`, `actividad`, `cant`, `id`) VALUES
+(131, '2024-08-15', '10:00:00', 12, 507, 1, 131),
+(131, '2024-08-22', '10:00:00', 12, 507, 1, 132),
+(132, '2024-08-07', '10:00:00', 12, 504, 1, 133),
+(132, '2024-08-14', '10:00:00', 12, 504, 1, 134),
+(133, '2024-08-06', '11:00:00', 12, 521, 1, 135),
+(133, '2024-08-13', '11:00:00', 12, 521, 1, 136),
+(133, '2024-08-20', '11:00:00', 12, 521, 1, 137),
+(134, '2024-08-21', '10:00:00', 12, 562, 1, 138),
+(134, '2024-08-28', '10:00:00', 12, 562, 1, 139),
+(131, '2024-08-28', '12:00:00', 12, 605, 1, 143),
+(131, '2024-08-29', '12:00:00', 12, 605, 1, 144),
+(133, '2024-08-28', '12:00:00', 12, 558, 1, 145),
+(133, '2024-08-29', '12:00:00', 12, 558, 1, 146);
+
 -- --------------------------------------------------------
 
 --
@@ -967,12 +1096,12 @@ CREATE TABLE `profesional` (
 --
 
 INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `id_especialidad`, `domicilio`, `localidad`, `codigo_pos`, `matricula_p`, `matricula_n`, `telefono`, `email`, `tipo_doc`, `nro_doc`) VALUES
-(12, 'WALTER ROSENDO', 25, '143', 'Villa Espana', '1886', '218', '796', 243567189, 'infowss@gmail.com', 'DNI', 21879630),
-(15, 'LIVINGSTON ESTELA BEATRIZ', 22, '2651', 'Villa Espana', '1886', '123', '222', 2147483647, 'TEST34@gmail.com', 'LE', 7680072),
-(16, 'MONICA CEJAS', 25, '143', 'Berazategui', '1886', '123', '345', 2147483647, 'moni@gmail.com', 'LE', 7680072),
-(17, 'VALENTIN ROSENDO', 25, '143', 'Berazategui', '1886', '1232', '3453', 2147483647, 'valentin@gmail.com', 'LE', 7680072),
-(18, 'IVAN ROSENDO', 22, '2651', 'Berazategui', '1886', '777', '743', 1139114579, 'ivanrosendo1102@gmail.com', 'DNI', 44379377),
-(19, 'Zoe', 22, '143', 'Villa Espana', '1886', '123', '345', 1139114579, 'ivanrosendo1102@gmail.com', 'LE', 7680072);
+(12, 'WALTER ROSENDO', 1000, '143', 'Villa Espana', '1886', '218', '796', 243567189, 'infowss@gmail.com', 'DNI', 21879630),
+(15, 'LIVINGSTON ESTELA BEATRIZ', 1000, '2651', 'Villa Espana', '1886', '123', '222', 2147483647, 'TEST34@gmail.com', 'LE', 7680072),
+(16, 'MONICA CEJAS', 1000, '143', 'Berazategui', '1886', '123', '345', 2147483647, 'moni@gmail.com', 'LE', 7680072),
+(17, 'VALENTIN ROSENDO', 1000, '143', 'Berazategui', '1886', '1232', '3453', 2147483647, 'valentin@gmail.com', 'LE', 7680072),
+(18, 'IVAN ROSENDO', 1000, '2651', 'Berazategui', '1886', '777', '743', 1139114579, 'ivanrosendo1102@gmail.com', 'DNI', 44379377),
+(19, 'Zoe', 1000, '143', 'Villa Espana', '1886', '123', '345', 1139114579, 'ivanrosendo1102@gmail.com', 'LE', 7680072);
 
 -- --------------------------------------------------------
 
@@ -990,15 +1119,6 @@ CREATE TABLE `responsable` (
   `localidad` varchar(255) NOT NULL,
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `responsable`
---
-
-INSERT INTO `responsable` (`id_paciente`, `nombreYapellido`, `tel`, `tipo_familiar`, `dni`, `dom`, `localidad`, `id`) VALUES
-(16, 'IVAN', 123, 1, 456, 12313, 'Bera', 2),
-(16, 'NUEVO', 123, 2, 123, 2451, 'BERA', 3),
-(16, 'IVAN NUEVI', 123, 1, 123, 4444, 'BERA', 4);
 
 -- --------------------------------------------------------
 
@@ -1191,14 +1311,6 @@ CREATE TABLE `traslados` (
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `traslados`
---
-
-INSERT INTO `traslados` (`id_paciente`, `hora`, `importe`, `obs`, `fecha`, `id`) VALUES
-(16, '23:06:00', 1500, 'nada', '2024-07-29', 2),
-(33, '10:56:00', 2500, '', '2024-08-15', 3);
-
 -- --------------------------------------------------------
 
 --
@@ -1216,6 +1328,15 @@ CREATE TABLE `turnos` (
   `atendido` varchar(255) NOT NULL,
   `observaciones` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `turnos`
+--
+
+INSERT INTO `turnos` (`id`, `fecha`, `hora`, `paciente`, `id_prof`, `motivo`, `llego`, `atendido`, `observaciones`) VALUES
+(92, '2024-09-10', '11:50:00', 131, 12, 579, 'SI', 'SI', 'NO'),
+(93, '2024-09-10', '12:15:00', 133, 12, 578, 'NO', 'NO', 'nada'),
+(94, '2024-09-10', '12:40:00', 134, 12, 578, 'NO', 'NO', 'nada');
 
 -- --------------------------------------------------------
 
@@ -1549,7 +1670,8 @@ ALTER TABLE `paci_modalidad`
 --
 ALTER TABLE `paci_op`
   ADD PRIMARY KEY (`id`,`id_paciente`),
-  ADD KEY `fk_paci_op` (`id_paciente`);
+  ADD KEY `fk_paci_op` (`id_paciente`),
+  ADD KEY `fk_op_modalidad` (`modalidad_op`);
 
 --
 -- Indices de la tabla `parametro_sistema`
@@ -1758,13 +1880,7 @@ ALTER TABLE `disponibilidad`
 -- AUTO_INCREMENT de la tabla `egresos`
 --
 ALTER TABLE `egresos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
-
---
--- AUTO_INCREMENT de la tabla `especialidad`
---
-ALTER TABLE `especialidad`
-  MODIFY `id_especialidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de la tabla `evoluciones_amb`
@@ -1860,13 +1976,13 @@ ALTER TABLE `origen_ingreso`
 -- AUTO_INCREMENT de la tabla `paciente`
 --
 ALTER TABLE `paciente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=128;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
 
 --
 -- AUTO_INCREMENT de la tabla `paci_diag`
 --
 ALTER TABLE `paci_diag`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `paci_habitacion`
@@ -1878,13 +1994,13 @@ ALTER TABLE `paci_habitacion`
 -- AUTO_INCREMENT de la tabla `paci_modalidad`
 --
 ALTER TABLE `paci_modalidad`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT de la tabla `paci_op`
 --
 ALTER TABLE `paci_op`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `parametro_sistema`
@@ -1902,7 +2018,7 @@ ALTER TABLE `periodo`
 -- AUTO_INCREMENT de la tabla `practicas`
 --
 ALTER TABLE `practicas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
 
 --
 -- AUTO_INCREMENT de la tabla `profesional`
@@ -1974,7 +2090,7 @@ ALTER TABLE `traslados`
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT de la tabla `t_juicio`
@@ -2152,6 +2268,7 @@ ALTER TABLE `paci_modalidad`
 -- Filtros para la tabla `paci_op`
 --
 ALTER TABLE `paci_op`
+  ADD CONSTRAINT `fk_op_modalidad` FOREIGN KEY (`modalidad_op`) REFERENCES `modalidad` (`id`),
   ADD CONSTRAINT `fk_paci_op` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id`);
 
 --
