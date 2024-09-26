@@ -23,7 +23,7 @@ $sql = "SELECT
         WHERE 
             p.id = ? 
             AND pM.fecha = (
-                SELECT MAX(pM2.fecha)
+                SELECT MIN(pM2.fecha)
                 FROM paci_modalidad pM2
                 WHERE pM2.id_paciente = p.id
             )";

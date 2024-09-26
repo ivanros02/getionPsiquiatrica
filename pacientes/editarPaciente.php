@@ -97,10 +97,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         );
 
         if ($stmt->execute()) {
-            // Actualizar en la tabla paci_modalidad
-            $sql_modalidad = "UPDATE paci_modalidad SET modalidad = ?, fecha = ? WHERE id_paciente = ?";
+            // Actualizar en la tabla paci_modalidad solo la modalidad más antigua (primera ingresada)
+            $sql_modalidad = "UPDATE paci_modalidad 
+                                SET modalidad = ?, fecha = ? 
+                                WHERE id_paciente = ? 
+                                AND fecha = (
+                                    SELECT MIN(fecha) 
+                                    FROM paci_modalidad 
+                                    WHERE id_paciente = ?) ";
+
+            // Preparamos y ejecutamos la consulta
             $stmt_modalidad = $conn->prepare($sql_modalidad);
-            $stmt_modalidad->bind_param("isi", $modalidad_act, $admision, $id);
+            $stmt_modalidad->bind_param("isii", $modalidad_act, $admision, $id, $id);
 
             if ($stmt_modalidad->execute()) {
                 $response['success'] = true;
@@ -110,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $stmt_modalidad->close();
+
         } else {
             $response['message'] = 'Error al actualizar el paciente: ' . $stmt->error;
         }

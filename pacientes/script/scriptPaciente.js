@@ -199,7 +199,7 @@ document.getElementById('btnBuscar').addEventListener('click', function () {
     var parentesco = $('#parentesco').val();
 
     // Realizar la solicitud al backend
-    fetch(`https://worldsoftsystems.com.ar/buscar?beneficio=${beneficio}&parentesco=${parentesco}`, {
+    fetch(`https://worldsoftsystems.com.ar/buscarBenef?beneficio=${beneficio}&parentesco=${parentesco}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"

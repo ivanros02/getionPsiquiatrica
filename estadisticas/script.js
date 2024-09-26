@@ -46,6 +46,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const generatePlanBtn = document.getElementById('generatePlanBtn');
     const generatePlanExcelBtn = document.getElementById('generatePlanExcelBtn');
 
+    const openOpModalLink = document.getElementById('openOrdenModalLink');
+    const generateOpBtn = document.getElementById('generateOpBtn');
+    const generateOpExcelBtn = document.getElementById('generateOpExcelBtn');
+
+    if (openOpModalLink) {
+        openOpModalLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('openOrdenModal'));
+            modal.show();
+        });
+    }
+
+    if (generateOpBtn) {
+        generateOpBtn.addEventListener('click', function () {
+            const fechaDesde = document.getElementById('fechaDesdeOp').value;
+            const fechaHasta = document.getElementById('fechaHastaOp').value;
+            generateOpPdf(fechaDesde, fechaHasta);
+        });
+    }
+
+    if (generateOpExcelBtn) {
+        generateOpExcelBtn.addEventListener('click', function () {
+            const fechaDesde = document.getElementById('fechaDesdeOp').value;
+            const fechaHasta = document.getElementById('fechaHastaOp').value;
+            generateOpExcel(fechaDesde, fechaHasta);
+        });
+    }
 
     if (openPlanModalLink) {
         openPlanModalLink.addEventListener('click', function (e) {
@@ -295,6 +322,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function fetchOpData(fechaDesde, fechaHasta) {
+        return new Promise((resolve, reject) => {
+            fetch(`./gets/get_op_vencimiento.php?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`)
+                .then(response => response.json())
+                .then(data => resolve(data))
+                .catch(error => reject(error));
+        });
+    }
+
     function fetchPatientData(fechaDesde, fechaHasta, obraSocialId) {
         return new Promise((resolve, reject) => {
             fetch(`./gets/get_estadisticas_paciente.php?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}&obra_social=${obraSocialId}`)
@@ -367,6 +403,127 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => reject(error));
         });
     }
+
+    //OP
+    function generateOpPdf(fechaDesde, fechaHasta) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+    
+        // Función para obtener el número máximo de filas por página
+        function getMaxRowsPerPage(doc, headers, data) {
+            const pageHeight = doc.internal.pageSize.height;
+            const margins = { top: 30, bottom: 20 };
+            const rowHeight = 10;
+            const headerHeight = 10;
+    
+            const availableHeight = pageHeight - margins.top - margins.bottom - headerHeight;
+            const maxRows = Math.floor(availableHeight / rowHeight);
+    
+            return Math.min(maxRows, data.length);
+        }
+    
+        // Obtener los datos de operaciones
+        fetchOpData(fechaDesde, fechaHasta)
+            .then((opData) => {
+                const formattedFechaDesde = formatDate(fechaDesde);
+                const formattedFechaHasta = formatDate(fechaHasta);
+    
+                // Título del PDF
+                const title = 'LISTADO DE OPERACIONES';
+                const pageWidth = doc.internal.pageSize.getWidth();
+    
+                doc.setFontSize(16);
+                doc.setFont('Helvetica', 'bold');
+                doc.text(title, pageWidth / 2, 10, { align: 'center' });
+                doc.setFont('Helvetica', 'normal');
+    
+                const dateRange = `DESDE: ${formattedFechaDesde} HASTA: ${formattedFechaHasta}`;
+                doc.setFontSize(14);
+                doc.text(dateRange, pageWidth / 2, 20, { align: 'center' });
+    
+                doc.setFontSize(12); 
+                let startY = 30;
+                const margin = { left: 15 };
+    
+                // Encabezado de la tabla
+                const headers = ['Paciente', 'Fecha', 'Op', 'Cant. Meses', 'Modalidad', 'Fecha Vencimiento'];
+    
+                // Mapear los datos para la tabla
+                const data = opData.map(item => [
+                    item.nombre,
+                    formatDate(item.fecha),
+                    item.op,
+                    item.cant,
+                    item.descripcion,
+                    formatDate(item.fecha_vencimiento)
+                ]);
+    
+                // Crear tabla en el PDF
+                const tableWidth = pageWidth - margin.left * 2;
+                const maxRowsPerPage = getMaxRowsPerPage(doc, headers, data);
+    
+                let tableStartY = startY;
+    
+                for (let i = 0; i < data.length; i += maxRowsPerPage) {
+                    const chunk = data.slice(i, i + maxRowsPerPage);
+    
+                    doc.autoTable({
+                        head: [headers],
+                        body: chunk,
+                        startY: tableStartY,
+                        margin: margin,
+                        theme: 'striped',
+                        styles: {
+                            fontSize: 10,
+                            cellPadding: 2,
+                            overflow: 'linebreak'
+                        },
+                        columnStyles: {
+                            0: { cellWidth: 50 }, // Paciente
+                            1: { cellWidth: 30 }, // Fecha
+                            2: { cellWidth: 40 }, // Op
+                            3: { cellWidth: 30 }, // Cantidad
+                            4: { cellWidth: 50 }, // Modalidad
+                            5: { cellWidth: 50 }  // Fecha Vencimiento
+                        },
+                        didDrawPage: function (data) {
+                            tableStartY = data.cursor.y;
+                        },
+                        pageBreak: 'auto'
+                    });
+    
+                    if (i + maxRowsPerPage < data.length) {
+                        doc.addPage();
+                        tableStartY = 30;
+                    }
+                }
+    
+                // Agregar total de registros al final
+                const totalRegistros = opData.length;
+                doc.setFontSize(12);
+                doc.text(`Total Registros: ${totalRegistros}`, pageWidth / 2, tableStartY + 10, { align: 'center' });
+    
+                // Agregar logo al final del documento
+                const imgUrl = '../img/logo.png'; // Ruta de la imagen del logo
+                var img = new Image();
+                img.onload = function () {
+                    const imgWidth = 29;
+                    const imgHeight = 25;
+                    const xImg = (pageWidth - imgWidth) / 2;
+                    const yImg = tableStartY + 20;
+    
+                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+    
+                    // Abrir el PDF generado
+                    window.open(doc.output('bloburl'));
+                };
+                img.src = imgUrl;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+    
 
     //MEDICACION
     function generatePlanExcel(fechaDesde, fechaHasta, obraSocialId) {

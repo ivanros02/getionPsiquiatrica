@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-08-2024 a las 17:37:43
+-- Tiempo de generación: 25-09-2024 a las 01:45:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -37,20 +37,22 @@ CREATE TABLE `profesional` (
   `matricula_p` varchar(255) NOT NULL,
   `matricula_n` varchar(255) NOT NULL,
   `telefono` int(255) NOT NULL,
-  `email` varchar(255) NOT NULL
+  `email` varchar(255) NOT NULL,
+  `tipo_doc` varchar(255) NOT NULL,
+  `nro_doc` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `profesional`
 --
 
-INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `id_especialidad`, `domicilio`, `localidad`, `codigo_pos`, `matricula_p`, `matricula_n`, `telefono`, `email`) VALUES
-(12, 'WALTER ROSENDO', 25, '143', 'Villa Espana', '1886', '218', '796', 243567189, 'infowss@gmail.com'),
-(15, 'LIVINGSTON ESTELA BEATRIZ', 22, '2651', 'Villa Espana', '1886', '123', '222', 2147483647, 'TEST34@gmail.com'),
-(16, 'MONICA CEJAS', 25, '143', 'Berazategui', '1886', '123', '345', 2147483647, 'moni@gmail.com'),
-(17, 'VALENTIN ROSENDO', 25, '143', 'Berazategui', '1886', '1232', '3453', 2147483647, 'valentin@gmail.com'),
-(18, 'IVAN ROSENDO', 22, '2651', 'Berazategui', '1886', '777', '743', 1139114579, 'ivanrosendo1102@gmail.com'),
-(19, 'Zoe', 22, '143', 'Villa Espana', '1886', '123', '345', 1139114579, 'ivanrosendo1102@gmail.com');
+INSERT INTO `profesional` (`id_prof`, `nombreYapellido`, `id_especialidad`, `domicilio`, `localidad`, `codigo_pos`, `matricula_p`, `matricula_n`, `telefono`, `email`, `tipo_doc`, `nro_doc`) VALUES
+(12, 'WALTER ROSENDO', 1000, '143', 'Villa Espana', '1886', '218', '796', 243567189, 'infowss@gmail.com', 'DNI', 21879630),
+(15, 'LIVINGSTON ESTELA BEATRIZ', 1000, '2651', 'Villa Espana', '1886', '123', '222', 2147483647, 'TEST34@gmail.com', 'LE', 7680072),
+(16, 'MONICA CEJAS', 1000, '143', 'Berazategui', '1886', '123', '345', 2147483647, 'moni@gmail.com', 'LE', 7680072),
+(17, 'VALENTIN ROSENDO', 1000, '143', 'Berazategui', '1886', '1232', '3453', 2147483647, 'valentin@gmail.com', 'LE', 7680072),
+(18, 'IVAN ROSENDO', 1000, '2651', 'Berazategui', '1886', '777', '743', 1139114579, 'ivanrosendo1102@gmail.com', 'DNI', 44379377),
+(19, 'Zoe', 1000, '143', 'Villa Espana', '1886', '123', '345', 1139114579, 'ivanrosendo1102@gmail.com', 'LE', 7680072);
 
 --
 -- Índices para tablas volcadas

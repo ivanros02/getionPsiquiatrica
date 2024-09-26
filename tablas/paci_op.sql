@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-09-2024 a las 02:34:01
+-- Tiempo de generación: 25-09-2024 a las 14:03:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -31,17 +31,21 @@ CREATE TABLE `paci_op` (
   `id` int(11) NOT NULL,
   `id_paciente` int(11) NOT NULL,
   `fecha` date NOT NULL,
-  `op` int(255) NOT NULL,
-  `cant` int(11) NOT NULL
+  `op` bigint(255) NOT NULL,
+  `cant` int(11) NOT NULL,
+  `modalidad_op` int(255) NOT NULL,
+  `fecha_vencimiento` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `paci_op`
 --
 
-INSERT INTO `paci_op` (`id`, `id_paciente`, `fecha`, `op`, `cant`) VALUES
-(1, 16, '2024-08-15', 2147483647, 1),
-(3, 33, '2024-08-16', 123456791, 3);
+INSERT INTO `paci_op` (`id`, `id_paciente`, `fecha`, `op`, `cant`, `modalidad_op`, `fecha_vencimiento`) VALUES
+(4, 131, '2024-08-27', 9925850389, 6, 4, '2025-02-23'),
+(5, 134, '2024-08-19', 9925850389, 6, 11, '2025-02-15'),
+(6, 133, '2024-08-05', 9925850389, 6, 12, '2025-02-01'),
+(8, 133, '2024-08-22', 9925857388, 6, 11, '2025-02-18');
 
 --
 -- Índices para tablas volcadas
@@ -52,7 +56,8 @@ INSERT INTO `paci_op` (`id`, `id_paciente`, `fecha`, `op`, `cant`) VALUES
 --
 ALTER TABLE `paci_op`
   ADD PRIMARY KEY (`id`,`id_paciente`),
-  ADD KEY `fk_paci_op` (`id_paciente`);
+  ADD KEY `fk_paci_op` (`id_paciente`),
+  ADD KEY `fk_op_modalidad` (`modalidad_op`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -62,7 +67,7 @@ ALTER TABLE `paci_op`
 -- AUTO_INCREMENT de la tabla `paci_op`
 --
 ALTER TABLE `paci_op`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restricciones para tablas volcadas
@@ -72,6 +77,7 @@ ALTER TABLE `paci_op`
 -- Filtros para la tabla `paci_op`
 --
 ALTER TABLE `paci_op`
+  ADD CONSTRAINT `fk_op_modalidad` FOREIGN KEY (`modalidad_op`) REFERENCES `modalidad` (`id`),
   ADD CONSTRAINT `fk_paci_op` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id`);
 COMMIT;
 

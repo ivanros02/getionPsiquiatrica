@@ -288,7 +288,7 @@ $result = $conn->query($sql);
 
                         <div class="mb-3">
                             <label for="ugl_boca" class="form-label">UGL de boca</label>
-                            <input type="text" class="form-control" id="ugl_boca"
+                            <input type="number" class="form-control" id="ugl_boca"
                                 placeholder="Ingrese el nombre de la puerta de atención">
                         </div>
                         <button type="button" class="btn btn-primary" id="addBocaBtn">Agregar Boca</button>

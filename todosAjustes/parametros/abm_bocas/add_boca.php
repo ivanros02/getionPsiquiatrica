@@ -8,7 +8,7 @@ $ugl_boca = $_POST['ugl_boca'];
 
 if ($boca) {
     $stmt = $conn->prepare("INSERT INTO bocas_atencion (boca, puerta, num_boca, ugl_boca) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("siis", $boca, $puerta, $num_boca, $ugl_boca); // Verifica los tipos de datos
+    $stmt->bind_param("siii", $boca, $puerta, $num_boca, $ugl_boca); // Verifica los tipos de datos
 
     if ($stmt->execute()) {
         echo json_encode(["success" => true, "message" => "Boca agregada exitosamente."]);

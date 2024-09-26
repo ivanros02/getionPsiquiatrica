@@ -1031,6 +1031,27 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('recordatorioBtn').addEventListener('click', function () {
+        const profesionalId = document.getElementById('profesionalSelect').value;
+        const fechaDesde = document.getElementById('fechaDesde').value;
+        const fechaHasta = document.getElementById('fechaHasta').value;
+
+        // Validar que todos los campos estén llenos
+        if (!profesionalId || !fechaDesde || !fechaHasta) {
+            alert('Por favor, complete todos los campos.');
+            return;
+        }
+
+        // Redirigir a la URL con los parámetros
+        const url = `./gets/generar_excel.php?profesional=${profesionalId}&fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+        window.location.href = url;
+    });
+});
+
+
+
+
 
 
 

@@ -121,13 +121,13 @@ if ($resultTitle && $resultTitle->num_rows > 0) {
 
       <!--PRIMERA CARD -->
       <div class="col d-flex justify-content-center">
-        <a href="./op/public/index.html">
+        <a href="#" id="openOrdenModalLink">
           <div class="card h-100">
             <div class="first-content">
-              <img src="../img/reportes/reporte_op.png" alt="Icono agenda Profesional">
+              <img src="../img/reportes/modalidad.png" alt="Ordenes de Prestacion">
             </div>
             <div class="third-content">
-              <h3 class="mt-3">OP</h3>
+              <h3 class="mt-3">Vencimiento de Ordenes de Prestacion</h3>
             </div>
           </div>
         </a>
@@ -242,6 +242,38 @@ if ($resultTitle && $resultTitle->num_rows > 0) {
     </div>
   </div>
   <!-- FIN Cards Container -->
+
+  <!--OP-->
+  <div class="modal fade" id="openOrdenModal" tabindex="-1" aria-labelledby="opModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="opModalLabel">Vencimiento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="planForm">
+            <div class="mb-3">
+              <label for="fechaDesdeOp" class="form-label">Fecha Desde</label>
+              <input type="date" class="form-control" id="fechaDesdeOp" required>
+            </div>
+            <div class="mb-3">
+              <label for="fechaHastaOp" class="form-label">Fecha Hasta</label>
+              <input type="date" class="form-control" id="fechaHastaOp" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="generateOpBtn">Generar PDF</button>
+          <button type="button" class="btn btn-success" id="generateOpExcelBtn">Generar Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- FIN-->
+
+
 
   <!--PLAN MEDICACION-->
   <div class="modal fade" id="openPlanModal" tabindex="-1" aria-labelledby="planModalLabel" aria-hidden="true">
