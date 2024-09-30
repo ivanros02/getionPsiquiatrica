@@ -1044,10 +1044,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Redirigir a la URL con los parámetros
-        const url = `./gets/generar_excel.php?profesional=${profesionalId}&fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
+        const url = `./gets/generar_excel_para_recordatorio.php?profesional=${profesionalId}&fechaDesde=${fechaDesde}&fechaHasta=${fechaHasta}`;
         window.location.href = url;
     });
 });
+
+
 
 
 

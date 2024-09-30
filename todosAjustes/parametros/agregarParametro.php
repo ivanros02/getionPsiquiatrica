@@ -18,16 +18,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $localidad = $_POST['localidad'];
     $cod_sucursal = $_POST['cod_sucursal'];
     $tel = $_POST['tel'];
+    $num_hist_amb = $_POST['num_hist_amb'];
+    $num_hist_int = $_POST['num_hist_int'];
 
     // Preparar la consulta SQL para insertar los datos
     $query = "INSERT INTO parametro_sistema 
-              (id, inst, razon_social, c_interno, c_pami, cuit, u_efect, clave_efect, mail, puerta, dir, localidad, cod_sucursal, tel) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+              (id, inst, razon_social, c_interno, c_pami, cuit, u_efect, clave_efect, mail, puerta, dir, localidad, cod_sucursal, tel, num_hist_amb, num_hist_int) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     // Preparar la sentencia
     if ($stmt = $conn->prepare($query)) {
         // Bind parameters
-        $stmt->bind_param("issssssssissis", $id, $inst, $razon_social, $c_interno, $c_pami, $cuit, $u_efect, $clave_efect, $mail, $puerta, $dir, $localidad, $cod_sucursal, $tel);
+        $stmt->bind_param("issssssssissisii", $id, $inst, $razon_social, $c_interno, $c_pami, $cuit, $u_efect, $clave_efect, $mail, $puerta, $dir, $localidad, $cod_sucursal, $tel, $num_hist_amb, $num_hist_int);
 
         // Ejecutar la sentencia
         if ($stmt->execute()) {

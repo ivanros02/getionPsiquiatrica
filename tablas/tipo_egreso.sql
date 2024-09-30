@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-09-2024 a las 01:31:28
+-- Tiempo de generación: 27-09-2024 a las 00:24:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,32 +24,37 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `bocas_atencion`
+-- Estructura de tabla para la tabla `tipo_egreso`
 --
 
-CREATE TABLE `bocas_atencion` (
-  `id` int(255) NOT NULL,
-  `boca` varchar(255) NOT NULL,
-  `puerta` int(255) NOT NULL
+CREATE TABLE `tipo_egreso` (
+  `id` int(11) NOT NULL,
+  `codigo` varchar(255) NOT NULL,
+  `descripcion` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `bocas_atencion`
+-- Volcado de datos para la tabla `tipo_egreso`
 --
 
-INSERT INTO `bocas_atencion` (`id`, `boca`, `puerta`) VALUES
-(1, 'Raul B Diaz', 0),
-(2, 'Don Bosco ', 0),
-(3, 'Gonzalez', 0);
+INSERT INTO `tipo_egreso` (`id`, `codigo`, `descripcion`) VALUES
+(2, '1', 'Alta Medica Definitiva'),
+(3, '2', 'Alta Medica Transitoria'),
+(4, '3', 'Traslado a O/ Establecimiento'),
+(5, '4', 'Defuncion'),
+(6, '5', 'Retiro Voluntario'),
+(7, '6', 'Fuga'),
+(8, '7', 'Internacion Domiciliaria'),
+(9, '8', 'Otro');
 
 --
 -- Índices para tablas volcadas
 --
 
 --
--- Indices de la tabla `bocas_atencion`
+-- Indices de la tabla `tipo_egreso`
 --
-ALTER TABLE `bocas_atencion`
+ALTER TABLE `tipo_egreso`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -57,10 +62,10 @@ ALTER TABLE `bocas_atencion`
 --
 
 --
--- AUTO_INCREMENT de la tabla `bocas_atencion`
+-- AUTO_INCREMENT de la tabla `tipo_egreso`
 --
-ALTER TABLE `bocas_atencion`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `tipo_egreso`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -115,6 +115,18 @@ document.addEventListener("DOMContentLoaded", function () {
         // Limpiar o vaciar el div de bajaMensaje
         var bajaMensaje = document.getElementById('bajaMensaje');
         bajaMensaje.innerHTML = ''; // Vacía el contenido del div
+
+        // Aquí llamamos al backend para obtener los parámetros
+        fetch('./dato/obtener_parametros.php')
+            .then(response => response.json()) // Convertimos la respuesta en JSON
+            .then(data => {
+                console.log(data)
+                document.getElementById('nro_hist_amb').value = data[0].num_hist_amb;
+                document.getElementById('nro_hist_int').value = data[0].num_hist_int;
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos del backend:', error);
+            });
     }
 
     window.editarPaciente = editarPaciente;
@@ -199,7 +211,7 @@ document.getElementById('btnBuscar').addEventListener('click', function () {
     var parentesco = $('#parentesco').val();
 
     // Realizar la solicitud al backend
-    fetch(`https://worldsoftsystems.com.ar/buscarBenef?beneficio=${beneficio}&parentesco=${parentesco}`, {
+    fetch(`https://worldsoftsystems.com.ar/buscar?beneficio=${beneficio}&parentesco=${parentesco}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -209,8 +221,20 @@ document.getElementById('btnBuscar').addEventListener('click', function () {
         .then(data => {
             // Verificar si se encontró el nombre y apellido
             if (data.resultado) {
+                function convertDateFormat(dateStr) {
+                    const parts = dateStr.split('/');
+                    // Asegúrate de que tienes el formato esperado
+                    if (parts.length === 3) {
+                        return `${parts[2]}-${parts[1]}-${parts[0]}`; // Devuelve en formato "yyyy-MM-dd"
+                    }
+                    return dateStr; // Devuelve original si no es un formato esperado
+                }
+                
                 // Actualizar el campo de nombre y apellido con el resultado
-                $('#nombre').val(data.resultado);
+                $('#nombre').val(data.resultado.nombreApellido); // Asigna nombre y apellido
+                // Convertir la fecha y asignarla
+                const fechaNac = convertDateFormat(data.resultado.fecha_nac);
+                $('#fecha_nac').val(fechaNac); // Asigna fecha de nacimiento
             } else {
                 // Mostrar una alerta si no se encuentra el resultado
                 alert("No se encontró ningún beneficiario con los datos proporcionados.");

@@ -8,7 +8,7 @@ if (isset($_GET['fecha_desde']) && isset($_GET['fecha_hasta'])) {
     $fechaHasta = $_GET['fecha_hasta'];
     
     // Consulta SQL para obtener las operaciones con fecha_vencimiento entre fecha_desde y fecha_hasta
-    $query = "SELECT p.nombre,o.fecha,o.op,o.cant,m.descripcion,o.fecha_vencimiento
+    $query = "SELECT p.nombre, o.fecha, o.op, o.cant, m.descripcion, o.fecha_vencimiento
               FROM paci_op o
               LEFT JOIN paciente p ON p.id = o.id_paciente
               LEFT JOIN modalidad m ON m.id = o.modalidad_op
@@ -28,9 +28,13 @@ if (isset($_GET['fecha_desde']) && isset($_GET['fecha_hasta'])) {
         // Creamos un array para almacenar los datos
         $opData = array();
         
-        // Iteramos sobre el resultado
+        // Agrupar por modalidad
         while ($row = $result->fetch_assoc()) {
-            $opData[] = $row;
+            $modalidad = $row['descripcion'];
+            if (!isset($opData[$modalidad])) {
+                $opData[$modalidad] = []; // Inicializa el array para la modalidad
+            }
+            $opData[$modalidad][] = $row; // Agrega el registro al array de la modalidad
         }
         
         // Devolvemos los datos en formato JSON

@@ -16,12 +16,14 @@ $id = isset($_POST['id']) ? intval($_POST['id']) : 0;value:
     $localidad = $_POST['localidad'];
     $cod_sucursal = $_POST['cod_sucursal'];
     $tel = $_POST['tel'];
+    $num_hist_amb = $_POST['num_hist_amb'];
+    $num_hist_int = $_POST['num_hist_int'];
 
 // Actualizar el registro en la base de datos usando mysqli
-$query = "UPDATE parametro_sistema SET inst = ?, razon_social = ?, c_interno = ?, c_pami = ?, cuit = ?, u_efect = ?, clave_efect = ?, mail = ?, puerta = ?, dir = ?, localidad = ?, cod_sucursal = ?, tel = ? WHERE id = ?";
+$query = "UPDATE parametro_sistema SET inst = ?, razon_social = ?, c_interno = ?, c_pami = ?, cuit = ?, u_efect = ?, clave_efect = ?, mail = ?, puerta = ?, dir = ?, localidad = ?, cod_sucursal = ?, tel = ?, num_hist_amb = ?, num_hist_int = ? WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param(
-    'ssssssssissisi',
+    'ssssssssissisiii',
     $inst,
     $razon_social,
     $c_interno,
@@ -35,6 +37,8 @@ $stmt->bind_param(
     $localidad,
     $cod_sucursal,
     $tel,
+    $num_hist_amb,
+    $num_hist_int,
     $id
 );
 $stmt->execute();

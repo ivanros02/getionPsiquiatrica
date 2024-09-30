@@ -219,6 +219,16 @@ $result = $conn->query($sql);
                         </div>
 
                         <div class="form-group">
+                            <label for="num_hist_amb">Numero de Hist. AMB A Partir de :</label>
+                            <input type="text" class="form-control" id="num_hist_amb" name="num_hist_amb" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="num_hist_int">Numero de Hist. INT A Partir de :</label>
+                            <input type="text" class="form-control" id="num_hist_int" name="num_hist_int" required>
+                        </div>
+
+                        <div class="form-group">
                             <label for="mail">Correo Electrónico</label>
                             <input type="email" class="form-control" id="mail" name="mail" required>
                         </div>
@@ -366,6 +376,8 @@ $result = $conn->query($sql);
                 document.getElementById('localidad').value = parametro.localidad;
                 document.getElementById('cod_sucursal').value = parametro.cod_sucursal;
                 document.getElementById('tel').value = parametro.tel;
+                document.getElementById('num_hist_amb').value = parametro.num_hist_amb;
+                document.getElementById('num_hist_int').value = parametro.num_hist_int;
 
                 // Mostrar el modal de edición
                 var modal = new bootstrap.Modal(document.getElementById('agregarParametroModal'));

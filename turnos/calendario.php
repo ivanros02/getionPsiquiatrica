@@ -203,6 +203,7 @@
                 <div class="d-flex align-items-center justify-content-center gap-3">
                     <select id="profesionalSelect" class="form-control select-custom">
                         <option selected disabled>Seleccionar profesional</option>
+                        <option value="all">Todos los profesionales</option>
                         <!-- Opciones de profesionales se llenarán aquí -->
                     </select>
                     <input type="date" id="fechaDesde" class="form-control">

@@ -237,11 +237,60 @@ if ($resultTitle && $resultTitle->num_rows > 0) {
         </a>
       </div>
 
+      <div class="col d-flex justify-content-center">
+        <a href="#" id="openPaciUnicosModalLink">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/reportes/plan.png" alt="Ingresos">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Pacientes unicos</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+
 
 
     </div>
   </div>
   <!-- FIN Cards Container -->
+
+  <!--PACI UNICOS-->
+  <div class="modal fade" id="openPaciUnicosModal" tabindex="-1" aria-labelledby="paciUnicosModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="paciUnicosModalLabel">Pacientes Unicos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="paciUnicosForm">
+            <div class="mb-3">
+              <label for="fechaDesdePaciUnicos" class="form-label">Fecha Desde</label>
+              <input type="date" class="form-control" id="fechaDesdePaciUnicos" required>
+            </div>
+            <div class="mb-3">
+              <label for="fechaHastaPaciUnicos" class="form-label">Fecha Hasta</label>
+              <input type="date" class="form-control" id="fechaHastaPaciUnicos" required>
+            </div>
+            <div class="col-md-4 form-group">
+              <label for="obra_social_paci_unicos">Obra Social:*</label>
+              <select class="form-control" id="obra_social_paci_unicos" name="obra_social_paci_unicos" required>
+                <option value="">Seleccionar...</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="generatePaciUnicosBtn">Generar PDF</button>
+          <button type="button" class="btn btn-success" id="generatePaciUnicosExcelBtn">Generar Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--PACI UNICOS FIN-->
 
   <!--OP-->
   <div class="modal fade" id="openOrdenModal" tabindex="-1" aria-labelledby="opModalLabel" aria-hidden="true">

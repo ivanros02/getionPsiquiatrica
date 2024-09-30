@@ -425,14 +425,22 @@ $conn->close();
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="nro_hist_int">Nro. Historia Interna*:</label>
                                     <input type="text" class="form-control" id="nro_hist_int" name="nro_hist_int"
-                                        required>
+                                        readonly>
                                 </div>
                                 <div class="col-md-6 form-group mb-3">
                                     <label for="nro_hist_amb">Nro. Historia Ambulatoria*:</label>
                                     <input type="text" class="form-control" id="nro_hist_amb" name="nro_hist_amb"
-                                        required>
+                                        readonly>
+                                </div>
+                                <div class="col-md-12 form-group mb-3">
+                                    <label for="tipo_historia">Tipo de Historia Clínica a usar*:</label>
+                                    <select class="form-control" id="tipo_historia" name="tipo_historia">
+                                        <option value="amb">Historia Ambulatoria</option>
+                                        <option value="int">Historia Internacion</option>
+                                    </select>
                                 </div>
                             </div>
+
 
                             <h5>Información Personal</h5>
                             <div class="row">

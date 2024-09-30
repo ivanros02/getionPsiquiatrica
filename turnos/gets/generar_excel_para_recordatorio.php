@@ -17,16 +17,30 @@ if (!$profesionalId || !$fechaDesde || !$fechaHasta) {
     die("Faltan parámetros.");
 }
 
-// Consulta para obtener los turnos filtrados por profesional y fechas
-$sql = "SELECT t.fecha, t.hora, paci.nombre AS paciente, p.nombreYapellido as profesional, a.descripcion AS motivo, t.llego, t.atendido, t.observaciones, paci.telefono AS numero
-        FROM turnos t
-        LEFT JOIN profesional p ON t.id_prof = p.id_prof
-        LEFT JOIN paciente paci ON paci.id = t.paciente
-        LEFT JOIN actividades a ON a.id = t.motivo
-        WHERE t.id_prof = ? AND t.fecha BETWEEN ? AND ?";
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("iss", $profesionalId, $fechaDesde, $fechaHasta);
+// Consulta para obtener los turnos filtrados por profesional y fechas
+if ($profesionalId === 'all') {
+    $sql = "SELECT t.fecha, t.hora, paci.nombre AS paciente, p.nombreYapellido as profesional, a.descripcion AS motivo, t.llego, t.atendido, t.observaciones, paci.telefono AS numero
+            FROM turnos t
+            LEFT JOIN profesional p ON t.id_prof = p.id_prof
+            LEFT JOIN paciente paci ON paci.id = t.paciente
+            LEFT JOIN actividades a ON a.id = t.motivo
+            WHERE t.fecha BETWEEN ? AND ?";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $fechaDesde, $fechaHasta);
+} else {
+    $sql = "SELECT t.fecha, t.hora, paci.nombre AS paciente, p.nombreYapellido as profesional, a.descripcion AS motivo, t.llego, t.atendido, t.observaciones, paci.telefono AS numero
+            FROM turnos t
+            LEFT JOIN profesional p ON t.id_prof = p.id_prof
+            LEFT JOIN paciente paci ON paci.id = t.paciente
+            LEFT JOIN actividades a ON a.id = t.motivo
+            WHERE t.id_prof = ? AND t.fecha BETWEEN ? AND ?";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iss", $profesionalId, $fechaDesde, $fechaHasta);
+}
+
 $stmt->execute();
 $resultado = $stmt->get_result();
 
@@ -83,13 +97,18 @@ if ($resultado->num_rows > 0) {
     }
 }
 
-// Si no se obtuvo nombre del profesional, lo dejamos como 'desconocido'
-if (empty($nombreProfesional)) {
-    $nombreProfesional = 'desconocido';
-}
+// Si el profesional es 'all', usamos "todos" como el nombre del profesional
+if ($profesionalId === 'all') {
+    $nombreProfesional = 'todos';
+} else {
+    // Si no se obtuvo nombre del profesional, lo dejamos como 'desconocido'
+    if (empty($nombreProfesional)) {
+        $nombreProfesional = 'desconocido';
+    }
 
-// Limpiar el nombre del profesional para el nombre del archivo
-$nombreProfesional = preg_replace('/[^A-Za-z0-9_\-]/', '_', $nombreProfesional);
+    // Limpiar el nombre del profesional para el nombre del archivo
+    $nombreProfesional = preg_replace('/[^A-Za-z0-9_\-]/', '_', $nombreProfesional);
+}
 
 // Descargar el archivo Excel con el nombre del profesional
 $writer = new Xlsx($spreadsheet);

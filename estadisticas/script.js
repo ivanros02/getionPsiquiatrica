@@ -46,9 +46,40 @@ document.addEventListener('DOMContentLoaded', function () {
     const generatePlanBtn = document.getElementById('generatePlanBtn');
     const generatePlanExcelBtn = document.getElementById('generatePlanExcelBtn');
 
+    const openPaciUnicosModalLink = document.getElementById('openPaciUnicosModalLink');
+    const generatePaciUnicosBtn = document.getElementById('generatePaciUnicosBtn');
+    const generatePaciUnicosExcelBtn = document.getElementById('generatePaciUnicosExcelBtn');
+
     const openOpModalLink = document.getElementById('openOrdenModalLink');
     const generateOpBtn = document.getElementById('generateOpBtn');
     const generateOpExcelBtn = document.getElementById('generateOpExcelBtn');
+
+    if (openPaciUnicosModalLink) {
+        openPaciUnicosModalLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('openPaciUnicosModal'));
+            modal.show();
+        });
+    }
+
+    if (generatePaciUnicosBtn) {
+        generatePaciUnicosBtn.addEventListener('click', function () {
+            const fechaDesde = document.getElementById('fechaDesdePaciUnicos').value;
+            const fechaHasta = document.getElementById('fechaHastaPaciUnicos').value;
+            const obraSocialId = $('#obra_social_paci_unicos').val();
+            generatePaciUnicosPDF(fechaDesde, fechaHasta, obraSocialId);
+        });
+    }
+
+    if (generatePaciUnicosExcelBtn) {
+        generatePaciUnicosExcelBtn.addEventListener('click', function () {
+            const fechaDesde = document.getElementById('fechaDesdePaciUnicos').value;
+            const fechaHasta = document.getElementById('fechaHastaPaciUnicos').value;
+            const obraSocialId = $('#obra_social_paci_unicos').val();
+            generatePaciUnicosExcel(fechaDesde, fechaHasta, obraSocialId);
+        });
+    }
+
 
     if (openOpModalLink) {
         openOpModalLink.addEventListener('click', function (e) {
@@ -322,6 +353,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function fetchPaciUnicos(fechaDesde, fechaHasta, obraSocialId) {
+        return new Promise((resolve, reject) => {
+            fetch(`./gets/get_prestacion_unicas.php?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}&obra_social=${obraSocialId}`)
+                .then(response => response.json())
+                .then(data => resolve(data))
+                .catch(error => reject(error));
+        });
+    }
+
     function fetchOpData(fechaDesde, fechaHasta) {
         return new Promise((resolve, reject) => {
             fetch(`./gets/get_op_vencimiento.php?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`)
@@ -404,126 +444,97 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    //OP
+    // Función para generar el PDF de operaciones
     function generateOpPdf(fechaDesde, fechaHasta) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('l', 'mm', 'a4');
-    
-        // Función para obtener el número máximo de filas por página
-        function getMaxRowsPerPage(doc, headers, data) {
-            const pageHeight = doc.internal.pageSize.height;
-            const margins = { top: 30, bottom: 20 };
-            const rowHeight = 10;
-            const headerHeight = 10;
-    
-            const availableHeight = pageHeight - margins.top - margins.bottom - headerHeight;
-            const maxRows = Math.floor(availableHeight / rowHeight);
-    
-            return Math.min(maxRows, data.length);
-        }
-    
+
         // Obtener los datos de operaciones
         fetchOpData(fechaDesde, fechaHasta)
             .then((opData) => {
                 const formattedFechaDesde = formatDate(fechaDesde);
                 const formattedFechaHasta = formatDate(fechaHasta);
-    
+
                 // Título del PDF
                 const title = 'LISTADO DE OPERACIONES';
                 const pageWidth = doc.internal.pageSize.getWidth();
-    
+
                 doc.setFontSize(16);
                 doc.setFont('Helvetica', 'bold');
                 doc.text(title, pageWidth / 2, 10, { align: 'center' });
                 doc.setFont('Helvetica', 'normal');
-    
+
                 const dateRange = `DESDE: ${formattedFechaDesde} HASTA: ${formattedFechaHasta}`;
                 doc.setFontSize(14);
                 doc.text(dateRange, pageWidth / 2, 20, { align: 'center' });
-    
-                doc.setFontSize(12); 
+
+                doc.setFontSize(12);
                 let startY = 30;
                 const margin = { left: 15 };
-    
+
                 // Encabezado de la tabla
                 const headers = ['Paciente', 'Fecha', 'Op', 'Cant. Meses', 'Modalidad', 'Fecha Vencimiento'];
-    
-                // Mapear los datos para la tabla
-                const data = opData.map(item => [
-                    item.nombre,
-                    formatDate(item.fecha),
-                    item.op,
-                    item.cant,
-                    item.descripcion,
-                    formatDate(item.fecha_vencimiento)
-                ]);
-    
-                // Crear tabla en el PDF
-                const tableWidth = pageWidth - margin.left * 2;
-                const maxRowsPerPage = getMaxRowsPerPage(doc, headers, data);
-    
-                let tableStartY = startY;
-    
-                for (let i = 0; i < data.length; i += maxRowsPerPage) {
-                    const chunk = data.slice(i, i + maxRowsPerPage);
-    
-                    doc.autoTable({
-                        head: [headers],
-                        body: chunk,
-                        startY: tableStartY,
-                        margin: margin,
-                        theme: 'striped',
-                        styles: {
-                            fontSize: 10,
-                            cellPadding: 2,
-                            overflow: 'linebreak'
-                        },
-                        columnStyles: {
-                            0: { cellWidth: 50 }, // Paciente
-                            1: { cellWidth: 30 }, // Fecha
-                            2: { cellWidth: 40 }, // Op
-                            3: { cellWidth: 30 }, // Cantidad
-                            4: { cellWidth: 50 }, // Modalidad
-                            5: { cellWidth: 50 }  // Fecha Vencimiento
-                        },
-                        didDrawPage: function (data) {
-                            tableStartY = data.cursor.y;
-                        },
-                        pageBreak: 'auto'
-                    });
-    
-                    if (i + maxRowsPerPage < data.length) {
-                        doc.addPage();
-                        tableStartY = 30;
+
+                // Iterar sobre los datos agrupados por modalidad
+                for (const [modalidad, records] of Object.entries(opData)) {
+                    // Agregar título de modalidad
+                    doc.setFontSize(14);
+                    doc.text(`MODALIDAD: ${modalidad}`, pageWidth / 2, startY, { align: 'center' });
+                    startY += 5;
+
+                    // Asegúrate de que records sea un array
+                    if (Array.isArray(records)) {
+                        const data = records.map(item => [
+                            item.nombre,
+                            formatDate(item.fecha),
+                            item.op,
+                            item.cant,
+                            item.descripcion,
+                            formatDate(item.fecha_vencimiento)
+                        ]);
+
+                        // Agregar tabla al PDF
+                        doc.autoTable({
+                            head: [headers],
+                            body: data,
+                            startY: startY,
+                            margin: margin,
+                            theme: 'striped',
+                            styles: {
+                                fontSize: 10,
+                                cellPadding: 2,
+                                overflow: 'linebreak'
+                            },
+                            columnStyles: {
+                                0: { cellWidth: 50 }, // Paciente
+                                1: { cellWidth: 30 }, // Fecha
+                                2: { cellWidth: 40 }, // Op
+                                3: { cellWidth: 30 }, // Cantidad
+                                4: { cellWidth: 50 }, // Modalidad
+                                5: { cellWidth: 50 }  // Fecha Vencimiento
+                            },
+                            pageBreak: 'auto'
+                        });
                     }
+
+                    // Actualizar la posición Y para el próximo grupo
+                    startY += 30; // Espacio entre grupos, ajusta según sea necesario
                 }
-    
+
                 // Agregar total de registros al final
-                const totalRegistros = opData.length;
+                const totalRegistros = Object.values(opData).reduce((acc, records) => acc + (Array.isArray(records) ? records.length : 0), 0);
                 doc.setFontSize(12);
-                doc.text(`Total Registros: ${totalRegistros}`, pageWidth / 2, tableStartY + 10, { align: 'center' });
-    
-                // Agregar logo al final del documento
-                const imgUrl = '../img/logo.png'; // Ruta de la imagen del logo
-                var img = new Image();
-                img.onload = function () {
-                    const imgWidth = 29;
-                    const imgHeight = 25;
-                    const xImg = (pageWidth - imgWidth) / 2;
-                    const yImg = tableStartY + 20;
-    
-                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
-    
-                    // Abrir el PDF generado
-                    window.open(doc.output('bloburl'));
-                };
-                img.src = imgUrl;
+                doc.text(`Total Registros: ${totalRegistros}`, pageWidth / 2, startY + 10, { align: 'center' });
+
+                // Abrir el PDF generado
+                window.open(doc.output('bloburl'));
             })
             .catch(error => {
                 console.error('Error:', error);
             });
     }
-    
+
+
 
     //MEDICACION
     function generatePlanExcel(fechaDesde, fechaHasta, obraSocialId) {
@@ -1830,6 +1841,17 @@ document.addEventListener('DOMContentLoaded', function () {
             // Mostrar los totales generales
             doc.setFontSize(14);
 
+            // Verificar si hay espacio suficiente para los totales y el logo
+            const pageHeight = doc.internal.pageSize.height;
+            const remainingHeight = pageHeight - startY;
+
+            const requiredHeightForTotalsAndLogo = 40; // Espacio necesario para totales y logo
+
+            if (remainingHeight < requiredHeightForTotalsAndLogo) {
+                doc.addPage(); // Añadir nueva página si no hay suficiente espacio
+                startY = 30;   // Reiniciar el Y inicial en la nueva página
+            }
+
             // Total Ambulatorio alineado a la izquierda
             doc.text(`Total Ambulatorio: ${totalAmbulatorio}`, margin.left, startY + 5);
 
@@ -1848,18 +1870,284 @@ document.addEventListener('DOMContentLoaded', function () {
                 const xImg = (pageWidth - imgWidth) / 2;
                 const yImg = startY + 25;
 
-                doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+                // Verificar si hay suficiente espacio para el logo
+                const remainingHeightForLogo = pageHeight - (startY + 25);
+                if (remainingHeightForLogo < imgHeight) {
+                    doc.addPage(); // Añadir nueva página si no hay suficiente espacio
+                    startY = 30;   // Reiniciar el Y inicial en la nueva página para el logo
+                }
+
+                doc.addImage(img, 'PNG', xImg, startY + 25, imgWidth, imgHeight);
                 window.open(doc.output('bloburl'));
             };
             img.src = imgUrl;
+
+
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    //FIN RESUMEN ESTADISTICAS POR MODALIDAD
+
+    //PACI UNICOS
+
+    function generatePaciUnicosExcel(fechaDesde, fechaHasta, obraSocialId) {
+        Promise.all([fetchPaciUnicos(fechaDesde, fechaHasta, obraSocialId)])
+            .then(([resumen]) => {
+
+                const data = resumen.map(item => {
+                    const fechaPract = item.fecha_pract ? formatDate(item.fecha_pract) : '';
+                    const fechaTurno = item.fecha_turno ? formatDate(item.fecha_turno) : '';
+
+                    return [
+                        item.nombre,
+                        (`${item.benef}${item.parentesco}`),
+                        item.pract_full || item.turno_pract, // Preferir pract_full si existe
+                        fechaPract || fechaTurno, // Mostrar fecha_pract si existe, de lo contrario mostrar fecha_turno
+                        item.cantidad || 1
+                    ];
+                });
+
+                // Calcular la cantidad total
+                const totalQuantity = resumen.reduce((total, item) => {
+                    return total + (item.cantidad || 1); // Sumar la cantidad, o 1 si no está definida
+                }, 0);
+                // Crear un nuevo libro de trabajo
+                const wb = XLSX.utils.book_new();
+
+                // Crear una hoja de trabajo con los datos de egresos
+                const wsData = [
+                    ['AFILIADO', 'BENEFICIO', 'PRACTICA/TURNO', 'FECHA', 'CANTIDAD'], // Encabezados
+                    ...data,
+                    [], // Fila vacía para separación
+                    [`Total Cantidad: ${totalQuantity}`] // Fila de total
+                ];
+
+                const ws = XLSX.utils.aoa_to_sheet(wsData);
+                XLSX.utils.book_append_sheet(wb, ws, 'PACIENTES');
+
+                // Agregar hoja de total general
+                const grandTotalSheet = XLSX.utils.aoa_to_sheet([
+                    ['Total General', totalQuantity]
+                ]);
+                XLSX.utils.book_append_sheet(wb, grandTotalSheet, 'Total General');
+
+                // Generar el archivo Excel
+                XLSX.writeFile(wb, 'LISTADO_DE_PRESTACIONES_REALIZADAS_POR_PACIENTE_Y_MODALIDAD.xlsx');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function generatePaciUnicosPDF(fechaDesde, fechaHasta, obraSocialId) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+
+        function getMaxRowsPerPage(doc, headers, data) {
+            const pageHeight = doc.internal.pageSize.height;
+            const margins = { top: 30, bottom: 20 };
+            const rowHeight = 10;
+            const headerHeight = 10;
+
+            const availableHeight = pageHeight - margins.top - margins.bottom - headerHeight;
+            return Math.min(Math.floor(availableHeight / rowHeight), data.length);
+        }
+
+        Promise.all([fetchPaciUnicos(fechaDesde, fechaHasta, obraSocialId)]).then(([resumen]) => {
+            const groupedByModality = resumen.reduce((acc, item) => {
+                if (!item.modalidad_full) return acc; 
+
+                if (!acc[item.modalidad_full]) {
+                    acc[item.modalidad_full] = { data: [], totalQuantity: 0, isInternacion: false };
+                }
+
+                // Extraer el código de modalidad desde modalidad_full
+                const codigoModalidad = item.modalidad_full.split(' - ')[0];
+                const isInternacion = ['11', '12'].includes(codigoModalidad); // Identifica internación por el código
+
+                acc[item.modalidad_full].isInternacion = isInternacion;
+
+                if (item.pract_full) {
+                    acc[item.modalidad_full].data.push([
+                        item.nombre,
+                        (`${item.benef}${item.parentesco}`),
+                        item.pract_full,
+                        formatDate(item.fecha_pract),
+                        item.cantidad || 1
+                    ]);
+                    acc[item.modalidad_full].totalQuantity += item.cantidad || 1;
+                }
+
+                if (item.turno_pract) {
+                    acc[item.modalidad_full].data.push([
+                        item.nombre,
+                        (`${item.benef}${item.parentesco}`),
+                        item.turno_pract,
+                        formatDate(item.fecha_turno),
+                        item.cantidad || 1
+                    ]);
+                    acc[item.modalidad_full].totalQuantity += item.cantidad || 1;
+                }
+
+                return acc;
+            }, {});
+
+            const formattedFechaDesde = formatDate(fechaDesde);
+            const formattedFechaHasta = formatDate(fechaHasta);
+            const title = 'LISTADO DE PRESTACIONES REALIZADAS POR PACIENTE Y MODALIDAD';
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            doc.setFontSize(16);
+            doc.setFont('Helvetica', 'bold');
+            doc.text(title, pageWidth / 2, 10, { align: 'center' });
+
+            const dateRange = `DESDE: ${formattedFechaDesde} HASTA: ${formattedFechaHasta}`;
+            doc.setFontSize(14);
+            doc.text(dateRange, pageWidth / 2, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            let startY = 30;
+            const margin = { left: 15 };
+
+            let grandTotal = 0;
+            let totalAmbulatorio = 0;
+            let totalInternacion = 0;
+
+            // Función para imprimir un grupo (Ambulatorio o Internación)
+            function printGroup(title, modalities, startY) {
+                if (modalities.length > 0) {
+                    doc.setFontSize(14);
+                    doc.text(title, margin.left, startY); // Título del grupo
+                    startY += 10;
+
+                    modalities.forEach(modality => {
+                        const { data, totalQuantity, isInternacion } = groupedByModality[modality];
+                        const modalityUpperCase = modality.toUpperCase();
+                        const subtitle = `MODALIDAD: ${modalityUpperCase}`;
+
+                        doc.setFontSize(12);
+                        doc.text(subtitle, pageWidth / 2, startY, { align: 'center' });
+                        startY += 10;
+
+                        const headers = ['AFILIADO', 'BENEFICIO', 'PRACTICA/TURNO', 'FECHA', 'CANTIDAD'];
+
+                        if (data.length) {
+                            let tableStartY = startY;
+                            const maxRowsPerPage = getMaxRowsPerPage(doc, headers, data);
+
+                            for (let i = 0; i < data.length; i += maxRowsPerPage) {
+                                const chunk = data.slice(i, i + maxRowsPerPage);
+
+                                doc.autoTable({
+                                    head: [headers],
+                                    body: chunk,
+                                    startY: tableStartY,
+                                    margin: margin,
+                                    theme: 'striped',
+                                    styles: {
+                                        fontSize: 10,
+                                        cellPadding: 2,
+                                        overflow: 'linebreak'
+                                    },
+                                    columnStyles: {
+                                        0: { cellWidth: 50 }, // Ajusta el ancho de las columnas
+                                        1: { cellWidth: 50 },
+                                        2: { cellWidth: 125 },
+                                        3: { cellWidth: 25 },
+                                        4: { cellWidth: 25 }
+                                    },
+                                    didDrawPage: function (data) {
+                                        tableStartY = data.cursor.y;
+                                    },
+                                    pageBreak: 'auto'
+                                });
+
+                                if (i + maxRowsPerPage < data.length) {
+                                    doc.addPage();
+                                    tableStartY = 30;
+                                }
+                            }
+
+                            doc.setFontSize(12);
+                            doc.text(`Total Cantidad: ${totalQuantity}`, pageWidth / 2, tableStartY + 10, { align: 'center' });
+
+                            grandTotal += totalQuantity;
+
+                            if (isInternacion) {
+                                totalInternacion += totalQuantity;
+                            } else {
+                                totalAmbulatorio += totalQuantity;
+                            }
+
+                            startY = tableStartY + 20;
+                        }
+                    });
+                }
+                return startY;
+            }
+
+            // Agrupar modalidades en ambulatorio e internación
+            const ambulatorioModalities = Object.keys(groupedByModality).filter(modality => !groupedByModality[modality].isInternacion);
+            const internacionModalities = Object.keys(groupedByModality).filter(modality => groupedByModality[modality].isInternacion);
+
+            // Imprimir grupo de Ambulatorio
+            startY = printGroup('AMBULATORIO', ambulatorioModalities, startY);
+
+            // Imprimir grupo de Internación
+            startY = printGroup('INTERNACION', internacionModalities, startY);
+
+            // Mostrar los totales generales
+            doc.setFontSize(14);
+
+            // Verificar si hay espacio suficiente para los totales y el logo
+            const pageHeight = doc.internal.pageSize.height;
+            const remainingHeight = pageHeight - startY;
+
+            const requiredHeightForTotalsAndLogo = 40; // Espacio necesario para totales y logo
+
+            if (remainingHeight < requiredHeightForTotalsAndLogo) {
+                doc.addPage(); // Añadir nueva página si no hay suficiente espacio
+                startY = 30;   // Reiniciar el Y inicial en la nueva página
+            }
+
+            // Total Ambulatorio alineado a la izquierda
+            doc.text(`Total Ambulatorio: ${totalAmbulatorio}`, margin.left, startY + 5);
+
+            // Total Internación alineado a la izquierda
+            doc.text(`Total Internación: ${totalInternacion}`, margin.left, startY + 10);
+
+            // Total General centrado, debajo de los otros dos
+            doc.text(`Total General: ${grandTotal}`, pageWidth / 2, startY + 15, { align: 'center' });
+
+            // Imagen de logo
+            const imgUrl = '../img/logo.png';
+            var img = new Image();
+            img.onload = function () {
+                const imgWidth = 25;
+                const imgHeight = 20;
+                const xImg = (pageWidth - imgWidth) / 2;
+                const yImg = startY + 25;
+
+                // Verificar si hay suficiente espacio para el logo
+                const remainingHeightForLogo = pageHeight - (startY + 25);
+                if (remainingHeightForLogo < imgHeight) {
+                    doc.addPage(); // Añadir nueva página si no hay suficiente espacio
+                    startY = 30;   // Reiniciar el Y inicial en la nueva página para el logo
+                }
+
+                doc.addImage(img, 'PNG', xImg, startY + 25, imgWidth, imgHeight);
+                window.open(doc.output('bloburl'));
+            };
+            img.src = imgUrl;
+
 
         }).catch(error => {
             console.error('Error:', error);
         });
     }
 
-
-    //FIN RESUMEN ESTADISTICAS POR MODALIDAD
+    //FIN PACI UNICOS
 
     //PACIENTES
     function generatePatientExcel(fechaDesde, fechaHasta, obraSocialId) {
@@ -2376,6 +2664,7 @@ $(document).ready(function () {
                 $('#obra_social_ingreso').append(new Option(optionText, item.id));
                 $('#obra_social_diag').append(new Option(optionText, item.id));
                 $('#obra_social_plan').append(new Option(optionText, item.id));
+                $('#obra_social_paci_unicos').append(new Option(optionText, item.id));
             });
         },
         error: function (error) {
