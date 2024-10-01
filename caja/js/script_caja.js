@@ -68,7 +68,7 @@ function editarMovimiento(id) {
         .then(response => response.json())
         .then(movimiento => {
             document.getElementById('movimientoId').value = movimiento.id || '';
-            document.getElementById('fecha').value = formatDate(movimiento.fecha) || '';
+            document.getElementById('fecha').value = movimiento.fecha || '';
             document.getElementById('detalle').value = movimiento.detalle != null ? movimiento.detalle : '';
             document.getElementById('ingreso').value = movimiento.ingreso != null ? movimiento.ingreso : '';
             document.getElementById('egreso').value = movimiento.egreso != null ? movimiento.egreso : '';

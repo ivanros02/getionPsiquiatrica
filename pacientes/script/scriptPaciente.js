@@ -231,10 +231,12 @@ document.getElementById('btnBuscar').addEventListener('click', function () {
                 }
                 
                 // Actualizar el campo de nombre y apellido con el resultado
+                $('#ugl_paciente').val(data.resultado.ugl);
                 $('#nombre').val(data.resultado.nombreApellido); // Asigna nombre y apellido
                 // Convertir la fecha y asignarla
                 const fechaNac = convertDateFormat(data.resultado.fecha_nac);
                 $('#fecha_nac').val(fechaNac); // Asigna fecha de nacimiento
+
             } else {
                 // Mostrar una alerta si no se encuentra el resultado
                 alert("No se encontró ningún beneficiario con los datos proporcionados.");

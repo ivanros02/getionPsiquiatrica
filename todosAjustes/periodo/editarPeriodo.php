@@ -4,17 +4,17 @@ require_once "../../conexion.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtener los datos del formulario
     $id = $_POST['id'];
-    $codigo = $_POST['codigo'];
+    
     $descripcion = $_POST['descripcion'];
 
     // Consulta SQL para actualizar la especialidad
-    $sql = "UPDATE periodo SET codigo = ?, descripcion = ? WHERE id = ?";
+    $sql = "UPDATE periodo SET descripcion = ? WHERE id = ?";
 
     // Preparar la sentencia
     $stmt = $conn->prepare($sql);
 
     // Vincular parámetros (el orden y tipos deben ser correctos: "s" para string y "i" para integer)
-    $stmt->bind_param("ssi", $codigo, $descripcion, $id);
+    $stmt->bind_param("si", $descripcion, $id);
 
     // Ejecutar la sentencia
     if ($stmt->execute()) {

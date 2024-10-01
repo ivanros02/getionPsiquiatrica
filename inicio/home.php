@@ -244,6 +244,7 @@ if (isset($_GET['cerrar_sesion'])) {
 
       <!-- QUINTA CARD -->
       <div class="col d-flex justify-content-center">
+        <a href="../gastos/gastos.php">
         <div class="card h-100">
           <div class="first-content">
             <img src="../img/home/gastos.png" class="img-fluid" alt="">
@@ -252,6 +253,7 @@ if (isset($_GET['cerrar_sesion'])) {
             <h3 class="mt-3">Gastos</h3>
           </div>
         </div>
+        </a>
       </div>
       <!--CARD -->
 

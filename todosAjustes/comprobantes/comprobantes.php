@@ -132,7 +132,6 @@ $result = $conn->query($sql);
             <thead class="table-custom">
                 <tr>   
                     <th>ID</th>
-                    <th>Codigo</th>
                     <th>Descripcion</th>
                     <th>Acciones</th>
                 </tr>
@@ -142,7 +141,6 @@ $result = $conn->query($sql);
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <tr>  
                             <td><?= $row["id"] ?></td>  
-                            <td><?= $row["codigo"] ?></td>
                             <td><?= $row["descripcion"] ?></td>
                             <td>
                                 <button class="btn btn-custom-editar" onclick='editarComprobante(<?= json_encode($row) ?>)'><i
@@ -176,11 +174,6 @@ $result = $conn->query($sql);
                 <div class="modal-body">
                     <form id="formComprobante" action="./agregarComprobante.php" method="POST">
                     <input type="hidden" id="id" name="id">
-                        <div class="form-group">
-                            <label for="codigo">Codigo</label>
-                            <input type="text" class="form-control" id="codigo" name="codigo"
-                                required>
-                        </div>
                         <div class="form-group">
                             <label for="descripcion">Descripcion</label>
                             <input type="text" class="form-control" id="descripcion" name="descripcion"
@@ -230,7 +223,7 @@ $result = $conn->query($sql);
                 document.getElementById('formComprobante').action = './editarComprobante.php'; // Asegúrate de que el formulario apunta a la URL correcta
 
                 document.getElementById('id').value = comprobante.id;
-                document.getElementById('codigo').value = comprobante.codigo;
+                
                 document.getElementById('descripcion').value = comprobante.descripcion;
 
                 // Mostrar el modal de edición
@@ -242,7 +235,6 @@ $result = $conn->query($sql);
             function limpiarFormulario() {
                 document.getElementById('formComprobante').action = './agregarComprobante.php';
                 document.getElementById('id').value = '';
-                document.getElementById('codigo').value = '';
                 document.getElementById('descripcion').value = '';
             }
 

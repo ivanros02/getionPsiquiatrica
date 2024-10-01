@@ -423,23 +423,34 @@ $conn->close();
 
                             <div class="row">
                                 <div class="col-md-6 form-group mb-3">
-                                    <label for="nro_hist_int">Nro. Historia Interna*:</label>
-                                    <input type="text" class="form-control" id="nro_hist_int" name="nro_hist_int"
-                                        readonly>
+                                    <label for="ugl_paciente">UGL:</label>
+                                    <input type="text" class="form-control" id="ugl_paciente" name="ugl_paciente"
+                                        required readonly>
                                 </div>
                                 <div class="col-md-6 form-group mb-3">
-                                    <label for="nro_hist_amb">Nro. Historia Ambulatoria*:</label>
-                                    <input type="text" class="form-control" id="nro_hist_amb" name="nro_hist_amb"
-                                        readonly>
-                                </div>
-                                <div class="col-md-12 form-group mb-3">
                                     <label for="tipo_historia">Tipo de Historia Clínica a usar*:</label>
                                     <select class="form-control" id="tipo_historia" name="tipo_historia">
                                         <option value="amb">Historia Ambulatoria</option>
                                         <option value="int">Historia Internacion</option>
                                     </select>
                                 </div>
+
+
                             </div>
+
+                            <div class="row">
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="nro_hist_amb">Nro. Historia Ambulatoria*:</label>
+                                    <input type="text" class="form-control" id="nro_hist_amb" name="nro_hist_amb"
+                                        readonly>
+                                </div>
+                                <div class="col-md-6 form-group mb-3">
+                                    <label for="nro_hist_int">Nro. Historia Interna*:</label>
+                                    <input type="text" class="form-control" id="nro_hist_int" name="nro_hist_int"
+                                        readonly>
+                                </div>
+                            </div>
+
 
 
                             <h5>Información Personal</h5>
