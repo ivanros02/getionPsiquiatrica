@@ -461,7 +461,7 @@ $conn->close();
                                 </div>
                                 <div class="col-md-4 form-group mb-3">
                                     <label for="fecha_nac">Fecha de Nacimiento:*</label>
-                                    <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" required>
+                                    <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" readonly required>
                                 </div>
                                 <div class="col-md-4 form-group mb-3">
                                     <label for="sexo">Sexo:*</label>

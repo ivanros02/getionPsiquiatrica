@@ -41,6 +41,18 @@ if (isset($_GET['cerrar_sesion'])) {
   <!-- Custom CSS -->
   <link rel="stylesheet" href="../estilos/styleGeneral.css">
   <link rel="stylesheet" href="../estilos/styleBotones.css">
+
+  <!-- scripts -->
+  <!-- Bootstrap JS (opcional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -101,7 +113,10 @@ if (isset($_GET['cerrar_sesion'])) {
     }
 
     .message.user {
-      color: var(--primary-color) !important;
+      color: white;
+      background-color: var(--primary-color) !important;
+      border-radius: 0.2rem;
+      padding: 1px;
     }
 
     .message.bot {
@@ -156,7 +171,6 @@ if (isset($_GET['cerrar_sesion'])) {
       z-index: 800;
       /* Asegúrate de que esté por encima del botón */
     }
-    
   </style>
   </style>
 </head>
@@ -165,11 +179,11 @@ if (isset($_GET['cerrar_sesion'])) {
   <!-- Just an image -->
   <nav class="navbar bg-body-tertiary">
     <div class="container navbar-custom d-flex justify-content-center">
-        <a class="navbar-brand" href="#">
-            <img src="../img/logoBlanco.png" height="160rem" alt="Medical Logo" loading="lazy" />
-        </a>
+      <a class="navbar-brand" href="#">
+        <img src="../img/logoBlanco.png" height="160rem" alt="Medical Logo" loading="lazy" />
+      </a>
     </div>
-</nav>
+  </nav>
 
 
 
@@ -230,14 +244,14 @@ if (isset($_GET['cerrar_sesion'])) {
       <!-- CUARTA CARD -->
       <div class="col d-flex justify-content-center">
         <a href="../caja/caja.php">
-        <div class="card h-100">
-          <div class="first-content">
-            <img src="../img/home/caja.png" class="img-fluid" alt="">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/home/caja.png" class="img-fluid" alt="">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Caja</h3>
+            </div>
           </div>
-          <div class="third-content">
-            <h3 class="mt-3">Caja</h3>
-          </div>
-        </div>
         </a>
       </div>
       <!--CARD -->
@@ -245,14 +259,14 @@ if (isset($_GET['cerrar_sesion'])) {
       <!-- QUINTA CARD -->
       <div class="col d-flex justify-content-center">
         <a href="../gastos/gastos.php">
-        <div class="card h-100">
-          <div class="first-content">
-            <img src="../img/home/gastos.png" class="img-fluid" alt="">
+          <div class="card h-100">
+            <div class="first-content">
+              <img src="../img/home/gastos.png" class="img-fluid" alt="">
+            </div>
+            <div class="third-content">
+              <h3 class="mt-3">Gastos</h3>
+            </div>
           </div>
-          <div class="third-content">
-            <h3 class="mt-3">Gastos</h3>
-          </div>
-        </div>
         </a>
       </div>
       <!--CARD -->
@@ -307,14 +321,8 @@ if (isset($_GET['cerrar_sesion'])) {
   </footer>
 
 
-  <!-- Bootstrap JS (opcional) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
   <script>
     function confirmLogout(event) {
@@ -334,53 +342,64 @@ if (isset($_GET['cerrar_sesion'])) {
     // Definición de respuestas del chatbot
     document.addEventListener('DOMContentLoaded', () => {
 
-
-      const questions = [
-        { text: '¿Cómo estás?', answer: 'Estoy bien, gracias por preguntar.' },
-        { text: '¿Qué puedes hacer?', answer: 'Puedo responder preguntas y ayudarte con información.' },
-        { text: '¿Cuál es tu nombre?', answer: 'Soy un chatbot.' },
-        { text: '¿Cuál es tu color favorito?', answer: 'Me gusta el azul.' },
-        { text: '¿Dónde vives?', answer: 'Estoy en la nube.' },
-      ];
-
       const questionList = document.getElementById('questionList');
       const messages = document.getElementById('messages');
       const chatButton = document.getElementById('chatButton');
       const chatContainer = document.getElementById('chatContainer');
       const minimizeButton = document.getElementById('minimizeButton');
 
-      function displayQuestions() {
-        questionList.innerHTML = '';
+      // Función para cargar preguntas y respuestas desde la base de datos
+      function loadQuestions() {
+        $.ajax({
+          url: './gets/get_pyr.php', // Archivo PHP que obtiene las preguntas y respuestas desde la base de datos
+          method: 'GET',
+          dataType: 'json',
+          success: function (questions) {
+            displayQuestions(questions); // Mostrar las preguntas en la interfaz
+          },
+          error: function (xhr, status, error) {
+            console.error("Error al cargar las preguntas: ", error);
+          }
+        });
+      }
+
+      // Función para mostrar las preguntas como botones
+      function displayQuestions(questions) {
+        questionList.innerHTML = ''; // Limpiar lista de preguntas
         questions.forEach((question, index) => {
           const button = document.createElement('button');
           button.className = 'btn btn-primary';
           button.textContent = question.text;
           button.addEventListener('click', (event) => {
             event.stopPropagation(); // Prevenir el cierre del chat
-            displayAnswer(index);
+            displayAnswer(questions, index); // Mostrar la respuesta cuando se hace clic
           });
           questionList.appendChild(button);
         });
       }
 
-      function displayAnswer(index) {
+      // Función para mostrar la respuesta al hacer clic en una pregunta
+      function displayAnswer(questions, index) {
         const question = questions[index];
         messages.innerHTML += `<div class="message user">${question.text}</div>`;
         messages.innerHTML += `<div class="message bot">${question.answer}</div>`;
-        displayQuestions();
         messages.scrollTop = messages.scrollHeight;  // Desplazar hacia abajo
       }
 
+      // Mostrar el chat cuando se hace clic en el botón de abrir chat
       chatButton.addEventListener('click', () => {
         chatContainer.style.display = 'block';
         chatButton.style.display = 'none';
+        loadQuestions(); // Cargar las preguntas cuando se abre el chat
       });
 
+      // Minimizar el chat
       minimizeButton.addEventListener('click', () => {
         chatContainer.style.display = 'none';
         chatButton.style.display = 'flex';
       });
 
+      // Cerrar el chat si se hace clic fuera de él
       document.addEventListener('click', (event) => {
         if (!chatContainer.contains(event.target) && !chatButton.contains(event.target)) {
           chatContainer.style.display = 'none';
@@ -388,8 +407,8 @@ if (isset($_GET['cerrar_sesion'])) {
         }
       });
 
-      displayQuestions();
     });
+
   </script>
 </body>
 

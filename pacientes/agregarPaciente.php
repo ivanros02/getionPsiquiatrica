@@ -26,7 +26,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $boca_atencion = $_POST['boca_atencion'];
     $modalidad_act = $_POST['modalidad_act'];
     $hora_admision = $_POST['hora_admision'];
-    $tipo_historia = $_POST['tipo_historia'];  // Añadir este campo
+    $tipo_historia = $_POST['tipo_historia'];
+    $ugl_descripcion = $_POST['ugl_paciente'];  // Este es el texto (descripción) enviado por el formulario
+
+    // 1. Aquí va la consulta SQL para convertir la descripción a ID:
+    $sql_ugl = "SELECT id FROM codigo_ugl WHERE descripcion = ?";
+    $stmt_ugl = $conn->prepare($sql_ugl);
+    $stmt_ugl->bind_param("s", $ugl_descripcion);  // Vinculamos la descripción como parámetro
+    $stmt_ugl->execute();
+    $stmt_ugl->bind_result($ugl_id);  // El resultado será el ID del UGL
+    $stmt_ugl->fetch();
+    $stmt_ugl->close();
+
+    // Si no se encuentra el UGL, devolvemos un error
+    if (!$ugl_id) {
+        $response['success'] = false;
+        $response['message'] = 'No se encontró un UGL correspondiente.';
+        echo json_encode($response);
+        exit();
+    }
+
 
     // Obtener los valores actuales de num_hist_amb y num_hist_int desde la tabla parametro_sistema
     $sql_param = "SELECT num_hist_amb, num_hist_int FROM parametro_sistema"; // Asegúrate que `id = 1` es correcto para tu caso
@@ -57,12 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $response['message'] = 'El paciente ya está registrado.';
         } else {
             // Insertar el nuevo paciente
-            $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado, boca_atencion, nro_hist_amb, nro_hist_int, hora_admision) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO paciente (nombre, obra_social, fecha_nac, sexo, domicilio, localidad, partido, c_postal, telefono, tipo_doc, nro_doc, admision, id_prof, benef, parentesco, hijos, ocupacion, tipo_afiliado, boca_atencion, nro_hist_amb, nro_hist_int, hora_admision, ugl_paciente) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $conn->prepare($sql);
             $stmt->bind_param(
-                "ssssssssssssiisisiiiis",
+                "ssssssssssssiisisiiiisi",
                 $nombre,
                 $obra_social,
                 $fecha_nac,
@@ -84,7 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $boca_atencion,
                 $nro_hist_clinica_amb, // Ambulatoria
                 $nro_hist_clinica_int, // Internación
-                $hora_admision
+                $hora_admision,
+                $ugl_id
             );
 
             if ($stmt->execute()) {

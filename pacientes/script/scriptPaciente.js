@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var form = document.getElementById('formPaciente');
         form.action = './editarPaciente.php';
         form.dataset.mode = 'edit'; // Agrega un atributo de datos para identificar el modo
-
         document.getElementById('id').value = paciente.id;
         document.getElementById('nombre').value = paciente.nombre;
         document.getElementById('obra_social').value = paciente.obra_social;
@@ -45,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('nro_hist_amb').value = paciente.nro_hist_amb;
         document.getElementById('nro_hist_int').value = paciente.nro_hist_int;
         document.getElementById('hora_admision').value = paciente.hora_admision;
+        document.getElementById('ugl_paciente').value = paciente.ugl_descripcion;
 
 
         // Primero, carga las modalidades
@@ -229,7 +229,7 @@ document.getElementById('btnBuscar').addEventListener('click', function () {
                     }
                     return dateStr; // Devuelve original si no es un formato esperado
                 }
-                
+
                 // Actualizar el campo de nombre y apellido con el resultado
                 $('#ugl_paciente').val(data.resultado.ugl);
                 $('#nombre').val(data.resultado.nombreApellido); // Asigna nombre y apellido
@@ -726,7 +726,58 @@ document.getElementById('btnCompletarManualmente').addEventListener('click', fun
     var nombreInput = document.getElementById('nombre');
     nombreInput.removeAttribute('readonly');  // Elimina el atributo readonly
     nombreInput.focus();  // Opcional: pone el foco en el campo para que el usuario pueda escribir
+
+    // Para 'fecha_nac'
+    var fechaNacInput = document.getElementById('fecha_nac');
+    fechaNacInput.removeAttribute('readonly');  // Elimina el atributo readonly
+    fechaNacInput.focus();  // Opcional: pone el foco en el campo para que el usuario pueda escribir
+
+    // Para 'ugl_paciente'
+    convertirInputEnSelect();  // Llama a la función para convertir el input en select
+
+    // Enfoca el nuevo select si es necesario
+    var uglPacienteSelect = document.getElementById('ugl_paciente');
+    uglPacienteSelect.focus();  // Opcional: pone el foco en el select
 });
+
+// Función para convertir el input en un select
+function convertirInputEnSelect() {
+    var uglInput = document.getElementById('ugl_paciente');
+    var uglValue = uglInput.value;  // Guardar el valor actual
+
+    // Crear el nuevo elemento select
+    var selectUGL = document.createElement('select');
+    selectUGL.className = 'form-control';
+    selectUGL.id = 'ugl_paciente';
+    selectUGL.name = 'ugl_paciente';
+    selectUGL.required = true;
+
+    // Agregar la opción predeterminada
+    var defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Seleccione UGL';
+    selectUGL.appendChild(defaultOption);
+
+    // Obtener UGLs mediante AJAX
+    fetch('./dato/obtener_ugl.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(item => {
+                var option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.descripcion;
+                selectUGL.appendChild(option);
+            });
+
+            // Establecer el valor actual si está disponible
+            selectUGL.value = uglValue;
+
+            // Reemplazar el input por el select
+            uglInput.parentNode.replaceChild(selectUGL, uglInput);
+        })
+        .catch(error => console.error('Error al cargar UGLs:', error));
+}
+
 
 // Limitar a 12 dígitos en el campo "benef"
 document.getElementById('benef').addEventListener('input', function () {

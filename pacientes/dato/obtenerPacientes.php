@@ -1,7 +1,7 @@
 <?php
 require_once "../../conexion.php";
 
-$sql = "SELECT * FROM paciente"; // Ajusta la consulta según tus necesidades
+$sql = "SELECT p.*, u.descripcion AS ugl_descripcion FROM paciente p LEFT JOIN codigo_ugl u ON u.id = p.ugl_paciente "; // Ajusta la consulta según tus necesidades
 $result = $conn->query($sql);
 
 $pacientes = array();
