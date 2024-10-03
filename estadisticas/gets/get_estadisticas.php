@@ -94,12 +94,6 @@ LEFT JOIN actividades act ON act.id = pract.actividad
 WHERE (pract.fecha BETWEEN ? AND ?)
 AND p.obra_social = ?
 
-
-
-
-
-
-
 ";
 
 // Preparar la consulta

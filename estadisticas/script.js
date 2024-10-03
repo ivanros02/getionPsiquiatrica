@@ -46,6 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const generatePlanBtn = document.getElementById('generatePlanBtn');
     const generatePlanExcelBtn = document.getElementById('generatePlanExcelBtn');
 
+    const openPacientesBocaModalLink = document.getElementById('openPacientesBocaModalLink');
+    const generatePacientesBocaBtn = document.getElementById('generatePacientesBocaBtn');
+    const generatePacientesBocaExcelBtn = document.getElementById('generatePacientesBocaExcelBtn');
+
     const openPaciUnicosModalLink = document.getElementById('openPaciUnicosModalLink');
     const generatePaciUnicosBtn = document.getElementById('generatePaciUnicosBtn');
     const generatePaciUnicosExcelBtn = document.getElementById('generatePaciUnicosExcelBtn');
@@ -53,6 +57,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const openOpModalLink = document.getElementById('openOrdenModalLink');
     const generateOpBtn = document.getElementById('generateOpBtn');
     const generateOpExcelBtn = document.getElementById('generateOpExcelBtn');
+
+    if (openPacientesBocaModalLink) {
+        openPacientesBocaModalLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('openPacientesBocaModal'));
+            modal.show();
+        });
+    }
+
+    if (generatePacientesBocaBtn) {
+        generatePacientesBocaBtn.addEventListener('click', function () {
+            const fechaDesde = document.getElementById('fechaDesdePacientesBoca').value;
+            const fechaHasta = document.getElementById('fechaHastaPacientesBoca').value;
+            const obraSocialId = $('#obra_social_paci_boca').val();
+            generatePacientesBocaPDF(fechaDesde, fechaHasta, obraSocialId);
+        });
+    }
+
+    if (generatePacientesBocaExcelBtn) {
+        generatePacientesBocaExcelBtn.addEventListener('click', function () {
+            const fechaDesde = document.getElementById('fechaDesdePacientesBoca').value;
+            const fechaHasta = document.getElementById('fechaHastaPacientesBoca').value;
+            const obraSocialId = $('#obra_social_paci_boca').val();
+            generatePacientesBocaExcel(fechaDesde, fechaHasta, obraSocialId);
+        });
+    }
 
     if (openPaciUnicosModalLink) {
         openPaciUnicosModalLink.addEventListener('click', function (e) {
@@ -353,6 +383,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function fetchPaciBoca(fechaDesde, fechaHasta, obraSocialId) {
+        return new Promise((resolve, reject) => {
+            fetch(`./gets/get_paciente_boca_atencion.php?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}&obra_social=${obraSocialId}`)
+                .then(response => response.json())
+                .then(data => resolve(data))
+                .catch(error => reject(error));
+        });
+    }
+
+
+
     function fetchPaciUnicos(fechaDesde, fechaHasta, obraSocialId) {
         return new Promise((resolve, reject) => {
             fetch(`./gets/get_prestacion_unicas.php?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}&obra_social=${obraSocialId}`)
@@ -533,6 +574,122 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error:', error);
             });
     }
+
+
+    // PACIENTES POR BOCA
+    function generatePacientesBocaPDF(fechaDesde, fechaHasta, obraSocialId) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+
+        // Obtener los datos de pacientes
+        Promise.all([fetchPaciBoca(fechaDesde, fechaHasta, obraSocialId)]).then(([resumen]) => {
+            const formattedFechaDesde = formatDate(fechaDesde);
+            const formattedFechaHasta = formatDate(fechaHasta);
+
+            // Título del PDF
+            const title = 'LISTADO DE PACIENTES ATENDIDOS POR MODALIDAD';
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            doc.setFontSize(16);
+            doc.setFont('Helvetica', 'bold');
+            doc.text(title, pageWidth / 2, 10, { align: 'center' });
+            doc.setFont('Helvetica', 'normal');
+
+            // Subtítulo con fechas
+            const dateRange = `DESDE: ${formattedFechaDesde} HASTA: ${formattedFechaHasta}`;
+            doc.setFontSize(14);
+            doc.text(dateRange, pageWidth / 2, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            let startY = 30;
+            const margin = { left: 15, right: 15 }; // Ajustar márgenes
+
+            // Agrupar por modalidad
+            const groupedByModalidad = resumen.reduce((acc, item) => {
+                if (!acc[item.modalidad_full]) {
+                    acc[item.modalidad_full] = { data: [] };
+                }
+
+                acc[item.modalidad_full].data.push([
+                    item.nombre,
+                    `${item.benef}${item.parentesco}`,
+                    formatDate(item.admision),
+                    formatDate(item.ult_atencion),
+                    formatDate(item.egreso),
+                    item.boca_de_atencion, // Añadir boca de atención aquí
+                    item.diag
+                ]);
+
+                return acc;
+            }, {});
+
+            // Encabezado de la tabla
+            const headers = ['AFILIADO', 'BENEFICIO', 'INGRESO', 'ULT. ATENCION', 'EGRESO', 'BOCA DE ATENCION', 'DIAGNOSTICO'];
+
+            let totalRegistros = 0; // Contador total de registros
+
+            // Iterar sobre los datos agrupados por modalidad
+            for (const modalidad in groupedByModalidad) {
+                // Agregar espacio adicional antes del título de modalidad
+                startY += 10; // Aumentar el espacio por encima del subtítulo
+
+                // Agregar título de modalidad
+                doc.setFontSize(14);
+                doc.text(`MODALIDAD: ${modalidad}`, pageWidth / 2, startY, { align: 'center' });
+                startY += 5;
+
+                const { data } = groupedByModalidad[modalidad];
+                totalRegistros += data.length; // Sumar al total de registros
+
+                // Asegúrate de que data sea un array
+                if (Array.isArray(data)) {
+                    // Agregar tabla al PDF
+                    doc.autoTable({
+                        head: [headers],
+                        body: data,
+                        startY: startY,
+                        margin: margin,
+                        theme: 'striped',
+                        styles: {
+                            fontSize: 10,
+                            cellPadding: 2,
+                            overflow: 'linebreak',
+                            minCellHeight: 10 // Asegurarse de que las celdas tengan una altura mínima
+                        },
+                        columnStyles: {
+                            0: { cellWidth: 50 }, // Afiliado
+                            1: { cellWidth: 50 }, // Beneficio
+                            2: { cellWidth: 50 }, // Modalidad
+                            3: { cellWidth: 30 }, // Ult. Atención
+                            4: { cellWidth: 30 }, // Egreso
+                            5: { cellWidth: 30 }, // Boca de Atención
+                            6: { cellWidth: 29 }  // Diagnóstico
+                        },
+                        pageBreak: 'auto'
+                    });
+                }
+
+                // Actualizar la posición Y para el próximo grupo
+                startY += data.length * 10 + 10; // Ajustar el inicio Y para la próxima tabla
+            }
+
+            // Agregar total de registros al final
+            doc.setFontSize(12);
+            doc.text(`TOTAL GENERAL DE REGISTROS: ${totalRegistros}`, pageWidth / 2, startY + 10, { align: 'center' });
+
+            // Mostrar el PDF
+            window.open(doc.output('bloburl'));
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // FIN PACIENTES POR BOCA
+
+
+
+
+
 
 
 
@@ -1956,7 +2113,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         Promise.all([fetchPaciUnicos(fechaDesde, fechaHasta, obraSocialId)]).then(([resumen]) => {
             const groupedByModality = resumen.reduce((acc, item) => {
-                if (!item.modalidad_full) return acc; 
+                if (!item.modalidad_full) return acc;
 
                 if (!acc[item.modalidad_full]) {
                     acc[item.modalidad_full] = { data: [], totalQuantity: 0, isInternacion: false };
@@ -2665,6 +2822,7 @@ $(document).ready(function () {
                 $('#obra_social_diag').append(new Option(optionText, item.id));
                 $('#obra_social_plan').append(new Option(optionText, item.id));
                 $('#obra_social_paci_unicos').append(new Option(optionText, item.id));
+                $('#obra_social_paci_boca').append(new Option(optionText, item.id));
             });
         },
         error: function (error) {
