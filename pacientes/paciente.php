@@ -445,7 +445,7 @@ $conn->close();
                                         readonly>
                                 </div>
                                 <div class="col-md-6 form-group mb-3">
-                                    <label for="nro_hist_int">Nro. Historia Interna*:</label>
+                                    <label for="nro_hist_int">Nro. Historia Internacion*:</label>
                                     <input type="text" class="form-control" id="nro_hist_int" name="nro_hist_int"
                                         readonly>
                                 </div>

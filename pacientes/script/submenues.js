@@ -1794,6 +1794,24 @@ $(document).ready(function () {
                 $('#modaliFecha').val(paci_modalidad.fecha);
                 $('#modalidad_paci').val(paci_modalidad.modalidad);
 
+                $.ajax({
+                    url: './dato/verificar_egreso.php',
+                    type: 'GET',
+                    data: { id_paciente: $('#id').val() },
+                    success: function (response) {
+                        const data = JSON.parse(response);
+                        if (data.egresado) {
+                            $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                        } else {
+                            $('#bajaMensaje').html('');
+                        }
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('Error en verificar egreso:', textStatus, errorThrown);
+                    }
+                });
+
                 // Establecer data-action a "edit"
                 $('#btnGuardarModali').attr('data-action', 'edit');
 
@@ -1830,6 +1848,24 @@ $(document).ready(function () {
                 actualizarFechaAdmision(idPaciente);
 
                 $.ajax({
+                    url: './dato/verificar_egreso.php',
+                    type: 'GET',
+                    data: { id_paciente: $('#id').val() },
+                    success: function (response) {
+                        const data = JSON.parse(response);
+                        if (data.egresado) {
+                            $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                        } else {
+                            $('#bajaMensaje').html('');
+                        }
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('Error en verificar egreso:', textStatus, errorThrown);
+                    }
+                });
+
+                $.ajax({
                     url: './dato/get_modalidad_paci_id.php',
                     type: 'GET',
                     dataType: 'json',
@@ -1852,23 +1888,7 @@ $(document).ready(function () {
 
 
 
-        $.ajax({
-            url: './dato/verificar_egreso.php',
-            type: 'GET',
-            data: { id_paciente: $('#id').val() },
-            success: function (response) {
-                const data = JSON.parse(response);
-                if (data.egresado) {
-                    $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
-                } else {
-                    $('#bajaMensaje').html('');
-                }
 
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log('Error en verificar egreso:', textStatus, errorThrown);
-            }
-        });
 
 
     });
@@ -1887,6 +1907,24 @@ $(document).ready(function () {
                     // Recargar la lista de prácticas después de eliminar
                     const idPaciente = $('#id').val();
                     cargarListaModalidad(idPaciente);
+
+                    $.ajax({
+                        url: './dato/verificar_egreso.php',
+                        type: 'GET',
+                        data: { id_paciente: $('#id').val() },
+                        success: function (response) {
+                            const data = JSON.parse(response);
+                            if (data.egresado) {
+                                $('#bajaMensaje').html('<h1 style="color: red !important;">PACIENTE EGRESADO</h1>');
+                            } else {
+                                $('#bajaMensaje').html('');
+                            }
+
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log('Error en verificar egreso:', textStatus, errorThrown);
+                        }
+                    });
 
                     $.ajax({
                         url: './dato/get_modalidad_paci_id.php',
@@ -3040,7 +3078,7 @@ $(document).ready(function () {
                 $('#ordenNombreCarga').val(orden.nombre_paciente);
                 $('#ordenIdPaciente').val(orden.id_paciente);
 
-                
+
 
 
                 // Establecer data-action a "edit"

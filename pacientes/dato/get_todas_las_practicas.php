@@ -14,8 +14,7 @@ if ($pacienteId === '') {
 }
 
 // Preparar y ejecutar la consulta para obtener las modalidades activas del paciente
-$sqlModalidadesActivas = "
-    SELECT pm.modalidad 
+$sqlModalidadesActivas = "SELECT pm.modalidad 
     FROM paci_modalidad pm 
     LEFT JOIN egresos e ON pm.id_paciente = e.id_paciente AND pm.modalidad = e.modalidad
     WHERE pm.id_paciente = ? AND e.id_paciente IS NULL
