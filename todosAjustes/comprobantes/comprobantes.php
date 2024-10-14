@@ -28,7 +28,7 @@ if (isset($_GET['eliminar'])) {
         // Ejecutar la sentencia
         if ($stmt->execute()) {
             // Redirigir a la página después de eliminar
-            header("Location: ./categoria.php");
+            header("Location: ./comprobantes.php");
             exit();
         } else {
             throw new Exception($stmt->error);

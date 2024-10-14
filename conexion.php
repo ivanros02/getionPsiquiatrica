@@ -2,7 +2,7 @@
 $hostname = "localhost";
 $username = "root";
 $password = "";
-$database = "gestion_db";
+$database = "medical_pq000";
 
 // Crear conexión
 $conn = new mysqli($hostname, $username, $password, $database);
