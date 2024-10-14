@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Validar los datos
     $id_paciente = isset($_POST['id_paciente']) ? $_POST['id_paciente'] : '';
-    $antecedentes = isset($_POST['hc_familiar']) ? $_POST['hc_familiar'] : '';
+    $antecedentes = isset($_POST['admi_familiar']);
     $id_diag = isset($_POST['id_diag']) ? $_POST['id_diag'] : '';
     $id_prof = isset($_POST['id_prof']) ? $_POST['id_prof'] : '';
     $id_medicamento = isset($_POST['id_medicamento']) ? $_POST['id_medicamento'] : '';

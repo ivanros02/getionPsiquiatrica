@@ -420,22 +420,95 @@ $(document).ready(function () {
         }
     });
 
-    $.ajax({
-        url: './dato/get_medicacion.php',
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            data.forEach(function (item) {
-                $('#medicam1').append(new Option(item.descripcion, item.id));
-                $('#medicam2').append(new Option(item.descripcion, item.id));
-                $('#medicam3').append(new Option(item.descripcion, item.id));
-                $('#hc_medi').append(new Option(item.descripcion, item.id));
-            });
-        },
-        error: function (error) {
-            console.error("Error fetching data: ", error);
-        }
+    let currentPage = 1;
+    const resultsPerPage = 100;
+
+    // Función para cargar medicamentos en el select
+    function cargarMedicacion(page, search = '') {
+        $.ajax({
+            url: './dato/get_medicacion.php',
+            type: 'GET',
+            data: {
+                page: page,
+                per_page: resultsPerPage,
+                search: search
+            },
+            dataType: 'json',
+            success: function (data) {
+                // Limpiar ambos selects antes de cargar nuevos registros
+                $('#hc_medi').empty().append(new Option("Seleccionar...", ""));
+                $('#mediDesc').empty().append(new Option("Seleccionar...", ""));
+
+                // Agregar las opciones recibidas
+                data.forEach(function (item) {
+                    $('#hc_medi').append(new Option(item.descripcion, item.id));
+                    $('#mediDesc').append(new Option(item.descripcion, item.id));
+                });
+            },
+            error: function (error) {
+                console.error("Error fetching data: ", error);
+            }
+        });
+    }
+
+    // Llamar a la función cuando el documento está listo
+    $(document).ready(function () {
+        cargarMedicacion(currentPage); // Cargar medicamentos al iniciar
+
+        // Manejar la búsqueda en el input
+        $('#searchMedicacion').on('input', function () {
+            currentPage = 1; // Resetear a la primera página al buscar
+            const search = $(this).val();
+            cargarMedicacion(currentPage, search);
+        });
+
+        // Botón de siguiente página
+        $('#nextPage').on('click', function (event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            currentPage++;
+            const search = $('#searchMedicacion').val();
+            cargarMedicacion(currentPage, search);
+        });
+
+        // Botón de página anterior
+        $('#prevPage').on('click', function (event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            if (currentPage > 1) {
+                currentPage--;
+                const search = $('#searchMedicacion').val();
+                cargarMedicacion(currentPage, search);
+            }
+        });
+
+        $('#searchMedicacionHc').on('input', function () {
+            currentPage = 1; // Resetear a la primera página al buscar
+            const search = $(this).val();
+            cargarMedicacion(currentPage, search);
+        });
+
+        // Botón de siguiente página
+        $('#nextPageHc').on('click', function (event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            currentPage++;
+            const search = $('#searchMedicacion').val();
+            cargarMedicacion(currentPage, search);
+        });
+
+        // Botón de página anterior
+        $('#prevPageHc').on('click', function (event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            if (currentPage > 1) {
+                currentPage--;
+                const search = $('#searchMedicacion').val();
+                cargarMedicacion(currentPage, search);
+            }
+        });
     });
+
+
+
+
+
 
     $.ajax({
         url: './dato/get_secretaria.php',
@@ -479,19 +552,7 @@ $(document).ready(function () {
         }
     });
 
-    $.ajax({
-        url: './dato/get_medicacion.php',
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            data.forEach(function (item) {
-                $('#mediDesc').append(new Option(item.descripcion, item.id));
-            });
-        },
-        error: function (error) {
-            console.error("Error fetching data: ", error);
-        }
-    });
+
 
     $.ajax({
         url: './dato/get_t_juicio.php',

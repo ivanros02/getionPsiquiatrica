@@ -10,9 +10,10 @@ if ($conn->connect_error) {
 }
 
 // Preparar la consulta para obtener los datos de la práctica específica
-$sql = "SELECT f.* , paci.nombre AS nombre_paciente
+$sql = "SELECT f.* , paci.nombre AS nombre_paciente, prof.nombreYapellido prof_full
         FROM fisica f
         LEFT JOIN paciente paci ON paci.id=f.id_paciente
+        LEFT JOIN profesional prof ON prof.id_prof = f.medico_tratante
         WHERE f.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);

@@ -2309,6 +2309,7 @@ function cargarListaEvoluciones(idPaciente) {
                 html += '<td>';
                 html += '<button id="editEvo" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + evo.id + '">Editar</button> ';
                 html += '<button id="deleteEvo"  class="btn btn-danger btn-sm btn-delete" data-id="' + evo.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-evolucion" data-id="' + evo.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -2445,6 +2446,77 @@ $(document).ready(function () {
 
 });
 
+// Evento para generar el PDF
+$(document).on('click', '.btn-pdf-evolucion', function () {
+    var evoId = $(this).data('id');
+
+    // Petición AJAX para obtener los datos de la evolución
+    $.ajax({
+        url: './dato/get_evo_con_id.php',
+        type: 'GET',
+        data: { id: evoId },
+        success: function (response) {
+            var evo = JSON.parse(response);
+
+            // Crear el documento PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título del documento
+            doc.setFontSize(16);
+            doc.text("Evolución Ambulatoria del Paciente", 10, 10);
+
+            // Información básica
+            doc.setFontSize(12);
+            doc.text("Nombre del Paciente: " + evo.nombre_paciente, 10, 20);
+            doc.text("Fecha: " + formatDate(evo.fecha), 10, 30);
+            doc.text("Motivo: " + evo.motivo, 10, 40);
+
+            // Tabla de datos
+            doc.autoTable({
+                startY: 50,
+                head: [['Antecedentes', 'Estado Actual', 'Familia', 'Diagnóstico', 'Objetivo', 'Duración', 'Frecuencia']],
+                body: [
+                    [
+                        evo.antecedentes,
+                        evo.estado_actual,
+                        evo.familia,
+                        evo.diag_full,
+                        evo.objetivo,
+                        evo.duracion,
+                        evo.frecuencia
+                    ]
+                ],
+            });
+
+            // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+            const finalY = doc.lastAutoTable.finalY || 60;
+
+            // Agregar el logo centrado después de la tabla
+            const imgUrl = '../img/logo.png';
+            var img = new Image();
+            img.onload = function () {
+                const imgWidth = 29; // Ancho de la imagen
+                const imgHeight = 25; // Altura de la imagen
+                const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                // Agregar la imagen al PDF
+                doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                // Abrir el PDF en una nueva pestaña del navegador
+                window.open(doc.output('bloburl'));
+            };
+            img.src = imgUrl; // Establecer la fuente de la imagen
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Error al obtener los datos de la evolución:', textStatus, errorThrown);
+        }
+    });
+});
+
+
 //FIN EVOLUCIONES
 
 //EVOLUCIONES INT
@@ -2521,6 +2593,7 @@ function cargarListaEvolucionesInt(idPaciente) {
                 html += '<td>';
                 html += '<button id="editEvoInt" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + evo.id + '">Editar</button> ';
                 html += '<button id="deleteEvoInt"  class="btn btn-danger btn-sm btn-delete" data-id="' + evo.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-evolucion" data-id="' + evo.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -2657,6 +2730,75 @@ $(document).ready(function () {
 
 });
 
+$(document).on('click', '.btn-pdf-evolucion', function () {
+    var evoId = $(this).data('id');
+
+    // Petición AJAX para obtener los datos de la evolución
+    $.ajax({
+        url: './dato/get_evo_int_con_id.php',
+        type: 'GET',
+        data: { id: evoId },
+        success: function (response) {
+            var evo = JSON.parse(response);
+
+            // Crear el documento PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título del documento
+            doc.setFontSize(16);
+            doc.text("Evolución Internación del Paciente", 10, 10);
+
+            // Información básica
+            doc.setFontSize(12);
+            doc.text("Nombre del Paciente: " + evo.nombre_paciente, 10, 20);
+            doc.text("Fecha: " + formatDate(evo.fecha), 10, 30);
+            doc.text("Motivo: " + evo.motivo, 10, 40);
+
+            // Tabla de datos
+            doc.autoTable({
+                startY: 50,
+                head: [['Antecedentes', 'Estado Actual', 'Familia', 'Diagnóstico', 'Objetivo', 'Duración', 'Frecuencia']],
+                body: [
+                    [
+                        evo.antecedentes,
+                        evo.estado_actual,
+                        evo.familia,
+                        evo.diag_full,
+                        evo.objetivo,
+                        evo.duracion,
+                        evo.frecuencia
+                    ]
+                ],
+            });
+
+            // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+            const finalY = doc.lastAutoTable.finalY || 60;
+
+            // Agregar el logo centrado después de la tabla
+            const imgUrl = '../img/logo.png';
+            var img = new Image();
+            img.onload = function () {
+                const imgWidth = 29; // Ancho de la imagen
+                const imgHeight = 25; // Altura de la imagen
+                const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                // Agregar la imagen al PDF
+                doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                // Abrir el PDF en una nueva pestaña del navegador
+                window.open(doc.output('bloburl'));
+            };
+            img.src = imgUrl; // Establecer la fuente de la imagen
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Error al obtener los datos de la evolución:', textStatus, errorThrown);
+        }
+    });
+});
+
 //FIN EVOLUCIONES INT
 
 //ADMISION AMB
@@ -2716,10 +2858,11 @@ function cargarListaAdmisionAmb(idPaciente) {
             historia.forEach(function (hist) {
                 html += '<tr>';
                 html += '<td>' + formatDate(hist.hc_fecha) + '</td>';
-                html += '<td>' + hist.id_prof + '</td>';
+                html += '<td>' + hist.profesional + '</td>';
                 html += '<td>';
                 html += '<button id="editAdmiAmb" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + hist.id + '">Editar</button> ';
                 html += '<button id="deleteAdmiAmb"  class="btn btn-danger btn-sm btn-delete" data-id="' + hist.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-admision" data-id="' + hist.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -2776,12 +2919,12 @@ $(document).ready(function () {
                 $('#admiAmbId').val(data.id);
                 $('#admiAmbNombreCarga').val(data.nombre_paciente);
                 $('#admiAmbIdPaciente').val(data.id_paciente);
-
-                $('#hc_familiar').val(data.antecedentes);
+                $('#hc_fecha').val(data.hc_fecha)
+                $('#admi_familiar').val(data.antecedentes);
                 $('#hc_prof').val(data.id_prof);
 
                 $('input[name="aspectoPsiquico"][value="' + data.asc_psiquico + '"]').prop('checked', true);
-                $('input[name="actPsiquica"][value="' + data.act_psiquica + '"]').prop('checked', true);
+                $('input[name="act_psiquica"][value="' + data.act_psiquica + '"]').prop('checked', true);
                 $('input[name="act"][value="' + data.act + '"]').prop('checked', true);
                 $('input[name="orientacion"][value="' + data.orientacion + '"]').prop('checked', true);
                 $('input[name="conciencia"][value="' + data.conciencia + '"]').prop('checked', true);
@@ -2797,10 +2940,19 @@ $(document).ready(function () {
                 $('input[name="tratamiento"][value="' + data.tratamiento + '"]').prop('checked', true);
                 $('input[name="evolucion"][value="' + data.evolucion + '"]').prop('checked', true);
 
-                $('#hc_diag').val(data.diag_full)
-                $('#hc_cada_medi').val(data.hc_cada_medi);
-                $('#hc_desc_medi').val(data.hc_desc_medi);
-                $('#hc_fecha').val(data.hc_fecha);
+                // Ocultar los elementos de diagnóstico y medicación
+                $('#hc_diag').hide(); // Ocultar el select de diagnóstico
+                $('label[for="hc_diag"]').hide(); // Ocultar la etiqueta de diagnóstico
+
+                $('#hc_medi').hide(); // Ocultar el select de medicación
+                $('#searchMedicacionHc').hide(); // Ocultar el campo de búsqueda de medicación
+                $('label[for="hc_medi"]').hide(); // Ocultar la etiqueta de medicación
+                $('#hc_desc_medi').hide(); // Ocultar el input de descripción de medicación
+                $('label[for="hc_desc_medi"]').hide(); // Ocultar la etiqueta de descripción de medicación
+                $('#hc_cada_medi').hide(); // Ocultar el input de cada cuánto
+                $('label[for="hc_cada_medi"]').hide(); // Ocultar la etiqueta de cada cuánto
+
+
 
 
                 // Establecer data-action a "edit"
@@ -2838,18 +2990,17 @@ $(document).ready(function () {
         var tratamiento = $('input[name="tratamiento"]:checked').val();
         var evolucion = $('input[name="evolucion"]:checked').val();
 
-
         // Verificar que todos los campos obligatorios están completos
         if (!aspectoPsiquico || !act_psiquica || !act || !orientacion || !conciencia || !memoria ||
             !atencion || !pensamiento || !cont_pensamiento || !sensopercepcion || !afectividad ||
-            !inteligencia || !juicio || !esfinteres || !tratamiento || !evolucion ||
-            !$('#hc_diag').val() || !$('#hc_medi').val()) {
+            !inteligencia || !juicio || !esfinteres || !tratamiento || !evolucion) {
 
             alert('Por favor complete todos los campos obligatorios.');
             return; // Detiene la ejecución si falta algún dato
         }
 
         formData = {
+            id: $('#admiAmbId').val(),
             id_paciente: $('#admiAmbIdPaciente').val(),
             asc_psiquico: aspectoPsiquico,
             act_psiquica: act_psiquica,
@@ -2873,7 +3024,7 @@ $(document).ready(function () {
             id_prof: $('#hc_prof').val(),
             hc_desc_medi: $('#hc_desc_medi').val() || '',
             hc_cada_medi: $('#hc_cada_medi').val() || '',
-            antecedentes: $('#hc_familiar').val()
+            admi_familiar: $('#admi_familiar').val()
 
         };
 
@@ -2918,6 +3069,86 @@ $(document).ready(function () {
         }
     });
 
+});
+
+// Evento para generar el PDF
+$(document).on('click', '.btn-pdf-admision', function () {
+    var admi = $(this).data('id');
+
+    // Petición AJAX para obtener los datos de la evolución
+    $.ajax({
+        url: './dato/get_admision_amb_id.php',
+        type: 'GET',
+        data: { id: admi },
+        success: function (response) {
+            var admision = JSON.parse(response);
+
+            // Crear el documento PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título del documento
+            doc.setFontSize(16);
+            doc.text("Admisión del Paciente", 10, 10);
+
+            // Información básica
+            doc.setFontSize(12);
+            doc.text("Nombre del Paciente: " + admision.nombre_paciente, 10, 20);
+            doc.text("Fecha: " + formatDate(admision.hc_fecha), 10, 30);
+            doc.text("Profesional: " + admision.prof_full, 10, 40);
+
+            // Tabla de datos
+            doc.autoTable({
+                startY: 50,
+                head: [['Campo', 'Valor']],
+                body: [
+                    ['Antecedentes', admision.antecedentes],
+                    ['Aspecto Psíquico', admision.asc_psiquico],
+                    ['Actividad Psíquica', admision.act_psiquica],
+                    ['Actividad', admision.act],
+                    ['Orientación', admision.orientacion],
+                    ['Conciencia', admision.conciencia],
+                    ['Memoria', admision.memoria],
+                    ['Atención', admision.atencion],
+                    ['Pensamiento', admision.pensamiento],
+                    ['Contenido del Pensamiento', admision.cont_pensamiento],
+                    ['Sensopercepción', admision.sensopercepcion],
+                    ['Afectividad', admision.afectividad],
+                    ['Inteligencia', admision.inteligencia],
+                    ['Juicio', admision.juicio],
+                    ['Esfínteres', admision.esfinteres],
+                    ['Tratamiento', admision.tratamiento],
+                    ['Evolución', admision.evolucion],
+                    ['Descripción del Medicamento', admision.hc_desc_medi],
+                    ['Frecuencia del Medicamento', admision.hc_cada_medi]
+                ],
+            });
+
+            // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+            const finalY = doc.lastAutoTable.finalY || 60;
+
+            // Agregar el logo centrado después de la tabla
+            const imgUrl = '../img/logo.png';
+            var img = new Image();
+            img.onload = function () {
+                const imgWidth = 29; // Ancho de la imagen
+                const imgHeight = 25; // Altura de la imagen
+                const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                // Agregar la imagen al PDF
+                doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                // Abrir el PDF en una nueva pestaña del navegador
+                window.open(doc.output('bloburl'));
+            };
+            img.src = imgUrl; // Establecer la fuente de la imagen
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('Error al obtener los datos de la evolución:', textStatus, errorThrown);
+        }
+    });
 });
 
 //FIN ADMISION AMB
@@ -3423,6 +3654,7 @@ function cargarListaNutri(idPaciente) {
                 html += '<td>';
                 html += '<button id="editNutri" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + nutri.id + '">Editar</button> ';
                 html += '<button id="deleteNutri" class="btn btn-danger btn-sm btn-delete" data-id="' + nutri.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-nutricion" data-id="' + nutri.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -3568,6 +3800,74 @@ $(document).ready(function () {
         }
     });
 
+    // Evento para generar el PDF
+    $(document).on('click', '.btn-pdf-nutricion', function () {
+        var nutriId = $(this).data('id');
+
+        // Petición AJAX para obtener los datos de la evolución
+        $.ajax({
+            url: './dato/get_nutri_con_id.php',
+            type: 'GET',
+            data: { id: nutriId },
+            success: function (response) {
+                var nutricion = JSON.parse(response);
+
+                // Crear el documento PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(16);
+                doc.text("ADMISÍON NUTRICION DEL PACIENTE", 10, 10);
+
+                // Información básica
+                doc.setFontSize(12);
+                doc.text("Nombre del Paciente: " + nutricion.nombre_paciente, 10, 20);
+                doc.text("Peso: " + nutricion.peso, 10, 30);
+                doc.text("Talla: " + nutricion.talla, 10, 40);
+                doc.text("IMC: " + nutricion.imc, 10, 50);
+
+                // Tabla de datos
+                doc.autoTable({
+                    startY: 60,
+                    head: [['Campo', 'Valor']],
+                    body: [
+                        ['Patologías', nutricion.patologias],
+                        ['Indicación de Dieta', nutricion.indicacion_dieta],
+                        ['Actitud hacia la Comida', nutricion.actitud_comida],
+                        ['Requiere', nutricion.requiere],
+                        ['No Requiere', nutricion.no_requiere],
+                        ['Especificar', nutricion.especificar]
+                    ],
+                });
+
+                // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+                const finalY = doc.lastAutoTable.finalY || 60;
+
+                // Agregar el logo centrado después de la tabla
+                const imgUrl = '../img/logo.png';
+                var img = new Image();
+                img.onload = function () {
+                    const imgWidth = 29; // Ancho de la imagen
+                    const imgHeight = 25; // Altura de la imagen
+                    const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                    const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                    const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                    // Agregar la imagen al PDF
+                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                    // Abrir el PDF en una nueva pestaña del navegador
+                    window.open(doc.output('bloburl'));
+                };
+                img.src = imgUrl; // Establecer la fuente de la imagen
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la evolución:', textStatus, errorThrown);
+            }
+        });
+    });
+
 });
 //FIN NUTRICION
 
@@ -3634,6 +3934,7 @@ function cargarListaFisica(idPaciente) {
                 html += '<td>';
                 html += '<button id="editFisica" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + fisica.id + '">Editar</button> ';
                 html += '<button id="deleteFisica" class="btn btn-danger btn-sm btn-delete" data-id="' + fisica.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-fisica-pdf" data-id="' + fisica.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -3740,7 +4041,6 @@ $(document).ready(function () {
         var action = $(this).attr('data-action');
         var url = action === 'edit' ? './submenu/fisica/editar_fisica.php' : './submenu/fisica/agregar_fisica.php';
         var formData = $('#formAgregarFisica').serialize();
-        console.log('Datos enviados: ', formData);
         $.ajax({
             url: url,
             type: 'POST',
@@ -3781,6 +4081,81 @@ $(document).ready(function () {
             });
         }
     });
+
+    //BOTON PDF
+    $(document).on('click', '.btn-fisica-pdf', function () {
+        var fisicaId = $(this).data('id');
+
+        // Petición AJAX para obtener los datos de la evaluación física
+        $.ajax({
+            url: './dato/get_ad_fisica_id.php', // Cambia esta URL según sea necesario
+            type: 'GET',
+            data: { id: fisicaId },
+            success: function (response) {
+                var fisica = JSON.parse(response);
+                console.log(fisica)
+                // Crear el documento PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(16);
+                doc.text("Evaluación Física del Paciente", 10, 10);
+
+                // Información básica
+                doc.setFontSize(12);
+                doc.text("ID del Paciente: " + fisica.nombre_paciente, 10, 20);
+                doc.text("Médico Tratante: " + fisica.prof_full, 10, 30);
+
+                // Tabla de datos
+                doc.autoTable({
+                    startY: 40,
+                    head: [['Campo', 'Valor']],
+                    body: [
+                        ['Objetivos Generales', fisica.objetivos_generales],
+                        ['Examen Postural', fisica.examen_postural],
+                        ['Examen Muscular', fisica.examen_muscular],
+                        ['Examen de Flexibilidad', fisica.examen_flexibilidad],
+                        ['Fuerza Miembros Inferiores', fisica.fuerza_miembros_inferiores],
+                        ['Fuerza Miembros Superiores', fisica.fuerza_miembros_superiores],
+                        ['Equilibrio Normal', fisica.equilibrio_normal],
+                        ['Equilibrio con Ojos Cerrados', fisica.equilibrio_ojos_cerrados],
+                        ['Equilibrio en Base de Sustentación', fisica.equilibrio_base_sustentacion],
+                        ['Movimiento del Miembro Superior', fisica.movimiento_ms],
+                        ['Movimiento del Miembro Inferior', fisica.movimiento_ml],
+                        ['Movimiento del Tronco', fisica.movimiento_tronco],
+                        ['Caminando y Giros', fisica.caminando_giros],
+                        ['Observaciones Generales', fisica.observaciones_generales]
+                    ],
+                });
+
+                // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+                const finalY = doc.lastAutoTable.finalY || 70;
+
+                // Agregar el logo centrado después de la tabla
+                const imgUrl = '../img/logo.png';
+                var img = new Image();
+                img.onload = function () {
+                    const imgWidth = 29; // Ancho de la imagen
+                    const imgHeight = 25; // Altura de la imagen
+                    const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                    const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                    const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                    // Agregar la imagen al PDF
+                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                    // Abrir el PDF en una nueva pestaña del navegador
+                    window.open(doc.output('bloburl'));
+                };
+                img.src = imgUrl; // Establecer la fuente de la imagen
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la evaluación física:', textStatus, errorThrown);
+            }
+        });
+    });
+
 
 });
 
@@ -3850,6 +4225,7 @@ function cargarListaAdmiDiag(idPaciente) {
                 html += '<td>';
                 html += '<button id="editAdmiDiag" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + admiDiag.id + '">Editar</button> ';
                 html += '<button id="deleteAdmiDiag" class="btn btn-danger btn-sm btn-delete" data-id="' + admiDiag.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-admi-diag" data-id="' + admiDiag.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -3949,7 +4325,6 @@ $(document).ready(function () {
         var action = $(this).attr('data-action');
         var url = action === 'edit' ? './submenu/admiDiag/editar_admi_diag.php' : './submenu/admiDiag/agregar_admi_diag.php';
         var formData = $('#formImpresionDiagnostica').serialize();
-        console.log('Datos enviados: ', formData);
         $.ajax({
             url: url,
             type: 'POST',
@@ -3989,6 +4364,89 @@ $(document).ready(function () {
             });
         }
     });
+
+    // Generar PDF
+    $(document).on('click', '.btn-pdf-admi-diag', function () {
+        var diagId = $(this).data('id');
+
+        // Petición AJAX para obtener los datos de la impresión diagnóstica
+        $.ajax({
+            url: './dato/get_ad_diag_id.php', // Cambia esta URL según sea necesario
+            type: 'GET',
+            data: { id: diagId },
+            success: function (response) {
+                var diagnostico = JSON.parse(response);
+
+                // Crear el documento PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(16);
+                doc.text("Impresión Diagnóstica del Paciente", 10, 10);
+
+                // Información básica
+                doc.setFontSize(12);
+                doc.text("Paciente: " + diagnostico.nombre_paciente, 10, 20);
+
+                // Tabla de datos
+                doc.autoTable({
+                    startY: 30,
+                    head: [['Campo', 'Valor']],
+                    body: [
+                        ['Naturaleza de la Impresión', diagnostico.impresion_naturaleza],
+                        ['Situación de la Impresión', diagnostico.impresion_situacion],
+                        ['Conciencia de la Impresión', diagnostico.impresion_conciencia],
+                        ['Expectativas', diagnostico.impresion_expectativas],
+                        ['Diagnóstico Clínico', diagnostico.diagnostico_clinico],
+                        ['Gravedad del Diagnóstico', diagnostico.diagnostico_gravedad],
+                        ['Factores Desencadenantes', diagnostico.factores_desencadenantes],
+                        ['Personalidad Premorbida', diagnostico.personalidad_premorbida],
+                        ['Incapacidad Social', diagnostico.incapacidad_social],
+                        ['Indicaciones', diagnostico.indicaciones],
+                        ['Pronóstico', diagnostico.pronostico]
+                    ],
+                    columnStyles: {
+                        0: { cellWidth: 60 }, // Ancho fijo para la columna "Campo"
+                        1: { cellWidth: 130 } // Ancho fijo para la columna "Valor"
+                    },
+                    
+                    styles: {
+                        overflow: 'linebreak', // Manejo de líneas largas
+                        cellPadding: 5, // Espaciado dentro de las celdas
+                        fontSize: 12 // Tamaño de fuente
+                    },
+                });
+
+                // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+                const finalY = doc.lastAutoTable.finalY || 70;
+
+                // Agregar el logo centrado después de la tabla
+                const imgUrl = '../img/logo.png';
+                var img = new Image();
+                img.onload = function () {
+                    const imgWidth = 29; // Ancho de la imagen
+                    const imgHeight = 25; // Altura de la imagen
+                    const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                    const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                    const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                    // Agregar la imagen al PDF
+                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                    // Abrir el PDF en una nueva pestaña del navegador
+                    window.open(doc.output('bloburl'));
+                };
+                img.src = imgUrl; // Establecer la fuente de la imagen
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de la impresión diagnóstica:', textStatus, errorThrown);
+            }
+        });
+    });
+
+
+
 
 });
 
@@ -4058,6 +4516,7 @@ function cargarListaExamen(idPaciente) {
                 html += '<td>';
                 html += '<button id="editEx" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + ex.id + '">Editar</button> ';
                 html += '<button id="deleteEx" class="btn btn-danger btn-sm btn-delete" data-id="' + ex.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-ex" data-id="' + ex.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -4090,7 +4549,7 @@ $(document).ready(function () {
         // Llenar los campos del nuevo modal con la información necesaria
         $('#forma_presentarse').val('');
         $('#vestimenta').val('');
-        $('#peso').val('');
+        $('#peso_psiquiatrico').val('');
         $('#grado_actividad').val('');
         $('#cualidad_formal').val('');
         $('#pertinente').val('');
@@ -4127,7 +4586,7 @@ $(document).ready(function () {
 
                 $('#forma_presentarse').val(ex.forma_presentarse);
                 $('#vestimenta').val(ex.vestimenta);
-                $('#peso').val(ex.peso);
+                $('#peso_psiquiatrico').val(ex.peso);
                 $('#grado_actividad').val(ex.grado_actividad);
                 $('#cualidad_formal').val(ex.cualidad_formal);
                 $('#pertinente').val(ex.pertinente);
@@ -4158,7 +4617,6 @@ $(document).ready(function () {
         var action = $(this).attr('data-action');
         var url = action === 'edit' ? './submenu/ex_psiquiatrico/editar_ex.php' : './submenu/ex_psiquiatrico/agregar_ex.php';
         var formData = $('#formExPsiquiatrico').serialize();
-        console.log('Datos enviados: ', formData);
         $.ajax({
             url: url,
             type: 'POST',
@@ -4199,6 +4657,77 @@ $(document).ready(function () {
             });
         }
     });
+
+    //PDF
+    $(document).on('click', '.btn-pdf-ex', function () {
+        var exId = $(this).data('id');
+
+        // Petición AJAX para obtener los datos del examen psiquiátrico
+        $.ajax({
+            url: './dato/get_ex_psiquiatrico_id.php', // Cambia esta URL según sea necesario
+            type: 'GET',
+            data: { id: exId },
+            success: function (response) {
+                var examen = JSON.parse(response);
+
+                // Crear el documento PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(16);
+                doc.text("Examen Psiquiátrico del Paciente", 10, 10);
+
+                // Información básica
+                doc.setFontSize(12);
+                doc.text("Paciente: " + examen.nombre_paciente, 10, 20);
+
+                // Tabla de datos
+                doc.autoTable({
+                    startY: 30,
+                    head: [['Campo', 'Valor']],
+                    body: [
+                        ['Forma de Presentarse', examen.forma_presentarse],
+                        ['Vestimenta', examen.vestimenta],
+                        ['Peso', examen.peso],
+                        ['Grado de Actividad', examen.grado_actividad],
+                        ['Cualidad Formal', examen.cualidad_formal],
+                        ['Pertinente', examen.pertinente],
+                        ['Signos de Ansiedad', examen.signos_ansiedad],
+                        ['Bradilalia', examen.bradilalia],
+                        ['Cooperativo', examen.cooperativo],
+                        ['Comunicativo', examen.comunicativo],
+                        ['Escala de Actitudes', examen.escala_actitudes]
+                    ],
+                });
+
+                // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+                const finalY = doc.lastAutoTable.finalY || 70;
+
+                // Agregar el logo centrado después de la tabla
+                const imgUrl = '../img/logo.png';
+                var img = new Image();
+                img.onload = function () {
+                    const imgWidth = 29; // Ancho de la imagen
+                    const imgHeight = 25; // Altura de la imagen
+                    const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                    const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                    const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                    // Agregar la imagen al PDF
+                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                    // Abrir el PDF en una nueva pestaña del navegador
+                    window.open(doc.output('bloburl'));
+                };
+                img.src = imgUrl; // Establecer la fuente de la imagen
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos del examen psiquiátrico:', textStatus, errorThrown);
+            }
+        });
+    });
+
 
 });
 
@@ -4265,6 +4794,7 @@ function cargarListaAntecedentes(idPaciente) {
                 html += '<td>';
                 html += '<button id="editAntecedente" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + antecedente.id + '">Editar</button> ';
                 html += '<button id="deleteAntecedente" class="btn btn-danger btn-sm btn-delete" data-id="' + antecedente.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-antecedente-f" data-id="' + antecedente.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -4402,6 +4932,83 @@ $(document).ready(function () {
         }
     });
 
+    //GENERAR PDF
+    $(document).on('click', '.btn-pdf-antecedente-f', function () {
+        var pacienteId = $(this).data('id');
+
+        // Petición AJAX para obtener los datos de los antecedentes familiares
+        $.ajax({
+            url: './dato/get_paci_antecendes_familiares_id.php', // Asegúrate de que esta URL es correcta
+            type: 'GET',
+            data: { id: pacienteId },
+            success: function (response) {
+                var antecedentes = JSON.parse(response);
+
+                // Crear el documento PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(16);
+                doc.text("Antecedentes Familiares del Paciente", 10, 10);
+
+                // Información básica
+                doc.setFontSize(12);
+                doc.text("Paciente: " + antecedentes.nombre_paciente, 10, 20);
+
+                // Tabla de datos
+                doc.autoTable({
+                    startY: 30,
+                    head: [['Campo', 'Valor']],
+                    body: [
+                        ['Grupo Familiar', antecedentes.antecedentes_familiar_1],
+                        ['Interrelacion', antecedentes.antecedentes_familiar_2],
+                        ['Estado cultural, social y económico', antecedentes.antecedentes_familiar_3],
+                        ['Cambios y eventos', antecedentes.antecedentes_familiar_4],
+                        ['Antecedentes psiquiátricos, psicosomáticos y neurológicos', antecedentes.antecedentes_familiar_5],
+                        ['Conclusiones del entrevistador sobre el tipo de familia', antecedentes.antecedentes_familiar_6],
+                    ],
+                    // Definir estilos de columnas
+                    columnStyles: {
+                        0: { cellWidth: 60 }, // Ancho de la primera columna (Campo)
+                        1: { cellWidth: 120 }, // Ancho de la segunda columna (Valor), ajustar para textos largos
+                    },
+                    styles: {
+                        cellPadding: 3, // Margen interno de las celdas
+                        fontSize: 10, // Tamaño de la fuente
+                        overflow: 'linebreak', // Permitir salto de línea en celdas con contenido largo
+                    },
+                });
+
+                // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+                const finalY = doc.lastAutoTable.finalY || 70;
+
+                // Agregar el logo centrado después de la tabla
+                const imgUrl = '../img/logo.png';
+                var img = new Image();
+                img.onload = function () {
+                    const imgWidth = 29; // Ancho de la imagen
+                    const imgHeight = 25; // Altura de la imagen
+                    const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                    const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                    const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                    // Agregar la imagen al PDF
+                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                    // Abrir el PDF en una nueva pestaña del navegador
+                    window.open(doc.output('bloburl'));
+                };
+                img.src = imgUrl; // Establecer la fuente de la imagen
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de los antecedentes familiares:', textStatus, errorThrown);
+            }
+        });
+    });
+
+
+
 });
 
 //FIN ANTECENDES FAMILIARES
@@ -4467,6 +5074,7 @@ function cargarListaAntecendesPersonales(idPaciente) {
                 html += '<td>';
                 html += '<button id="editAntecentePersonal" class="btn btn-primary btn-custom-save btn-sm btn-edit" data-id="' + antecedentesPersonales.id + '">Editar</button> ';
                 html += '<button id="deleteAntecentePersonal" class="btn btn-danger btn-sm btn-delete" data-id="' + antecedentesPersonales.id + '">Eliminar</button>';
+                html += '<button class="btn btn-success btn-sm btn-pdf-personales" data-id="' + antecedentesPersonales.id + '">Generar PDF</button>';
                 html += '</td>';
                 html += '</tr>';
             });
@@ -4618,6 +5226,98 @@ $(document).ready(function () {
             });
         }
     });
+
+    //GENERAR PDF
+    $(document).on('click', '.btn-pdf-personales', function () {
+        var pacienteId = $(this).data('id');
+
+        // Petición AJAX para obtener los datos de los antecedentes personales
+        $.ajax({
+            url: './dato/get_antecendes_personales_id.php', // Asegúrate de que esta URL es correcta
+            type: 'GET',
+            data: { id: pacienteId },
+            success: function (response) {
+                var antecedentes = JSON.parse(response);
+
+                // Crear el documento PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                // Título del documento
+                doc.setFontSize(16);
+                doc.text("Antecedentes Personales del Paciente", 10, 10);
+
+                // Información básica
+                doc.setFontSize(12);
+                doc.text("Paciente: " + antecedentes.nombre_paciente, 10, 20);
+
+                // Tabla de datos con ajuste de texto largo
+                doc.autoTable({
+                    startY: 30,
+                    head: [['Campo', 'Valor']],
+                    body: [
+                        ['Complicaciones al Nacimiento', antecedentes.complicaciones_nacimiento],
+                        ['Desarrollo en la Niñez', antecedentes.desarrollo_ninez],
+                        ['Enfermedades Principales', antecedentes.enfermedades_principales],
+                        ['Sistema Nervioso', antecedentes.sistema_nervioso],
+                        ['Estudios', antecedentes.estudios],
+                        ['Actividad Sexual', antecedentes.actividad_sexual],
+                        ['Historial Marital', antecedentes.historial_marital],
+                        ['Embarazos e Hijos', antecedentes.embarazos_hijos],
+                        ['Interrelación Familiar', antecedentes.interrelacion_familiar],
+                        ['Actividades Laborales', antecedentes.actividades_laborales],
+                        ['Hábitos', antecedentes.habitos],
+                        ['Intereses', antecedentes.intereses],
+                        ['Actividad Social', antecedentes.actividad_social],
+                        ['Creencias Religiosas', antecedentes.creencias_religiosas],
+                        ['Toxicomanías', antecedentes.toxicomanias],
+                        ['Rasgos de Personalidad', antecedentes.rasgos_personalidad],
+                    ],
+                    styles: {
+                        overflow: 'linebreak',  // Permitir saltos de línea en contenido largo
+                        cellWidth: 'auto',      // Ajustar el ancho de las celdas según el contenido
+                        fontSize: 10,           // Ajustar el tamaño de fuente para caber mejor
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 50 },   // Ancho fijo para la columna "Campo"
+                        1: { cellWidth: 120 },  // Ancho fijo para la columna "Valor"
+                    },
+                    bodyStyles: {
+                        valign: 'top',  // Alinear el contenido al inicio de la celda
+                    },
+                    margin: { top: 30 },  // Establecer margen superior
+                });
+
+                // Obtener la altura de la tabla generada para colocar la imagen debajo de la tabla
+                const finalY = doc.lastAutoTable.finalY || 70;
+
+                // Agregar el logo centrado después de la tabla
+                const imgUrl = '../img/logo.png';
+                var img = new Image();
+                img.onload = function () {
+                    const imgWidth = 29; // Ancho de la imagen
+                    const imgHeight = 25; // Altura de la imagen
+                    const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página
+                    const xImg = (pageWidth - imgWidth) / 2; // Calcular la posición X para centrar
+                    const yImg = finalY + 15; // La posición Y justo debajo de la tabla
+
+                    // Agregar la imagen al PDF
+                    doc.addImage(img, 'PNG', xImg, yImg, imgWidth, imgHeight);
+
+                    // Abrir el PDF en una nueva pestaña del navegador
+                    window.open(doc.output('bloburl'));
+                };
+                img.src = imgUrl; // Establecer la fuente de la imagen
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error al obtener los datos de los antecedentes personales:', textStatus, errorThrown);
+            }
+        });
+    });
+
+
+
+
 
 });
 

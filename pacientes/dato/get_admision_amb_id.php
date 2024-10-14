@@ -10,9 +10,10 @@ if ($conn->connect_error) {
 }
 
 // Preparar la consulta para obtener los datos de la práctica específica
-$sql = "SELECT h.*,TIMESTAMPDIFF(YEAR, p.fecha_nac, CURDATE()) AS edad,p.nombre AS nombre_paciente
+$sql = "SELECT h.*,TIMESTAMPDIFF(YEAR, p.fecha_nac, CURDATE()) AS edad,p.nombre AS nombre_paciente, prof.nombreYapellido AS prof_full
         FROM hc_admision_ambulatorio h
         LEFT JOIN paciente p ON h.id_paciente = p.id
+        LEFT JOIN profesional prof ON prof.id_prof = h.id_prof
         
         WHERE h.id = ?";
 $stmt = $conn->prepare($sql);

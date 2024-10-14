@@ -5,7 +5,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $idPaciente = $_POST['id_paciente']; // Asegúrate de que el formulario incluya el campo 'id_paciente'
     $forma_presentarse = $_POST['forma_presentarse'];
     $vestimenta = $_POST['vestimenta'];
-    $peso = $_POST['peso'];
+    $peso = $_POST['peso_psiquiatrico'];
     $grado_actividad = $_POST['grado_actividad'];
     $cualidad_formal = $_POST['cualidad_formal'];
     $pertinente = $_POST['pertinente'];

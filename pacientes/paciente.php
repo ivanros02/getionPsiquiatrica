@@ -81,39 +81,52 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pacientes|<?php echo htmlspecialchars($title); ?></title>
+    <title>Pacientes | <?php echo htmlspecialchars($title); ?></title>
     <link rel="icon" href="../img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!--FECHAS -->
     <!-- Bootstrap Datepicker CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
         rel="stylesheet">
+
+
+    <link rel="stylesheet" href="../estilos/styleBotones.css">
+    <link rel="stylesheet" href="../estilos/styleGeneral.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 
     <!-- Bootstrap Datepicker JS -->
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
 
-    <link rel="stylesheet" href="../estilos/styleBotones.css">
-    <link rel="stylesheet" href="../estilos/styleGeneral.css">
-    <script src="./script/scriptPaciente.js" defer></script>
-    <script src="./script/submenues.js" defer></script>
-    <!--REPORTES -->
+
+    <!-- Reportes JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Scripts personalizados -->
+    <script src="./script/scriptPaciente.js" defer></script>
+    <script src="./script/submenues.js" defer></script>
+
+
+
+
     <style>
         .modal-xl {
             max-width: 89%;
@@ -329,16 +342,10 @@ $conn->close();
                             <span class="icon-text">Evoluciones Int.</span>
                         </a>
 
-                        <a href="#" class="btn btn-link" title="admision Int" data-bs-toggle="modal"
-                            data-bs-target="#admiIntModal" onclick="loadAdmiIntModal()">
-                            <i class="fa-solid fa-hospital-user custom-icon"></i>
-                            <span class="icon-text">Admision Int.</span>
-                        </a>
-
                         <a href="#" class="btn btn-link" title="admision Amb" data-bs-toggle="modal"
                             data-bs-target="#admiAmbModal" onclick="loadAdmiAmbModal()">
                             <i class="fa-solid fa-hospital-user custom-icon"></i>
-                            <span class="icon-text">Admision Amb.</span>
+                            <span class="icon-text">Admision</span>
                         </a>
 
                         <a href="#" class="btn btn-link" title="admision nutricion" data-bs-toggle="modal"
@@ -461,7 +468,8 @@ $conn->close();
                                 </div>
                                 <div class="col-md-4 form-group mb-3">
                                     <label for="fecha_nac">Fecha de Nacimiento:*</label>
-                                    <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" readonly required>
+                                    <input type="date" class="form-control" id="fecha_nac" name="fecha_nac" readonly
+                                        required>
                                 </div>
                                 <div class="col-md-4 form-group mb-3">
                                     <label for="sexo">Sexo:*</label>
@@ -1080,7 +1088,7 @@ $conn->close();
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="AmbModalLabel">Admision Amb.</h5>
+                    <h5 class="modal-title" id="AmbModalLabel">Admision</h5>
                     <div class="modal-header-center">
                         <img src="../img/logo.png" alt="Logo" class="modal-logo">
                     </div>
@@ -1177,6 +1185,7 @@ $conn->close();
                                         name="act_psiquica">
                                     <label class="form-check-label" for="pasiva">Pasiva</label>
                                 </div>
+
 
                                 <h5>3-Actividad</h5>
                                 <div class="form-check">
@@ -1331,13 +1340,19 @@ $conn->close();
                                 <select class="form-control" id="hc_diag" name="hc_diag" required>
                                     <option value="">Seleccionar...</option>
                                 </select>
-
+                                <hr>
                                 <div class="col-md-6">
-                                    <label for="hc_medi">Que medicacion esta tomando el paciente:</label>
+                                    <label for="hc_medi">Que medicación está tomando el paciente:</label>
+                                    <input type="text" id="searchMedicacionHc" placeholder="Buscar..."
+                                        class="form-control mb-2">
                                     <select class="form-control" id="hc_medi" name="hc_medi" required>
                                         <option value="">Seleccionar...</option>
                                     </select>
                                 </div>
+                                <button id="prevPageHc" class="btn btn-secondary">Página Anterior</button>
+                                <button id="nextPageHc" class="btn btn-secondary">Página Siguiente</button>
+                                <hr>
+
 
                                 <div class="col-md-6">
                                     <label for="hc_desc_medi">Para que lo toma:</label>
@@ -1352,8 +1367,8 @@ $conn->close();
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="hc_familiar">Antecedentes Familiares:</label>
-                                    <input type="text" class="form-control" id="hc_familiar" name="hc_familiar"
+                                    <label for="admi_familiar">Antecedentes Familiares:</label>
+                                    <input type="text" class="form-control" id="admi_familiar" name="admi_familiar"
                                         placeholder="Completar">
                                 </div>
 
@@ -1720,12 +1735,20 @@ $conn->close();
                             <input type="number" class="form-control" id="dosis" name="dosis" required>
                         </div>
 
+                        <hr>
+                        <hr>
                         <div class="col-md-4 form-group">
                             <label for="mediDesc">Medicamento:*</label>
+                            <input type="text" id="searchMedicacion" placeholder="Buscar..." class="form-control mb-2">
                             <select class="form-control" id="mediDesc" name="mediDesc" required>
                                 <option value="">Seleccionar...</option>
                             </select>
                         </div>
+                        <button id="prevPage" class="btn btn-secondary" type="button">Página Anterior</button>
+                        <button id="nextPage" class="btn btn-secondary" type="button">Página Siguiente</button>
+                        <hr>
+
+                        <hr>
 
 
                     </form>
@@ -2857,9 +2880,9 @@ $conn->close();
                                     descuidado, bizarro, otro (describir)</strong></label>
                             <input type="text" class="form-control" id="vestimenta" name="vestimenta">
 
-                            <label for="peso" class="form-label"><strong>c) - Peso: normal, obeso,
+                            <label for="peso_psiquiatrico" class="form-label"><strong>c) - Peso: normal, obeso,
                                     delgado</strong></label>
-                            <input type="text" class="form-control" id="peso" name="peso">
+                            <input type="text" class="form-control" id="peso_psiquiatrico" name="peso_psiquiatrico">
                         </div>
 
                         <div class="col-md-5">

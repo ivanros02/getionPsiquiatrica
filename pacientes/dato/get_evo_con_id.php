@@ -10,9 +10,10 @@ if ($conn->connect_error) {
 }
 
 // Preparar la consulta para obtener los datos de la práctica específica
-$sql = "SELECT e.* , paci.nombre AS nombre_paciente
+$sql = "SELECT e.* , paci.nombre AS nombre_paciente ,CONCAT(d.codigo, ' - ', d.descripcion) AS diag_full
         FROM evoluciones_amb e
         LEFT JOIN paciente paci ON paci.id=e.id_paciente
+        LEFT JOIN diag d ON d.id = e.diag
         WHERE e.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
